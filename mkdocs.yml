@@ -2,6 +2,10 @@ site_name: "CS 6250: Computer Networks"
 site_description: "Study Guide & Solutions for Georgia Tech CS 6250"
 site_url: https://lukehiura.github.io/cs6250-study-guide/
 
+repo_url: https://github.com/lukehiura/cs6250-study-guide
+repo_name: cs6250-study-guide
+edit_uri: edit/master/docs/
+
 theme:
   name: material
   palette:
@@ -28,9 +32,14 @@ theme:
     - search.suggest
     - search.highlight
     - content.tabs.link
+    - content.action.edit
+    - content.action.view
+    - navigation.footer
     - toc.follow
   icon:
     repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
 
 markdown_extensions:
   - admonition
@@ -58,6 +67,24 @@ markdown_extensions:
 plugins:
   - search
   - glightbox
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: date
+      fallback_to_build_date: true
+  - git-authors
+  - mkdocs_quiz:
+      shuffle_answers: true
+      show_progress: true
+      confetti: true
+      disable_after_submit: false
+
+copyright: Copyright &copy; 2026 Luke Hiura — unofficial study notes for Georgia Tech CS 6250
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/lukehiura/cs6250-study-guide
+      name: cs6250-study-guide on GitHub
 
 extra_javascript:
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
@@ -67,6 +94,7 @@ nav:
   - Lesson 1 - Introduction & Internet Architecture:
       - Full guide: lesson-01-introduction.md
       - Quick study guide: lesson-01-quick-study-guide.md
+      - Interactive quiz: lesson-01-quiz.md
   - Lesson 2 - Transport & Application Layers: lesson-02-transport-application.md
   - Lessons 3 & 4 - Intradomain & Interdomain Routing: lesson-03-04-routing.md
   - Lesson 5 - Router Design & Algorithms (Part 1): lesson-05-router-design-1.md

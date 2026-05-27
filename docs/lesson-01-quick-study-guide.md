@@ -1,6 +1,6 @@
 # Lesson 1: Quick Study Guide — Internet Architecture
 
-A condensed review for exams. For full explanations, diagrams, and official Q&A, see the [full Lesson 1 guide](lesson-01-introduction.md).
+A condensed review for exams. For full explanations, diagrams, and official Q&A, see the [full Lesson 1 guide](lesson-01-introduction.md). For interactive practice, try the **[Lesson 1 Quiz](lesson-01-quiz.md)**.
 
 ---
 

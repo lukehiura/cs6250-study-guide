@@ -29,7 +29,8 @@ This comprehensive reference has been structured to support graduate-level cours
 | Resource | Description |
 |----------|-------------|
 | [Lesson 1 Quick Study Guide](lesson-01-quick-study-guide.md) | Condensed Lesson 1 review with exam Q&A |
-| [Practice Questions](practice-questions.md) | Quiz yourself with questions and hidden answers |
+| [Lesson 1 Interactive Quiz](lesson-01-quiz.md) | Multiple-choice and fill-in-the-blank quizzes with progress tracking |
+| [Practice Questions](practice-questions.md) | Written questions with hidden answers |
 
 ---
 

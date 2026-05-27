@@ -2,6 +2,8 @@
 
 Test your understanding with these questions. Try to answer before revealing the solution.
 
+For interactive multiple-choice and fill-in-the-blank practice with progress tracking, see the **[Lesson 1 Interactive Quiz](lesson-01-quiz.md)**.
+
 ---
 
 ## Lesson 1: Introduction, History, and Internet Architecture

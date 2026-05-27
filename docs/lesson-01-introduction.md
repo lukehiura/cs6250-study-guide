@@ -3,7 +3,7 @@
 This section covers the fundamental design philosophies of modern networking.
 
 !!! tip "Exam prep"
-    Need a condensed review? See the **[Quick Study Guide](lesson-01-quick-study-guide.md)** — tables, memory aids, and high-yield questions with short answers.
+    Need a condensed review? See the **[Quick Study Guide](lesson-01-quick-study-guide.md)** — tables, memory aids, and high-yield questions with short answers. For interactive practice, try the **[Lesson 1 Quiz](lesson-01-quiz.md)**.
 
 ---
 

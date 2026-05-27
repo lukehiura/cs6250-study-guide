@@ -10,7 +10,7 @@ This comprehensive reference has been structured to support graduate-level cours
 
 | Module | Topic |
 |--------|-------|
-| [Lesson 1](lesson-01-introduction.md) | Introduction, History, and Internet Architecture |
+| [Lesson 1](lesson-01-introduction.md) | Introduction, History, and Internet Architecture ([quick guide](lesson-01-quick-study-guide.md)) |
 | [Lesson 2](lesson-02-transport-application.md) | Transport and Application Layers |
 | [Lessons 3 & 4](lesson-03-04-routing.md) | Intradomain and Interdomain Routing |
 | [Lesson 5](lesson-05-router-design-1.md) | Router Design and Algorithms (Part 1) |
@@ -28,6 +28,7 @@ This comprehensive reference has been structured to support graduate-level cours
 
 | Resource | Description |
 |----------|-------------|
+| [Lesson 1 Quick Study Guide](lesson-01-quick-study-guide.md) | Condensed Lesson 1 review with exam Q&A |
 | [Practice Questions](practice-questions.md) | Quiz yourself with questions and hidden answers |
 
 ---

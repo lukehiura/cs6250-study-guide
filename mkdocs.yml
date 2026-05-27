@@ -64,7 +64,9 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Lesson 1 - Introduction & Internet Architecture: lesson-01-introduction.md
+  - Lesson 1 - Introduction & Internet Architecture:
+      - Full guide: lesson-01-introduction.md
+      - Quick study guide: lesson-01-quick-study-guide.md
   - Lesson 2 - Transport & Application Layers: lesson-02-transport-application.md
   - Lessons 3 & 4 - Intradomain & Interdomain Routing: lesson-03-04-routing.md
   - Lesson 5 - Router Design & Algorithms (Part 1): lesson-05-router-design-1.md

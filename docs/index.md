@@ -24,5 +24,13 @@ This comprehensive reference has been structured to support graduate-level cours
 
 ---
 
+## Practice
+
+| Resource | Description |
+|----------|-------------|
+| [Practice Questions](practice-questions.md) | Quiz yourself with questions and hidden answers |
+
+---
+
 !!! tip "How to Use This Guide"
     Each lesson page contains the official study questions along with detailed answers. Use the search bar (top of page) to quickly find specific topics. Toggle between light and dark mode using the icon in the header.

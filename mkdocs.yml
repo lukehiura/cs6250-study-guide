@@ -23,6 +23,8 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.instant
+    - navigation.tracking
     - search.suggest
     - search.highlight
     - content.tabs.link
@@ -41,8 +43,13 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.mark
   - pymdownx.critic
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - tables
   - attr_list
+  - md_in_html
   - def_list
   - footnotes
   - toc:
@@ -50,6 +57,10 @@ markdown_extensions:
 
 plugins:
   - search
+  - glightbox
+
+extra_javascript:
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
   - Home: index.md
@@ -64,3 +75,4 @@ nav:
   - Lesson 10 - Surveillance & Censorship: lesson-10-surveillance-censorship.md
   - Lesson 11 - Applications (Video): lesson-11-video.md
   - Lesson 12 - Applications (CDNs & Overlay Networks): lesson-12-cdns-overlay.md
+  - Practice Questions: practice-questions.md

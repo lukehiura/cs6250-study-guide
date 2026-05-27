@@ -4,6 +4,77 @@ The transport layer provides logical communication between application processes
 
 ---
 
+## Transport and Network Layers Overview
+
+The transport layer and the network layer work together, but they solve different problems. The transport layer supports communication between applications running on end hosts. The network layer moves packets across the Internet from one host to another.
+
+### Transport Layer
+
+The transport layer is responsible for end-to-end communication between applications running on different hosts. The two main transport-layer protocols are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol).
+
+**TCP** provides a richer service to applications. It offers a connection-oriented service, meaning that the two endpoints establish a connection before exchanging data. TCP also provides reliable delivery, so lost data can be retransmitted. It supports flow control, which prevents the sender from overwhelming the receiver, and congestion control, which slows the sender when the network appears congested.
+
+**UDP** provides a simpler service. It is connectionless and offers best-effort delivery. UDP does not provide built-in reliability, flow control, or congestion control. This makes UDP lightweight, but it also means that applications using UDP must handle any needed reliability or timing requirements themselves.
+
+At the transport layer, the packet of information is called a **segment**.
+
+### Network Layer
+
+The network layer is responsible for moving packets from one host to another across the Internet. At this layer, the packet of information is called a **datagram**.
+
+A source host passes a transport-layer segment, along with the destination address, down to the network layer. The network layer adds its own header and creates a datagram. It is then responsible for moving that datagram across routers and networks toward the destination host.
+
+The most important protocol at this layer is the **Internet Protocol (IP)**. IP is often described as the glue that holds the Internet together because all Internet hosts and routers use IP to send and forward datagrams.
+
+IP defines the structure of the datagram and the addressing information used by hosts and routers. However, IP by itself does not decide the full path in advance. Routing protocols help determine the routes that datagrams can take between sources and destinations.
+
+### Takeaway
+
+The transport layer provides end-to-end communication services to applications, while the network layer provides host-to-host packet delivery across the Internet.
+
+---
+
+## Application, Presentation, and Session Layers Overview
+
+In the OSI reference model, the top three layers are the application layer, presentation layer, and session layer. In the five-layer Internet protocol stack, these three layers are usually combined into one broader application layer.
+
+### Application Layer
+
+The application layer supports network applications and application-level protocols. This is the layer closest to the user-facing software, such as web browsers, email clients, file transfer tools, and domain-name lookup services.
+
+Common application-layer protocols include:
+
+- **HTTP** — Used for web communication.
+- **SMTP** — Used for sending email.
+- **FTP** — Used for transferring files between hosts.
+- **DNS** — Used to translate domain names into IP addresses.
+
+The services at this layer depend on the application. For example, a web browser and an email client use the network differently and rely on different application-layer protocols.
+
+At the application layer, the packet of information is usually called a **message**.
+
+### Presentation Layer
+
+The presentation layer is responsible for how data is represented and formatted before it is delivered to the application. It can handle tasks such as data formatting, encoding, compression, and translation between data representations.
+
+For example, the presentation layer may help format a video stream or translate data between different byte orders, such as big endian and little endian formats.
+
+In the Internet protocol stack, these functions are usually handled inside the application or by application-level libraries.
+
+### Session Layer
+
+The session layer manages communication sessions between application processes. It helps organize related streams of communication that belong to the same interaction.
+
+For example, in a teleconference application, the session layer concept helps explain how the system keeps related audio and video streams tied together as part of the same call.
+
+In the Internet protocol stack, session management is usually handled by the application itself or by protocols and libraries used by the application.
+
+### Takeaway
+
+In the OSI model, application, presentation, and session are separate layers. In the Internet protocol stack, these functions are typically grouped into the application layer and handled by applications or application-level protocols.
+
+---
+
 ## What does the transport layer provide?
 
 The transport layer provides **logical communication between application processes** on different hosts. It extends the network layer's host-to-host delivery to **process-to-process** delivery by using port numbers. Key services include:

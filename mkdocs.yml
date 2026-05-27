@@ -95,8 +95,15 @@ nav:
       - Full guide: lesson-01-introduction.md
       - Quick study guide: lesson-01-quick-study-guide.md
       - Interactive quiz: lesson-01-quiz.md
-  - Lesson 2 - Transport & Application Layers: lesson-02-transport-application.md
-  - Lessons 3 & 4 - Intradomain & Interdomain Routing: lesson-03-04-routing.md
+  - Lesson 2 - Transport Layer:
+      - Full guide: lesson-02-transport-application.md
+      - Quick study guide: lesson-02-quick-study-guide.md
+      - Interactive quiz: lesson-02-quiz.md
+  - Lesson 3 - Intradomain Routing:
+      - Full guide: lesson-03-intradomain-routing.md
+      - Quick study guide: lesson-03-quick-study-guide.md
+      - Interactive quiz: lesson-03-quiz.md
+  - Lesson 4 - Interdomain Routing: lesson-04-interdomain-routing.md
   - Lesson 5 - Router Design & Algorithms (Part 1): lesson-05-router-design-1.md
   - Lesson 6 - Router Design & Algorithms (Part 2): lesson-06-router-design-2.md
   - Lesson 7 - SDN (Part 1): lesson-07-sdn-1.md

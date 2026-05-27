@@ -11,8 +11,9 @@ This comprehensive reference has been structured to support graduate-level cours
 | Module | Topic |
 |--------|-------|
 | [Lesson 1](lesson-01-introduction.md) | Introduction, History, and Internet Architecture ([quick guide](lesson-01-quick-study-guide.md)) |
-| [Lesson 2](lesson-02-transport-application.md) | Transport and Application Layers |
-| [Lessons 3 & 4](lesson-03-04-routing.md) | Intradomain and Interdomain Routing |
+| [Lesson 2](lesson-02-transport-application.md) | Transport Layer ([quick guide](lesson-02-quick-study-guide.md), [quiz](lesson-02-quiz.md)) |
+| [Lesson 3](lesson-03-intradomain-routing.md) | Intradomain Routing ([quick guide](lesson-03-quick-study-guide.md), [quiz](lesson-03-quiz.md)) |
+| [Lesson 4](lesson-04-interdomain-routing.md) | Interdomain Routing (BGP) |
 | [Lesson 5](lesson-05-router-design-1.md) | Router Design and Algorithms (Part 1) |
 | [Lesson 6](lesson-06-router-design-2.md) | Router Design and Algorithms (Part 2) |
 | [Lesson 7](lesson-07-sdn-1.md) | Software Defined Networking (Part 1) |
@@ -29,7 +30,10 @@ This comprehensive reference has been structured to support graduate-level cours
 | Resource | Description |
 |----------|-------------|
 | [Lesson 1 Quick Study Guide](lesson-01-quick-study-guide.md) | Condensed Lesson 1 review with exam Q&A |
-| [Lesson 1 Interactive Quiz](lesson-01-quiz.md) | Multiple-choice and fill-in-the-blank quizzes with progress tracking |
+| [Lesson 1 Interactive Quiz](lesson-01-quiz.md) | Lesson 1 multiple-choice and fill-in-the-blank practice |
+| [Lesson 2 Interactive Quiz](lesson-02-quiz.md) | Lesson 2 transport/TCP practice |
+| [Lesson 3 Quick Study Guide](lesson-03-quick-study-guide.md) | Condensed Lesson 3 routing review |
+| [Lesson 3 Interactive Quiz](lesson-03-quiz.md) | Lesson 3 intradomain routing practice |
 | [Practice Questions](practice-questions.md) | Written questions with hidden answers |
 
 ---

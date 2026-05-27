@@ -1,0 +1,66 @@
+site_name: "CS 6250: Computer Networks"
+site_description: "Study Guide & Solutions for Georgia Tech CS 6250"
+site_url: ""
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.mark
+  - pymdownx.critic
+  - tables
+  - attr_list
+  - def_list
+  - footnotes
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Lesson 1 - Introduction & Internet Architecture: lesson-01-introduction.md
+  - Lesson 2 - Transport & Application Layers: lesson-02-transport-application.md
+  - Lessons 3 & 4 - Intradomain & Interdomain Routing: lesson-03-04-routing.md
+  - Lesson 5 - Router Design & Algorithms (Part 1): lesson-05-router-design-1.md
+  - Lesson 6 - Router Design & Algorithms (Part 2): lesson-06-router-design-2.md
+  - Lesson 7 - SDN (Part 1): lesson-07-sdn-1.md
+  - Lesson 8 - SDN (Part 2): lesson-08-sdn-2.md
+  - Lesson 9 - Internet Security: lesson-09-security.md
+  - Lesson 10 - Surveillance & Censorship: lesson-10-surveillance-censorship.md
+  - Lesson 11 - Applications (Video): lesson-11-video.md
+  - Lesson 12 - Applications (CDNs & Overlay Networks): lesson-12-cdns-overlay.md

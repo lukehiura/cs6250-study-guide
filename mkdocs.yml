@@ -1,6 +1,6 @@
 site_name: "CS 6250: Computer Networks"
 site_description: "Study Guide & Solutions for Georgia Tech CS 6250"
-site_url: ""
+site_url: https://lukehiura.github.io/cs6250-study-guide/
 
 theme:
   name: material

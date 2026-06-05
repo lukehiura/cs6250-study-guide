@@ -1,0 +1,28 @@
+/*
+ * Design tokens — Material for MkDocs custom properties
+ * https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
+ *
+ * Override theme colors/fonts here. Use --md-* variables so light/dark
+ * palettes stay in sync. Site-specific tokens use the --cs-* prefix.
+ */
+
+:root > * {
+  /* Typography (theme.font in mkdocs.yml loads the faces) */
+  --cs-font-size-nav: 0.74rem;
+  --cs-font-size-nav-group: 0.68rem;
+
+  /* Layout */
+  --cs-nav-indent: 0.4rem;
+  --cs-nav-rail-width: 2px;
+
+  /* Semantic aliases → Material palette */
+  --cs-color-muted: var(--md-default-fg-color--light);
+  --cs-color-text: var(--md-default-fg-color);
+  --cs-color-active: var(--md-primary-fg-color);
+  --cs-color-rail: var(--md-default-fg-color--lightest);
+}
+
+/* Dark mode: slightly softer rail contrast on slate */
+[data-md-color-scheme="slate"] {
+  --cs-color-rail: var(--md-default-fg-color--lighter);
+}

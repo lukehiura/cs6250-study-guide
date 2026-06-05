@@ -8,6 +8,9 @@ edit_uri: edit/master/docs/
 
 theme:
   name: material
+  font:
+    text: Source Sans 3
+    code: JetBrains Mono
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -24,19 +27,22 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
+    # Navigation — see .cursor/rules/mkdocs-theme.mdc
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.top
     - navigation.path
-    - navigation.prune
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.tracking
+    - navigation.footer
+    - toc.follow
+    # Content & search
     - search.suggest
     - search.highlight
     - content.tabs.link
     - content.action.edit
     - content.action.view
-    - navigation.footer
-    - toc.follow
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil
@@ -95,36 +101,42 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Lesson 1 — Introduction:
-      - Guide: lesson-01/introduction.md
-      - Plain-language: lesson-01/plain-language.md
-      - Quick study: lesson-01/quick-study-guide.md
-      - Quiz: lesson-01/quiz.md
-  - Lesson 2 — Transport:
-      - Guide: lesson-02/transport-application.md
-      - Plain-language: lesson-02/plain-language.md
-      - Quick study: lesson-02/quick-study-guide.md
-      - Quiz: lesson-02/quiz.md
-  - Lesson 3 — Intradomain Routing:
-      - Guide: lesson-03/intradomain-routing.md
-      - Plain-language: lesson-03/plain-language.md
-      - Quick study: lesson-03/quick-study-guide.md
-      - Quiz: lesson-03/quiz.md
-  - Lesson 4 — Interdomain Routing:
-      - Guide: lesson-04/interdomain-routing.md
-      - Plain-language: lesson-04/plain-language.md
-      - Quick study: lesson-04/quick-study-guide.md
-      - Quiz: lesson-04/quiz.md
-  - Lesson 5 — Router Design (Part 1):
-      - Guide: lesson-05/router-design-1.md
-      - Plain-language: lesson-05/plain-language.md
-      - Quick study: lesson-05/quick-study-guide.md
-      - Quiz: lesson-05/quiz.md
-  - Lesson 6 — Router Design (Part 2): lesson-06/router-design-2.md
-  - Lesson 7 — SDN (Part 1): lesson-07/sdn-1.md
-  - Lesson 8 — SDN (Part 2): lesson-08/sdn-2.md
-  - Lesson 9 — Security: lesson-09/security.md
-  - Lesson 10 — Surveillance & Censorship: lesson-10/surveillance-censorship.md
-  - Lesson 11 — Video: lesson-11/video.md
-  - Lesson 12 — CDNs & Overlays: lesson-12/cdns-overlay.md
-  - Practice Questions: practice-questions.md
+  - Foundations:
+      - Lesson 1 — Introduction:
+          - Guide: lesson-01/introduction.md
+          - Plain-language: lesson-01/plain-language.md
+          - Quick study: lesson-01/quick-study-guide.md
+          - Quiz: lesson-01/quiz.md
+      - Lesson 2 — Transport:
+          - Guide: lesson-02/transport-application.md
+          - Plain-language: lesson-02/plain-language.md
+          - Quick study: lesson-02/quick-study-guide.md
+          - Quiz: lesson-02/quiz.md
+  - Routing:
+      - Lesson 3 — Intradomain Routing:
+          - Guide: lesson-03/intradomain-routing.md
+          - Plain-language: lesson-03/plain-language.md
+          - Quick study: lesson-03/quick-study-guide.md
+          - Quiz: lesson-03/quiz.md
+      - Lesson 4 — Interdomain Routing:
+          - Guide: lesson-04/interdomain-routing.md
+          - Plain-language: lesson-04/plain-language.md
+          - Quick study: lesson-04/quick-study-guide.md
+          - Quiz: lesson-04/quiz.md
+  - Router Design:
+      - Lesson 5 — Part 1:
+          - Guide: lesson-05/router-design-1.md
+          - Plain-language: lesson-05/plain-language.md
+          - Quick study: lesson-05/quick-study-guide.md
+          - Quiz: lesson-05/quiz.md
+      - Lesson 6 — Part 2: lesson-06/router-design-2.md
+  - SDN:
+      - Lesson 7 — Part 1: lesson-07/sdn-1.md
+      - Lesson 8 — Part 2: lesson-08/sdn-2.md
+  - Security:
+      - Lesson 9 — Internet Security: lesson-09/security.md
+      - Lesson 10 — Surveillance & Censorship: lesson-10/surveillance-censorship.md
+  - Applications:
+      - Lesson 11 — Video: lesson-11/video.md
+      - Lesson 12 — CDNs & Overlays: lesson-12/cdns-overlay.md
+  - Practice: practice-questions.md

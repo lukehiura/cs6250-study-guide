@@ -1,0 +1,74 @@
+---
+description: MkDocs Material theme — navigation, styling, and customization conventions
+globs: mkdocs.yml, docs/stylesheets/**
+alwaysApply: false
+---
+
+# MkDocs Material Theme
+
+Reference: `~/Developer/reference/mkdocs/docs.txt` (scraped Material docs).
+
+## Configuration hierarchy
+
+1. **`mkdocs.yml`** — behavior (nav features, palette, fonts, plugins)
+2. **`docs/stylesheets/tokens.css`** — CSS variables (`--md-*`, `--cs-*`)
+3. **`docs/stylesheets/nav.css`** — sidebar-only overrides (keep minimal)
+4. **`docs/stylesheets/extra.css`** — imports the above; do not add rules here
+
+Prefer theme features over CSS. Extend via `theme.custom_dir: overrides` only when HTML structure must change.
+
+## Navigation structure
+
+Top-level **tabs** group course modules; each lesson is a **collapsible nested section** in the sidebar:
+
+```yaml
+nav:
+  - Home: index.md
+  - Foundations:
+      - Lesson 1 — Introduction:
+          - Guide: lesson-01/introduction.md
+          - Plain-language: lesson-01/plain-language.md
+          - Quick study: lesson-01/quick-study-guide.md
+          - Quiz: lesson-01/quiz.md
+```
+
+Child labels are always: **Guide**, **Plain-language**, **Quick study**, **Quiz**.
+
+### Feature flags (current)
+
+| Feature | Purpose |
+|---------|---------|
+| `navigation.tabs` + `navigation.tabs.sticky` | Module groups in header tabs |
+| `navigation.path` | Breadcrumbs above page title |
+| `navigation.instant` + `navigation.instant.prefetch` | SPA-like page loads |
+| `navigation.tracking` | URL updates with TOC anchor |
+| `toc.follow` | TOC scrolls to active heading |
+
+### Do NOT enable
+
+| Feature | Why |
+|---------|-----|
+| `navigation.sections` | Top-level sections always expanded; fights collapsible lessons |
+| `navigation.expand` | Expands every subsection by default |
+| `navigation.prune` | Replaces collapsible sections with flat links (large-site optimization) |
+| `navigation.indexes` | Duplicates section title as first child; use explicit `Guide:` label instead |
+
+## Colors and fonts
+
+- Palette in `mkdocs.yml` (`primary`, `accent`, light/dark `scheme`)
+- Custom brand colors: set `primary: custom` then override `--md-primary-fg-color*` in `tokens.css`
+- Fonts: `theme.font.text` / `theme.font.code` in `mkdocs.yml` (Google Fonts)
+
+## When editing nav
+
+Update **both** `mkdocs.yml` nav and `docs/index.md` modules table (see `project-context.mdc`).
+
+## Schema validation
+
+Add to VS Code `settings.json` for mkdocs.yml autocomplete:
+
+```json
+"yaml.schemas": {
+  "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
+}
+```

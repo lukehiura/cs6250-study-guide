@@ -1,0 +1,45 @@
+/*
+ * Sidebar navigation — minimal overrides only.
+ *
+ * Behavior (tabs, collapse, breadcrumbs) is configured in mkdocs.yml.
+ * Avoid deep .md-nav selectors; prefer theme features over CSS hacks.
+ * https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/
+ */
+
+/* Prevent visited-link color drift in the primary sidebar */
+.md-nav--primary a.md-nav__link:any-link {
+  color: var(--cs-color-muted);
+}
+
+.md-nav--primary a.md-nav__link:any-link:hover {
+  color: var(--cs-color-text);
+}
+
+.md-nav--primary .md-nav__link--active,
+.md-nav--primary .md-nav__item--active > a.md-nav__link {
+  color: var(--cs-color-active);
+  font-weight: 600;
+}
+
+/* Lesson group headers (collapsible labels) */
+.md-nav--primary .md-nav__item--nested > label.md-nav__link {
+  font-size: var(--cs-font-size-nav-group);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--cs-color-text);
+}
+
+.md-nav--primary .md-nav__item--nested.md-nav__item--active > label.md-nav__link {
+  color: var(--cs-color-active);
+}
+
+/* Child links — subtle left rail for hierarchy */
+.md-nav--primary .md-nav__item--nested > .md-nav > .md-nav__list {
+  margin-left: var(--cs-nav-indent);
+  padding-left: calc(var(--cs-nav-indent) + 2px);
+  border-left: var(--cs-nav-rail-width) solid var(--cs-color-rail);
+}
+
+.md-nav--primary .md-nav__item--nested > .md-nav > .md-nav__list .md-nav__link {
+  font-size: var(--cs-font-size-nav);
+}

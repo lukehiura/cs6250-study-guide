@@ -80,8 +80,10 @@ Not every lesson has all four formats yet. Add siblings as needed.
 
 When adding or renaming a doc, update **both**:
 
-1. `mkdocs.yml` → `nav:` section (nested under the lesson)
+1. `mkdocs.yml` → `nav:` section (under the correct module tab + lesson group)
 2. `docs/index.md` → Modules table and/or Practice table
+
+Nav is grouped by course module (Foundations, Routing, Router Design, SDN, Security, Applications) with sticky header tabs. Each lesson uses Guide / Plain-language / Quick study / Quiz child labels. See **mkdocs-theme** rule for feature flags and CSS conventions.
 
 ## Non-negotiables
 

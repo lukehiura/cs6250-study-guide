@@ -24,7 +24,6 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.indexes
     - navigation.top
     - navigation.instant
     - navigation.tracking
@@ -94,27 +93,27 @@ extra_javascript:
 nav:
   - Home: index.md
   - Lesson 1 — Introduction:
-      - lesson-01/introduction.md
+      - Guide: lesson-01/introduction.md
       - Plain-language: lesson-01/plain-language.md
       - Quick study: lesson-01/quick-study-guide.md
       - Quiz: lesson-01/quiz.md
   - Lesson 2 — Transport:
-      - lesson-02/transport-application.md
+      - Guide: lesson-02/transport-application.md
       - Plain-language: lesson-02/plain-language.md
       - Quick study: lesson-02/quick-study-guide.md
       - Quiz: lesson-02/quiz.md
   - Lesson 3 — Intradomain Routing:
-      - lesson-03/intradomain-routing.md
+      - Guide: lesson-03/intradomain-routing.md
       - Plain-language: lesson-03/plain-language.md
       - Quick study: lesson-03/quick-study-guide.md
       - Quiz: lesson-03/quiz.md
   - Lesson 4 — Interdomain Routing:
-      - lesson-04/interdomain-routing.md
+      - Guide: lesson-04/interdomain-routing.md
       - Plain-language: lesson-04/plain-language.md
       - Quick study: lesson-04/quick-study-guide.md
       - Quiz: lesson-04/quiz.md
   - Lesson 5 — Router Design (Part 1):
-      - lesson-05/router-design-1.md
+      - Guide: lesson-05/router-design-1.md
       - Plain-language: lesson-05/plain-language.md
       - Quick study: lesson-05/quick-study-guide.md
       - Quiz: lesson-05/quiz.md

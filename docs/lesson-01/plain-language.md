@@ -9,359 +9,242 @@ search:
 
 # Lesson 1: Introduction & Internet Architecture — Plain-Language Guide
 
-The simplest possible version of [Lesson 1](introduction.md). No jargon unless we explain it right away. When you want exam detail, use the **[Quick Study Guide](quick-study-guide.md)** or the **[Quiz](quiz.md)**. Next up: **[Lesson 2 — Transport Layer](../lesson-02/transport-application.md)** ([Plain-language guide](../lesson-02/plain-language.md)).
+The simplest possible version of [Lesson 1](introduction.md). We explain ideas through **real things you do every day** — opening a website, joining a video call, sending email. When you want exam detail, use the **[Quick Study Guide](quick-study-guide.md)** or the **[Quiz](quiz.md)**. Next up: **[Lesson 2 — Transport Layer](../lesson-02/transport-application.md)** ([Plain-language guide](../lesson-02/plain-language.md)).
 
 ---
 
 ## Summary
 
-The **Internet** connects many different networks so apps on your device can talk to apps anywhere in the world. It works by splitting data into small **packets**, organizing work into **layers**, and keeping the middle of the network simple while the smart work happens at the **edges** (your phone and the server).
+The **Internet** lets apps on your phone talk to apps anywhere in the world. It works by chopping data into small **packets**, handing each job to a **layer** with one clear task, and keeping the middle of the network dumb while your phone and the server stay smart.
 
 ---
 
 ## The one-sentence version
 
-The Internet is many networks working together so your apps can reach other apps — by sending small packets, using layers, and putting the hard thinking at the ends, not in every router.
+The Internet is many networks stitched together so your apps can reach other apps — by sending small packets through layers, with the hard decisions at the **edges** (your device and the server), not in every router.
 
 ---
 
-## How the Internet grew (story time)
+## Scenario: you open a website
 
-The Internet grew slowly, like a city — not all at once.
+You tap a link. Here is what actually happens, in plain English:
 
-| When | What happened | In plain words |
-|------|---------------|----------------|
-| 1960s | Packet switching | Split data into small pieces and share the line, like passing notes instead of renting the whole room. |
-| 1969 | ARPANET | Four schools connected — the first small network. |
-| 1970s | Email | People saw the goal: connect **people**, not just computers. |
-| 1980s | TCP/IP | One shared language so different networks could talk. |
-| 1980s–90s | DNS | A phone book for the Internet — type `google.com` instead of a number. |
-| 1990s | World Wide Web | Pages, links, and browsers made the Internet easy for everyone. |
+```
+You type google.com
+    → browser asks DNS: "what number is that?"     (Application)
+    → browser opens a reliable connection          (Transport — TCP)
+    → packets get an IP address and hop router to router (Network)
+    → each hop uses Wi‑Fi or Ethernet to the next box (Link)
+    → signals on the wire or over the air          (Physical)
+    → Google's server gets your request and sends the page back
+```
 
-**Key takeaways:**
+You never think about any of this. **Layers** exist so each step has one job — like ordering food delivery:
 
-- **Packet switching** — break data into pieces and send them when there is room.
-- **Open design** — Wi‑Fi, fiber, and cable can all work together if they follow the same top rules.
-- **End-to-end** — your device and the server do the smart work; routers mostly just pass packets along.
-
----
-
-## Why we use layers (the airline trip)
-
-Sending data online is like flying from one city to another.
-
-You do not load the plane, talk to air traffic control, or fuel the jet. You buy a ticket, check bags, go through security, board, fly, land, and pick up bags. Each step is a **layer**. You care about your trip. The airline handles the rest.
-
-The Internet works the same way:
-
-| Layer (top → bottom) | Job in plain words | Example |
-|----------------------|--------------------|---------|
-| **Application** | What you actually use | Browser, email, Zoom |
-| **Transport** | Get data to the right app | **TCP** = make sure it arrives; **UDP** = send fast |
-| **Network** | Get it to the right **computer** | IP addresses |
-| **Data Link** | Get it to the **next** device on one hop | Wi‑Fi, Ethernet |
-| **Physical** | Send the actual signals | Wires, fiber, radio |
+| Layer | Delivery analogy | Your website visit |
+|-------|------------------|-------------------|
+| **Application** | What you ordered | Browser, HTTP, DNS |
+| **Transport** | Driver promises delivery | **TCP** = tracked package; **UDP** = toss it over the fence |
+| **Network** | City address on the box | IP address, routers |
+| **Data Link** | Last mile to the next stop | Wi‑Fi, Ethernet, MAC address |
+| **Physical** | The truck and road | Wires, fiber, radio |
 
 **Key takeaways:**
 
-- **Layers** split a big job into smaller steps.
-- You can change one layer (like Wi‑Fi to 5G) without breaking your browser.
-- Different companies can build different parts, and they still work together.
-- The trade-off: extra wrapping adds a little delay, and some checks happen twice.
+- You can switch from Wi‑Fi to 5G without changing your browser — swap one layer, keep the rest.
+- Each layer wraps the one above in a new envelope (**encapsulation**). Routers only read the **outside** label (IP), not your page content.
 
 ![Layering and functionality illustrated with the airline analogy](../images/layering-functionality.png)
+
+**Memory trick for data names going down:** **M**essage → **S**egment → **D**atagram → **F**rame → **B**its
+
+---
+
+## Scenario: Netflix vs a Zoom call
+
+Same Internet, different needs:
+
+| What you're doing | What matters most | Transport choice |
+|-------------------|-------------------|------------------|
+| Download a PDF | Every byte, in order | **TCP** — like tracked mail |
+| Live video call | Low delay; a dropped frame is OK | Often **UDP** — like live TV, not a resend |
+| Online game | Fast updates beat perfect history | Often **UDP** |
+
+**End-to-end principle:** Your app and the server pick that trade-off. Routers in the middle just forward packets — they do not decide "this is a video call, be gentle."
+
+That is why the web, streaming, and games could grow without reprogramming every router on Earth.
+
+**Real-world bends in the rule:**
+
+| Middle box | Everyday example |
+|------------|------------------|
+| **Firewall** | Office Wi‑Fi blocks random incoming connections |
+| **NAT** | Your whole home shares one public address (see below) |
+| **Proxy / cache** | School or ISP keeps a copy of popular pages nearby |
+
+---
+
+## Scenario: your home Wi‑Fi (NAT)
+
+Your laptop might be `192.168.1.42` — a **private** address only meaningful inside your house. The rest of the Internet sees your **router's** public address.
+
+```
+Phone (192.168.1.42)  →  router rewrites to public IP  →  amazon.com
+Amazon replies        →  router remembers who asked     →  your phone
+```
+
+That is **NAT**. It helped when we ran out of old-style IP addresses. Side effect: strangers on the Internet cannot easily connect *into* your laptop — fine for browsing, annoying for hosting games or peer video unless you use workarounds (STUN, hole punching).
+
+**Memory trick:** Wi‑Fi fixing a noisy signal is **not** an end-to-end violation. **NAT**, **firewalls**, and **DPI** **are** — the middle is changing or reading your traffic on purpose.
+
+---
+
+## How we got here (short story)
+
+| When | Real-world moment |
+|------|-------------------|
+| 1960s | **Packet switching** — share the phone line like passing notes, not renting the whole room |
+| 1969 | **ARPANET** — four universities linked; the first tiny "Internet" |
+| 1972 | **Email** — people, not just machines, were the point |
+| 1980s | **TCP/IP** — one shared language so different networks could talk |
+| 1980s | **DNS** — type `google.com` instead of memorizing `142.250.80.46` |
+| 1990s | **World Wide Web** — pages, links, browsers; the Internet went mainstream |
+
+Before DNS and the Web, the Internet was mostly researchers and tech folks. The milestones matter because they explain why the design favors **open layers**, **packets**, and **smart edges**.
 
 ---
 
 ## OSI (7 layers) vs Internet (5 layers)
 
-**OSI** is a textbook model with **7 layers**. The **Internet model** uses **5 layers** — what we actually build today.
-
-The main difference: the Internet combines the top three OSI layers into one **Application** layer. Formatting data and keeping a session open? The app handles that.
+Textbooks show **OSI** with 7 layers. The real Internet uses **5** — the top three OSI layers (app, presentation, session) are folded into one **Application** layer. Formatting and "keep the call open"? The app handles it.
 
 ```
 OSI:        App | Pres | Sess | Trans | Net | Link | Phys   (7)
 Internet:        App       | Trans | Net | Link | Phys   (5)
 ```
 
+**Socket** = the door between your app and the network: IP address + **port number** (which app on the machine).
+
 ![Diagram comparing seven-layer OSI model to five-layer Internet Protocol Stack](../images/osi-model.png)
 
-**Key takeaways:**
+---
 
-- **Socket** = the door between your app and the network. It uses an IP address plus a **port number**.
-- **TCP** or **UDP** carries your message through that door.
+## Scenario: devices in your building
+
+| Device | Real-life role | Looks at |
+|--------|----------------|----------|
+| **Hub** (old) | Megaphone in a room — everyone hears everything | Bits only |
+| **Switch** | Smart mailroom — letter goes to the right desk | **MAC** address |
+| **Router** | Post office between neighborhoods | **IP** address |
+
+**Hub vs switch:** hub shouts to all ports; switch sends only where it knows the device lives.
+
+**Switch vs router:** switch works **inside** one local network (your floor). Router connects **different** networks (your home → ISP → Internet).
+
+### How a switch learns
+
+A **learning bridge** (switch) builds a table from traffic:
+
+1. Your laptop sends from port 3 → "laptop lives on port 3"
+2. Frame for the printer → if known, send to that port only; if unknown, **flood** to all ports until someone answers
+
+![Illustration of a learning bridge](../images/learning-bridge.png)
+
+**Memory trick:** learn from **source**, forward to **destination**.
 
 ---
 
-## What each layer does
+## Scenario: backup cables that break the network
 
-### Application — "What do you want to do?"
+Your office has two paths between switches for backup. Good for reliability — bad if both paths are **active** at once: Ethernet frames can **loop forever** (no expiry like IP's TTL) → **broadcast storm** → network melts.
 
-Web pages, email, and name lookup live here.
+**Spanning Tree** fix: keep all cables plugged in, but **block** some ports in software so traffic follows one loop-free tree.
 
-- **HTTP** — web pages
-- **SMTP** — email
-- **DNS** — turns names like `google.com` into numbers
+![Extended LAN topology with loops](../images/spanning-tree-loops.png)
 
-**Data name:** **message**
+Switches gossip until they agree:
 
-### Transport — "Get it to the right app"
+1. Smallest bridge ID wins as **root**
+2. Each switch picks shortest path to root
+3. Block ports that would create a loop
 
-Your laptop runs many apps at once. **Port numbers** tell the computer which app gets each packet.
+![Resulting spanning tree after algorithm converges](../images/spanning-tree-result.png)
 
-- **TCP** — like tracked mail: connect first, resend if lost, do not flood the receiver
-- **UDP** — like a postcard: fast, no promises
-
-**Data name:** **segment**
-
-### Network — "Send it across the Internet"
-
-Uses **IP addresses** (like street addresses for computers). **Routers** read them and pick the next hop.
-
-**Data name:** **datagram**
-
-### Data Link — "One hop at a time"
-
-Moves data from this device to the **very next** one (laptop → router).
-
-Uses **MAC addresses** (like a name tag on your network card).
-
-**Data name:** **frame**
-
-### Physical — "Send the signals"
-
-Electricity, light in fiber, or radio waves. Just **bits** (0s and 1s).
-
-**Data name:** **bits**
-
-**Key takeaways:**
-
-- Each layer has a clear job.
-- Each layer uses a different name for its chunk of data.
-- Memory trick going down: **M**essage → **S**egment → **D**atagram → **F**rame → **B**its
+**Memory trick:** backup cables stay **physical**; forwarding follows a **tree** only.
 
 ---
 
-## Encapsulation — letters inside envelopes
+## The hourglass — why everything still uses IP
 
-When you send data, each layer wraps the layer above in a new envelope. That wrap is called a **header**.
+```
+     ╱╲   ← many apps (browser, games, email, …)
+    ╱  ╲
+   │ IP │  ← skinny middle: IP + TCP/UDP
+   │TCP │
+   │UDP │
+    ╲  ╱
+     ╲╱   ← many links (Wi‑Fi, fiber, 5G, cable, …)
+```
+
+Think **USB-C in the middle**: tons of devices on top, tons of cables and chargers on bottom, one narrow standard everyone had to agree on.
+
+Almost every app uses **IP + TCP or UDP**. That shared middle is why your phone, laptop, and smart TV all interoperate — but it also makes change slow (**ossification**). **IPv6** is better on paper; switching billions of devices is hard.
+
+![Evolutionary Architecture Model showing the hourglass shape](../images/evoarch-hourglass.png)
+
+**EvoArch (one paragraph):** Researchers modeled how protocol stacks evolve. Protocols lots of apps depend on (like **TCP**) become hard to replace even if something better appears. Over time you get an hourglass — wide top and bottom, narrow waist. Exam detail: [full guide — EvoArch](introduction.md#the-evoarch-model).
+
+---
+
+## Encapsulation — in one picture
+
+Each layer adds a header; the receiver peels them off:
 
 ```
 You write:           M                          (message)
-Transport adds:      [ envelope T | M ]         (segment)
-Network adds:        [ envelope N | T | M ]    (datagram)
-Link adds:           [ envelope L | N | T | M ] (frame)
-Physical sends:      signals on the wire        (bits)
+Transport adds:      [ T | M ]                  (segment)
+Network adds:        [ N | T | M ]              (datagram)
+Link adds:           [ L | N | T | M ]          (frame)
+Physical sends:      bits on the wire
 ```
-
-At the receiver, each layer opens its envelope and passes the inside up. That is **de-encapsulation**.
-
-### Who reads what?
-
-| Device | Layer | Looks at |
-|--------|-------|----------|
-| **Switch** | 2 | MAC address — "which port is this device on?" |
-| **Router** | 3 | IP address — "which network is next?" |
-
-**Key takeaways:**
-
-- Switches and routers only read the **address on the outside**. They do not read your email or web page.
-- **Smart edges, simple core** — phones and laptops are smart; middle routers stay simple and fast.
 
 ![Encapsulation across layers, switches, and routers](../images/encapsulation.png)
 
 ---
 
-## End-to-end principle — keep the middle simple on purpose
+## Layering — worth it?
 
-**Rule:** If only the sender and receiver know what they need (speed? perfect delivery? encryption?), **do not build that into every router in the world**.
-
-- File download? You need every byte in order → use **TCP** at the ends.
-- Video call? You need low delay; one lost frame is OK → the app may use **UDP**.
-
-The **core** tries its best to forward packets. Apps at the edges add the extra rules they need.
-
-**Key takeaways:**
-
-- This design helped the web, streaming, and video calls grow without rebuilding every router.
-- Real life bends the rule sometimes:
-
-| Middle box | What it does |
-|------------|--------------|
-| **Firewall** | Blocks bad traffic between you and the server |
-| **NAT** | Lets many home devices share one public IP address |
-| **Proxy / cache** | Answers for someone else instead of passing everything through |
-
-**NAT in plain words:**
-
-```
-Your phone (10.0.0.4)  →  home router changes to public IP  →  website
-Website replies        →  router remembers who asked         →  your phone
-```
-
-NAT helped when we ran out of old-style IP addresses. The downside: it is harder for outsiders to connect straight to your laptop (games and video calls need workarounds).
-
-**Memory trick:** Wi‑Fi link-layer error correction is **not** an end-to-end violation — it fixes a noisy medium. **NAT**, **firewalls**, and **DPI** **are** violations because the middle changes or inspects traffic.
-
----
-
-## Hourglass shape — skinny middle, wide top and bottom
-
-![Evolutionary Architecture Model showing the hourglass shape](../images/evoarch-hourglass.png)
-
-```
-     ╱╲   ← many apps (web, email, games, …)
-    ╱  ╲
-   │ IP │  ← narrow middle: IP, TCP, UDP
-   │TCP │
-   │UDP │
-    ╲  ╱
-     ╲╱   ← many link types (Wi‑Fi, fiber, 5G, …)
-```
-
-Almost everything uses **IP + TCP/UDP** in the middle. That is why so many devices work together.
-
-**Key takeaways:**
-
-- The middle is **narrow** — few core rules everyone shares.
-- The top and bottom are **wide** — many apps and many types of wires.
-- That middle is hard to change. **IPv6** is better in some ways, but switching billions of devices is slow. That stuck feeling is called **ossification**.
-
----
-
-## EvoArch — why the hourglass happens
-
-Researchers built a computer model called **EvoArch** to show how network rules evolve over time.
-
-- Rules **below** you = things you depend on
-- Rules **above** you = things that depend on you
-- **Value** = how much important stuff needs you
-
-**Key takeaways:**
-
-- **TCP is valuable** because web, email, and many apps sit on top of it.
-- A new rule can be better on paper but **fail** if nothing uses it.
-- Rules at the same level **compete**. Losers fade away. Over time, you get an hourglass shape.
-- **TCP and UDP protect IPv4** — new network rules struggle if apps will not switch.
-
----
-
-## Network devices — from simple to smarter
-
-| Device | Layer | In plain words |
-|--------|-------|----------------|
-| **Hub** | 1 | Megaphone — shouts to **everyone** |
-| **Repeater** | 1 | Volume booster on a long cable |
-| **Switch** | 2 | Smart mailroom — sends only to the right desk (MAC) |
-| **Router** | 3 | Post office between neighborhoods — uses IP |
-
-**Key takeaways:**
-
-- **Hub vs switch:** a hub sends to everyone (noisy). A switch sends directly when it knows where you are.
-- **Router vs switch:** a switch works inside one local network. A router connects different networks.
-
----
-
-## Learning bridges — switches that teach themselves
-
-A **learning bridge** (switch) builds a table: "Device A is on port 1. Device X is on port 2."
-
-**How it learns:**
-
-1. A frame arrives from Device A on port 1 → write down: **A → port 1**
-2. A frame goes to Device X → look up X
-   - **Known?** Send only to that port.
-   - **Unknown?** **Flood** — send to all ports except where it came from. Someone will answer, and then we learn.
-
-**Key takeaways:**
-
-- Learn from the **source** (who sent it).
-- Forward to the **destination** (who should get it).
-
-![Illustration of a learning bridge](../images/learning-bridge.png)
-
----
-
-## Spanning Tree — when backup cables cause loops
-
-Extra cables between switches are good for backup. They are bad if they create a **loop**.
-
-**Problem:** Ethernet frames do not expire (unlike IP, which has TTL). On a loop, the same frame spins forever → **broadcast storm** → network breaks.
-
-**Fix:** Keep all cables plugged in, but **block** some ports in software so traffic follows a **tree** with no loops.
-
-![Extended LAN topology with loops](../images/spanning-tree-loops.png)
-
-**How switches agree (no single boss):**
-
-1. Everyone says "I think **I'm** the root!"
-2. Smallest bridge ID wins → that is the **root**
-3. Each switch picks the shortest path to the root
-4. Block ports that would create a loop
-
-**Key takeaways:**
-
-- Keep backup cables **physically**, but use only a **tree** for forwarding.
-- Pick the best update: smallest root ID → shortest distance → smallest sender ID.
-
-![Resulting spanning tree after algorithm converges](../images/spanning-tree-result.png)
-
----
-
-## Layering — good and bad
-
-**Good:**
-
-- Easier to build and fix
-- Change one layer without breaking others
-- Gear from different companies works together
-
-**Bad:**
-
-- Extra headers add a little delay
-- Some jobs get done twice
-- Hard to make the whole stack faster at once
-
----
-
-## Clean-slate redesign (optional)
-
-"What if we built the Internet today from scratch?"
-
-The old Internet focused on **moving packets**. Today we would also want built-in **security**, **accountability**, and easier control of big networks.
-
-**Key takeaways:**
-
-- **4D architecture** — split "forward packets fast" from "decide what the whole network should do." This idea helped inspire **SDN**.
-- **AIP** — addresses that help trace who really sent a packet.
-- We will not replace the Internet overnight. These ideas show where fixes like SDN came from.
+| Good | Bad |
+|------|-----|
+| Fix Wi‑Fi without rewriting Chrome | Extra headers = tiny delay |
+| Gear from different vendors works together | Same check sometimes done twice (link + TCP) |
+| Easier to debug ("is it DNS or Wi‑Fi?") | Hard to optimize the whole stack at once |
 
 ---
 
 ## Where this leads
 
-Lesson 1 explains **how the stack is organized**. **[Lesson 2](../lesson-02/transport-application.md)** goes deep on **TCP and UDP** — how apps get reliable or fast delivery on top of IP.
+Lesson 1 is the **map of the stack**. **[Lesson 2](../lesson-02/transport-application.md)** goes deep on **TCP and UDP** — how apps get reliable or fast delivery on top of IP.
 
-| Layer | Lesson 1 focus | Lesson 2 focus |
-|-------|----------------|----------------|
-| Application | HTTP, DNS, SMTP names | Multiplexing with **ports** |
-| Transport | TCP vs UDP in one sentence | Reliability, flow control, congestion control |
-| Network | IP addresses, routers | (IP stays best-effort below transport) |
+| Layer | Lesson 1 (scenarios) | Lesson 2 (detail) |
+|-------|----------------------|-------------------|
+| Application | Browser, DNS, email names | Ports and multiplexing |
+| Transport | Tracked mail vs live TV | Reliability, flow control, congestion |
+| Network | IP and routers | (IP stays best-effort below transport) |
 
 ---
 
 ## The whole lesson on one napkin
 
 ```
-History:     packets + TCP/IP + DNS + Web = global Internet
-Layers:      App → Transport → Network → Link → Physical
-Names:       Message → Segment → Datagram → Frame → Bits
-Devices:     Hub (simple) → Switch (MAC) → Router (IP)
-Design:      Smart edges, simple core (end-to-end)
-Shape:       Hourglass — many apps & links, few core rules
-Reality:     NAT & firewalls bend the rules for good reasons
-Switches:    Learn from source, forward to destination
-Loops:       Spanning Tree blocks ports, keeps cables
+You browse:   DNS → TCP → IP → Wi‑Fi → back
+Layers:       App → Transport → Network → Link → Physical
+Names:        Message → Segment → Datagram → Frame → Bits
+Devices:      Hub (megaphone) → Switch (mailroom) → Router (post office)
+Design:       Smart edges, simple core
+Shape:        Hourglass — many apps & links, few core rules (IP/TCP/UDP)
+Reality:      NAT & firewalls bend the rules for good reasons
+Switches:     Learn from source, forward to destination; Spanning Tree stops loops
 ```
 
 ---
@@ -377,4 +260,4 @@ Loops:       Spanning Tree blocks ports, keeps cables
 
 ---
 
-**Bottom line:** The Internet connects the world by sending small **packets** through **layers**, keeping the middle simple and letting apps at the edges decide what quality of delivery they need.
+**Bottom line:** Every tap, stream, and message rides the same idea — small **packets**, **layers** with one job each, a simple middle, and smart **edges** that choose what "good delivery" means for that app.

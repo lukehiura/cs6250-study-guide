@@ -12,168 +12,173 @@ search:
 
 # Lesson 6: Router Design (Part 2) — Plain-Language Guide
 
-This is the simplest version of [Lesson 6](router-design-2.md). If you want exam detail, use the **[Quick Study Guide](quick-study-guide.md)** and then test yourself with the **[Quiz](quiz.md)**.
-
-!!! tip "Exam prep"
-    Study in this order: **[Full guide](router-design-2.md)** -> **[Quick Study Guide](quick-study-guide.md)** -> **[Quiz](quiz.md)**. Need Part 1 review first? Go back to [Lesson 5](../lesson-05/router-design-1.md).
+The simplest possible version of [Lesson 6](router-design-2.md). We explain ideas through **real situations** — a company firewall, a video call during a backup, a crowded switch. When you want exam detail, use the **[Quick Study Guide](quick-study-guide.md)** or the **[Quiz](quiz.md)**. Need Part 1 first? See [Lesson 5](../lesson-05/router-design-1.md).
 
 ---
 
 ## Summary
 
-Part 2 explains how routers do more than destination lookup. They also do **packet classification** (matching on multiple header fields), smart **scheduling** (choosing which packet goes next), and **traffic control** (token bucket and leaky bucket).
-
-The big idea is a tradeoff triangle: **speed, memory, and fairness**. Faster lookup often uses more memory. Fairer scheduling often needs better queue design.
+In [Lesson 5](../lesson-05/router-design-1.md), a router mostly asked: *"Where does this packet go?"* Part 2 adds three harder jobs: **classify** packets by more than destination, **schedule** who goes next when everyone is waiting, and **rate-limit** traffic so one user cannot hog the link.
 
 ---
 
 ## The one-sentence version
 
-A modern router is like a busy airport: it checks each packet's "ticket type," picks takeoff order to avoid runway jams, and enforces speed limits so one flow cannot dominate everyone else.
+A modern router is like a busy airport security line: it checks more than your destination, decides who boards next so one slow gate does not block everyone, and enforces speed limits so no single flight dominates the runway.
 
 ---
 
-## Why packet classification exists
+## Scenario: Your company router has rules, not just a map
 
-In Lesson 5, forwarding mostly means destination-based lookup. In real networks, that is not enough.
+Lesson 5 forwarding is like a GPS: look up the destination, pick a road. Real routers also need a **rule book**.
 
-Routers also need to classify traffic by more fields:
+Imagine router **R** connecting several sites. The lecture gives three rules:
 
-- source and destination IP address
-- source and destination port
-- protocol or flags
+| Rule | Plain English |
+|------|---------------|
+| Video from **S1** to **D** | Send it on the fast link **L1** |
+| Anything from **S2** | **Drop it** (maybe S2 is a sketchy lab) |
+| Traffic from **X** to **Y** | **Reserve 50 Mbps** for that path |
 
-That is called **packet classification**: matching a packet against policy rules, not just destination routes.
+![Example topology where router R classifies traffic by source, destination, and type](../images/packet-classification-traffic-routing.png)
 
-| Need | Example |
-|------|---------|
-| **Security** | Firewall drops packets from blocked sources |
-| **Quality of Service (QoS)** | Voice traffic gets lower delay |
-| **Traffic engineering** | Video flows take a preferred path |
+That is **packet classification** — matching on **source, destination, port, protocol**, not just "where is it going?"
 
----
+**Why bother?**
 
-## Three ways to classify quickly
+| Real need | Everyday example |
+|-----------|------------------|
+| **Security** | Office firewall blocks traffic from a compromised subnet |
+| **QoS** | Zoom calls get priority over a bulk file sync |
+| **Traffic engineering** | Video traffic takes a dedicated, less-congested path |
 
-### Set-pruning tries
+**The hard part:** A big company might have **thousands** of rules. Checking every rule for every packet is too slow. Routers use clever search structures (tries with shortcuts) — the full guide covers set-pruning, backtracking, and grid-of-tries. For now, just remember the tradeoff:
 
-Very fast lookup, but expensive memory use. Rules get copied into many places.
+| Approach | Plain English |
+|----------|---------------|
+| **Set-pruning** | Copy rules everywhere → **fast lookup, huge memory** |
+| **Backtracking** | Store each rule once → **less memory, slower search** |
+| **Grid of tries** | Precomputed shortcuts → **middle ground** |
 
-### Backtracking tries
+**Memory trick:** **Fast and fat. Lean and slow. Grid in between.**
 
-Store each rule once, so memory is lower. But lookup is slower because the search may walk back up ancestors.
-
-### Grid of tries
-
-A middle ground. It adds precomputed "jump pointers" to skip wasted backtracking steps.
-
-**Memory trick:** Set-pruning = **fast but fat**. Backtracking = **lean but slow**. Grid = **balanced**.
-
----
-
-## Why simple queues fail: HOL blocking
-
-**Head-of-line (HOL) blocking** means the first packet in line blocks packets behind it, even when those later packets could go to idle outputs.
-
-That happens with one FIFO queue per input in a crossbar switch.
-
-To fix it, routers use **Virtual Output Queues (VOQs)**: one queue per output at each input.
-
-| Queue design | Result |
-|-------------|--------|
-| One FIFO per input | HOL blocking hurts throughput |
-| **VOQ per output** | Avoids HOL, enables better parallel sends |
+Edge networks sometimes avoid re-classifying every hop: **MPLS** and **DiffServ** mark packets once at the edge; middle routers just follow the label.
 
 ---
 
-## Two scheduling ideas to remember
+## Scenario: Three people, one door — head-of-line blocking
 
-### Take-a-ticket
+Inside a router, a **crossbar switch** connects many inputs to many outputs at once — like a grid of doors between hallways.
 
-Fair in a simple sense, but can still cause waiting chains and poor parallelism.
+The lecture uses three inputs (**A**, **B**, **C**) and four outputs (**1–4**). All three want to reach output **1** first.
 
-### Parallel Iterative Matching (PIM)
+**Take-a-ticket** scheduling works like a deli counter:
 
-Runs rounds of **request -> grant -> accept** so many non-conflicting input/output pairs can send in parallel.
+1. Everyone takes a number for output 1.
+2. **A** gets served first and connects.
+3. **B** and **C** wait — even if they also have packets for outputs **2** or **3** that are sitting idle.
 
-**Key takeaway:** PIM with VOQs is the practical "avoid HOL and keep crossbar busy" strategy.
+![Take-a-ticket round 1 — A connects to output 1 while B and C wait](../images/take-ticket-round-1.png)
 
----
+That wait is **head-of-line (HOL) blocking**: the packet at the **front** of the line blocks everything behind it, even when a different output is free.
 
-## FIFO vs fair scheduling
-
-### FIFO with tail drop
-
-Easy and fast, but all packets are treated alike. Important traffic can be dropped when buffers fill.
-
-### Deficit Round Robin (DRR)
-
-Each flow gets a **quantum** (credit) and a **deficit counter**. If a flow cannot send a big packet now, leftover credit carries to next round.
-
-That gives near-fair bandwidth with low computational cost.
+**Fix:** Give each input a **separate mini-queue per output** — **virtual output queues (VOQs)**. Now a blocked packet for output 1 does not trap packets headed for output 3.
 
 ---
 
-## Policing vs shaping (token bucket and leaky bucket)
+## Scenario: Everyone asks at once — parallel matching
 
-**Policing** enforces limits by dropping or marking excess traffic.  
-**Shaping** enforces limits by delaying excess traffic in a queue.
+With VOQs, inputs can request multiple outputs in the same round. **Parallel Iterative Matching (PIM)** runs three quick steps:
 
-### Token bucket
+1. **Request** — each input asks every output it needs.
+2. **Grant** — each output picks one requester (randomly if several asked).
+3. **Accept** — each input picks one grant if it got several.
 
-Tokens arrive at rate **R** and bucket size is **B**. A flow can burst while tokens exist, but long-term average follows R.
+**Round 1:** A, B, and C all wanted output 1 — but output 1 only grants **B**. Meanwhile A gets output 2 and C gets output 4. **Three connections at once** instead of one-at-a-time tickets.
 
-### Leaky bucket
+![Parallel iterative matching round 1 — A, B, and C connect to different outputs simultaneously](../images/pim-round-1.png)
 
-Output is drained at a near-constant rate, smoothing bursts.
-
-| Mechanism | What happens to excess traffic? |
-|----------|----------------------------------|
-| **Policing** | Drop or mark it |
-| **Shaping** | Buffer and send later |
-
-!!! warning "Exam point"
-    **Token bucket allows bursts (up to B).** **Leaky bucket smooths to a steady rate.** Students often mix these up.
+**Key takeaway:** VOQs + PIM = **no HOL blocking, crossbar stays busy.**
 
 ---
 
-## High-yield plain-language Q&A
+## Scenario: Backup night floods the router
 
-### Why does packet classification need multiple fields?
+Your router uses simple **FIFO** queues: first in, first out. When the buffer is full, new packets at the **tail** get **dropped** — **tail drop**.
 
-Because destination-only lookup cannot express firewall rules, QoS priorities, or fine-grained policy.
+Friday night, someone kicks off a huge backup. Bursts fill the buffer. Meanwhile your boss is on a **video call**. FIFO does not care — important and unimportant packets wait in the same line, and both can get dropped.
 
-### Why is HOL blocking bad?
+**Why go beyond FIFO?**
 
-One blocked packet at queue front can waste output capacity, lowering total switch throughput.
+| Problem | What you feel |
+|---------|---------------|
+| Congestion | Everything slows when one flow hogs the buffer |
+| No QoS | Voice/video stutters while bulk traffic wins |
+| Unfair sharing | One download starves everyone else |
 
-### Why is DRR popular?
+**Deficit Round Robin (DRR)** is a practical fix. Think of a **cafeteria line with credits**:
 
-It gives practical fairness with O(1)-style round-robin behavior, which is hardware-friendly.
+- Each flow gets a **quantum** (allowance) each round.
+- Send packets until the allowance runs out; leftover credit **carries over**.
+- Big packet that does not fit this round? Wait — credit accumulates for next time.
 
-### What is the policing vs shaping difference in one line?
+![Deficit Round Robin iteration 1 — flow F1 sends a 200-byte packet using its quantum](../images/drr-iteration-1.png)
 
-Policing drops excess; shaping delays excess.
+Fair enough for real hardware, cheap to run — unlike fancier schemes that track a finish time for every queue.
+
+---
+
+## Scenario: Speed limit on the on-ramp
+
+Your ISP sells you "up to 100 Mbps" but does not want you blasting 100 Mbps **nonstop** while also sending huge bursts. Routers enforce **traffic profiles** two ways:
+
+| | **Policing** | **Shaping** |
+|---|-------------|-------------|
+| **Excess traffic** | Drop or mark it | Buffer and send later |
+| **Feels like** | Bouncer at the door | Waiting room before the door |
+| **Output** | Spiky, clipped peaks | Smooth, steady stream |
+
+### Token bucket — burst allowance
+
+Imagine a **parking meter** that refills at rate **R**, holding at most **B** tokens.
+
+- Tokens available? Packet goes through (maybe in a burst up to **B**).
+- **Shaping:** no tokens → packet **waits** in a queue.
+- **Policing:** no tokens → packet **dropped**.
+
+![Token bucket policing — excess packets are dropped when the bucket is empty](../images/token-bucket-policing.png)
+
+**Exam point:** Token bucket allows **controlled bursts** (up to B) while averaging rate R.
+
+### Leaky bucket — steady drip
+
+A bucket with a **small hole** dripping at constant rate **r**. Water (packets) pours in; only the drip leaves. Overflow? Discarded or queued.
+
+![Leaky bucket analogy — packets enter a bucket and leak out at a constant rate](../images/leaky-bucket-analogy.png)
+
+Output is **smooth and constant** — no bursting. Good when you want a steady stream, not occasional floods.
+
+![Policing vs shaping — policing clips peaks; shaping smooths them into a steady rate](../images/leaky-bucket-policing-vs-shaping.png)
+
+**Memory trick:** **Token = burst OK. Leaky = smooth only. Police = drop. Shape = delay.**
 
 ---
 
 ## The whole lesson on one napkin
 
 ```
-Classify packets by many fields -> apply policy
-Set-pruning: fast, big memory
-Backtracking: less memory, slower
-Grid: shortcuts, balanced tradeoff
+Classify: more than destination — firewall, QoS, reserved paths
+  Fast/fat (set-pruning) vs lean/slow (backtracking) vs grid shortcuts
 
-HOL blocking: one FIFO queue can stall useful packets
-VOQ + PIM (request/grant/accept): better parallel scheduling
+HOL blocking: front packet blocks the whole FIFO line
+  Fix: VOQs (queue per output) + PIM (request → grant → accept)
 
 FIFO tail drop: simple, unfair under congestion
-DRR: fair-share with quantum + deficit counters
+  DRR: each flow gets quantum + rolling credit
 
-Token bucket: average rate R, burst up to B
-Leaky bucket: smoother constant output rate
-Policing = drop/mark | Shaping = buffer/delay
+Token bucket: avg rate R, burst up to B
+Leaky bucket: constant drip, no burst
+Policing = drop/mark excess | Shaping = buffer/delay excess
 ```
 
 ---
@@ -182,8 +187,8 @@ Policing = drop/mark | Shaping = buffer/delay
 
 | You want... | Go here |
 |-------------|---------|
-| Full details and examples | [Lesson 6 full guide](router-design-2.md) |
+| Full details, algorithms, and study questions | [Lesson 6 full guide](router-design-2.md) |
 | Fast exam review | [Quick Study Guide](quick-study-guide.md) |
 | Practice questions | [Lesson 6 Quiz](quiz.md) |
-| Router architecture basics | [Lesson 5](../lesson-05/router-design-1.md) |
+| Router architecture basics (Part 1) | [Lesson 5](../lesson-05/router-design-1.md) |
 | SDN control/data-plane shift | [Lesson 7](../lesson-07/sdn-1.md) |

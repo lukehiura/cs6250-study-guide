@@ -32,17 +32,29 @@ The transport layer adds an **end-to-end service between applications**. At the 
 
 ---
 
-## Running example: loading a web page
+## Real-life scenarios (pick your transport)
+
+| Scenario | What matters most | Typical choice | Why |
+|----------|-------------------|----------------|-----|
+| Loading a web page | Correct bytes, in order | **TCP** + HTTP | Missing HTML breaks the page |
+| DNS lookup (`google.com` → IP) | One quick Q&A | **UDP** | Small request; speed beats setup overhead |
+| Video call / gaming | Low delay | **UDP** (often) | Retransmitting old frames causes lag |
+| Email / file download | Nothing lost | **TCP** | Corruption or gaps are unacceptable |
+| Live sports stream | Smooth playback | **UDP** or **TCP** | App decides loss vs delay tradeoff |
+
+These scenarios repeat throughout the lesson. When in doubt, ask: *Does this app need perfect delivery, or lowest delay?*
+
+### Running example: loading a web page
 
 When you type a URL in a browser:
 
-1. Traffic may leave your campus network, traverse ISPs, and reach a server (often at a **CDN** edge).
-2. The browser needs data that is **correct**, **in order**, and **fast enough** to feel responsive.
-3. The host establishes a **TCP connection** to the web server.
+1. **DNS (usually UDP):** Browser asks "what IP is this hostname?" — one small question, one small answer.
+2. Traffic may leave your campus network, traverse ISPs, and reach a server (often at a **CDN** edge).
+3. **TCP handshake:** Browser and server agree the connection exists before sending page data.
 4. The browser sends an **HTTP GET**; the server replies with an **HTTP response** (HTML body).
-5. The browser renders the page.
+5. TCP ensures bytes arrive **correctly** and **in order**; the browser renders the page.
 
-**TCP** is the natural choice here because a web page must arrive correctly and in order. A real-time app (live video, VoIP, gaming) might prefer **UDP** when **lower delay** matters more than perfect reliability.
+**TCP** is the natural choice here. A real-time app (live video, VoIP, gaming) might prefer **UDP** when **lower delay** matters more than perfect reliability. See the **[Plain-language guide](plain-language.md)** for step-by-step scenario walkthroughs.
 
 ---
 
@@ -61,74 +73,22 @@ The Internet mainly offers these two transport choices. Pick based on what the a
 
 ---
 
-## Transport and Network Layers Overview
+## Transport vs network layer (and where apps fit)
 
-The transport layer and the network layer work together, but they solve different problems. The transport layer supports communication between applications running on end hosts. The network layer moves packets across the Internet from one host to another.
+From [Lesson 1](../lesson-01/introduction.md), the stack is **Application → Transport → Network → Data Link → Physical**. This lesson focuses on **transport**; apps sit above it.
 
-### Transport Layer
+| Layer | Data unit | Scope | This lesson |
+|-------|-----------|-------|-------------|
+| **Application** | Message | What you use (HTTP, DNS, SMTP) | Mentioned in scenarios above |
+| **Transport** | **Segment** | App to app (ports) | **TCP and UDP — main focus** |
+| **Network (IP)** | **Datagram** | Computer to computer | Best effort; transport builds on top |
 
-The transport layer is responsible for end-to-end communication between applications running on different hosts. The two main transport-layer protocols are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol).
+**TCP** — connection-oriented, reliable, flow control, congestion control.
 
-**TCP** provides a richer service to applications. It offers a connection-oriented service, meaning that the two endpoints establish a connection before exchanging data. TCP also provides reliable delivery, so lost data can be retransmitted. It supports flow control, which prevents the sender from overwhelming the receiver, and congestion control, which slows the sender when the network appears congested.
+**UDP** — connectionless, best effort, minimal overhead; the app handles timing and loss if needed.
 
-**UDP** provides a simpler service. It is connectionless and offers best-effort delivery. UDP does not provide built-in reliability, flow control, or congestion control. This makes UDP lightweight, but it also means that applications using UDP must handle any needed reliability or timing requirements themselves.
-
-At the transport layer, the packet of information is called a **segment**.
-
-### Network Layer
-
-The network layer is responsible for moving packets from one host to another across the Internet. At this layer, the packet of information is called a **datagram**.
-
-A source host passes a transport-layer segment, along with the destination address, down to the network layer. The network layer adds its own header and creates a datagram. It is then responsible for moving that datagram across routers and networks toward the destination host.
-
-The most important protocol at this layer is the **Internet Protocol (IP)**. IP is often described as the glue that holds the Internet together because all Internet hosts and routers use IP to send and forward datagrams.
-
-IP defines the structure of the datagram and the addressing information used by hosts and routers. However, IP by itself does not decide the full path in advance. Routing protocols help determine the routes that datagrams can take between sources and destinations.
-
-### Takeaway
-
-The transport layer provides end-to-end communication services to applications, while the network layer provides host-to-host packet delivery across the Internet.
-
----
-
-## Application, Presentation, and Session Layers Overview
-
-In the OSI reference model, the top three layers are the application layer, presentation layer, and session layer. In the five-layer Internet protocol stack, these three layers are usually combined into one broader application layer.
-
-### Application Layer
-
-The application layer supports network applications and application-level protocols. This is the layer closest to the user-facing software, such as web browsers, email clients, file transfer tools, and domain-name lookup services.
-
-Common application-layer protocols include:
-
-- **HTTP** — Used for web communication.
-- **SMTP** — Used for sending email.
-- **FTP** — Used for transferring files between hosts.
-- **DNS** — Used to translate domain names into IP addresses.
-
-The services at this layer depend on the application. For example, a web browser and an email client use the network differently and rely on different application-layer protocols.
-
-At the application layer, the packet of information is usually called a **message**.
-
-### Presentation Layer
-
-The presentation layer is responsible for how data is represented and formatted before it is delivered to the application. It can handle tasks such as data formatting, encoding, compression, and translation between data representations.
-
-For example, the presentation layer may help format a video stream or translate data between different byte orders, such as big endian and little endian formats.
-
-In the Internet protocol stack, these functions are usually handled inside the application or by application-level libraries.
-
-### Session Layer
-
-The session layer manages communication sessions between application processes. It helps organize related streams of communication that belong to the same interaction.
-
-For example, in a teleconference application, the session layer concept helps explain how the system keeps related audio and video streams tied together as part of the same call.
-
-In the Internet protocol stack, session management is usually handled by the application itself or by protocols and libraries used by the application.
-
-### Takeaway
-
-In the OSI model, application, presentation, and session are separate layers. In the Internet protocol stack, these functions are typically grouped into the application layer and handled by applications or application-level protocols.
+!!! abstract "Takeaway"
+    **Transport = process-to-process (ports). Network = host-to-host (IP).** Presentation and session (OSI layers 5–6) are folded into the Internet **application** layer — see [Lesson 1](../lesson-01/introduction.md) for the full stack comparison.
 
 ---
 
@@ -451,16 +411,16 @@ On **3 duplicate ACKs**, retransmit the missing segment immediately without wait
 
 **Transmission control** regulates how fast a sender puts data on the network.
 
-### Why not send as fast as possible?
+### Scenario: downloading a 1 GB file on a "100 Mbps" link
 
-Example: Host A sends a **1 Gb** file to host B over a link advertised as **100 Mbps**.
+You start a big download. Your Wi‑Fi says 100 Mbps — so you expect ~80 seconds. Reality is messier:
 
-- A does not know the true path capacity (many hops, shared links).
-- **Other users** share the same bottleneck — A’s rate affects everyone.
-- B may receive from **multiple senders** at once.
-- B’s application may read **slower** than data arrives.
+- You do not know the true path capacity (many hops, shared links).
+- **Other users** share the same bottleneck — your rate affects everyone.
+- Your laptop may receive from **multiple senders** at once.
+- Your disk or browser may read **slower** than data arrives.
 
-So “use 100 Mbps” is not something the application can assume. **Rate must be discovered and adapted.**
+Blasting at full speed can **overflow the receiver** or **clog routers** for everyone. **Rate must be discovered and adapted.**
 
 ### Why the transport layer (TCP)?
 
@@ -476,6 +436,8 @@ Transmission control is a core primitive for most apps — TCP implements it in 
 ## Flow control (protect the receiver)
 
 **Flow control** matches the **sender’s rate** to the **receiver’s ability to absorb data**.
+
+**Scenario:** You download a movie while your laptop is also backing up photos to the cloud. Movie bytes arrive faster than the video app can decode and write to disk. Without flow control, the receive buffer **overflows** and data is lost — ironically, on a *reliable* protocol.
 
 TCP buffers arriving segments at the receiver until the application reads them. If the app is slow (disk I/O, other processes), data piles up and can **overflow RcvBuffer**.
 
@@ -560,9 +522,9 @@ Protect **RcvBuffer** using advertised **rwnd**; sender limits unACKed bytes. Se
 
 The second major reason for transmission control: avoid **overloading shared links**.
 
-### Why congestion control?
+### Scenario: everyone streams at once
 
-Many senders share a bottleneck link of capacity **R**. If their combined rate exceeds **R**:
+It's 8 p.m. in your apartment building. Twenty neighbors start Netflix at the same time. The link to your ISP has fixed capacity **R**. If combined traffic exceeds **R**:
 
 - Router queues grow
 - **Delay** increases

@@ -1,0 +1,40 @@
+/* Sidebar: collapsible lesson groups */
+.md-nav--primary > .md-nav__list > .md-nav__item--nested {
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+}
+
+.md-nav--primary > .md-nav__list > .md-nav__item--nested:not(:first-child) {
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+}
+
+/* Lesson group labels */
+.md-nav--primary > .md-nav__list > .md-nav__item--nested > label.md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item--nested > .md-nav__link {
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+/* Nested guide links: slightly smaller */
+.md-nav--primary > .md-nav__list > .md-nav__item--nested .md-nav .md-nav__link {
+  font-size: 0.68rem;
+  padding-left: 1.1rem;
+}
+
+/* Active lesson group */
+.md-nav--primary > .md-nav__list > .md-nav__item--nested.md-nav__item--active > label.md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item--nested.md-nav__item--active > .md-nav__link {
+  color: var(--md-primary-fg-color);
+}
+
+/* Single-page lessons (6–12) and top-level links */
+.md-nav--primary > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > .md-nav__link {
+  font-weight: 600;
+  font-size: 0.72rem;
+}

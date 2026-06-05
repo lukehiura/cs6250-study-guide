@@ -1,4 +1,14 @@
+---
+tags:
+  - lesson-11
+  - video
+  - applications
+---
+
 # Lesson 11: Applications (Video)
+
+!!! tip "Exam prep"
+    New to the material? Start with the **[Plain-language guide](plain-language.md)**. Need a condensed review? See the **[Quick Study Guide](quick-study-guide.md)**. For interactive practice, try the **[Lesson 11 Quiz](quiz.md)**.
 
 ---
 

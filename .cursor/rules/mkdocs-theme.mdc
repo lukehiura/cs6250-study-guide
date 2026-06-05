@@ -67,12 +67,54 @@ Child labels are always: **Guide**, **Plain-language**, **Quick study**, **Quiz*
 
 Update **both** `mkdocs.yml` nav and `docs/index.md` modules table (see `project-context.mdc`).
 
+## Plugins (approved)
+
+| Plugin | Purpose |
+|--------|---------|
+| `privacy` | Self-host Google Fonts and external JS (MathJax) |
+| `search` | Built-in client-side search |
+| `tags` | Topic index via front matter `tags:` |
+| `social` | Open Graph preview cards (requires `mkdocs-material[imaging]`) |
+| `optimize` | Compress images at build time (CI only — `enabled: !ENV [CI, false]`; needs `pngquant`) |
+| `glightbox` | Image lightbox |
+| `git-revision-date-localized` | Last-updated dates |
+| `git-authors` | Git author metadata |
+| `mkdocs_quiz` | Interactive quizzes |
+
+Do **not** add `navigation.prune`, `offline`, or Google Analytics.
+
+## Feedback widget
+
+GitHub Issues integration via [`docs/javascripts/feedback.js`](docs/javascripts/feedback.js):
+
+- `extra.analytics.feedback` in `mkdocs.yml` renders the widget
+- Positive rating shows a thank-you note
+- Negative rating opens a pre-filled GitHub issue (`data: 0` in feedback.js)
+- Hide per page: `hide: [feedback]` in front matter
+
+## Front matter conventions
+
+**Tags** (small vocabulary):
+
+```yaml
+tags:
+  - lesson-04
+  - bgp
+  - quick-study
+```
+
+Use `lesson-NN`, topic (`tcp`, `bgp`, `sdn`, `security`, …), and format (`plain-language`, `quick-study`, `quiz`) where applicable.
+
+**Search boost** (study formats rank higher):
+
+```yaml
+search:
+  boost: 2    # plain-language and quick-study
+  boost: 1.5  # quiz
+```
+
+**Exclude from search:** `search: { exclude: true }` on `docs/lectures/` if linked into build.
+
 ## Schema validation
 
-Add to VS Code `settings.json` for mkdocs.yml autocomplete:
-
-```json
-"yaml.schemas": {
-  "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
-}
-```
+VS Code autocomplete: [`.vscode/settings.json`](.vscode/settings.json) maps `mkdocs.yml` to the Material schema.

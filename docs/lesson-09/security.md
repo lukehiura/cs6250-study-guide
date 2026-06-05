@@ -1,4 +1,13 @@
+---
+tags:
+  - lesson-09
+  - security
+---
+
 # Lesson 9: Internet Security
+
+!!! tip "Exam prep"
+    New to the material? Start with the **[Plain-language guide](plain-language.md)**. Need a condensed review? See the **[Quick Study Guide](quick-study-guide.md)**. For interactive practice, try the **[Lesson 9 Quiz](quiz.md)**.
 
 ---
 

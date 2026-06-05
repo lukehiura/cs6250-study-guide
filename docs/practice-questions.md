@@ -1,3 +1,11 @@
+---
+tags:
+  - practice
+  - quiz
+search:
+  boost: 1.5
+---
+
 # Practice Questions
 
 Test your understanding with these questions. Try to answer before revealing the solution.

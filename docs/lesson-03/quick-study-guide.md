@@ -1,3 +1,14 @@
+---
+tags:
+  - lesson-03
+  - routing
+  - ospf
+  - igp
+  - quick-study
+search:
+  boost: 2
+---
+
 # Lesson 3: Quick Study Guide — Intradomain Routing
 
 Condensed review for exams. New to the material? Start with the **[Plain-language guide](plain-language.md)**. Full detail: [Lesson 3 guide](intradomain-routing.md). Practice: [Lesson 3 Quiz](quiz.md). BGP: [Lesson 4](../lesson-04/interdomain-routing.md) ([Plain-language guide](../lesson-04/plain-language.md), [quick guide](../lesson-04/quick-study-guide.md), [quiz](../lesson-04/quiz.md)).

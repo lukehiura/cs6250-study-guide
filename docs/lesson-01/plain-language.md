@@ -1,3 +1,12 @@
+---
+tags:
+  - lesson-01
+  - foundations
+  - plain-language
+search:
+  boost: 2
+---
+
 # Lesson 1: Introduction & Internet Architecture — Plain-Language Guide
 
 The simplest possible version of [Lesson 1](introduction.md). No jargon unless we explain it right away. When you want exam detail, use the **[Quick Study Guide](quick-study-guide.md)** or the **[Quiz](quiz.md)**. Next up: **[Lesson 2 — Transport Layer](../lesson-02/transport-application.md)** ([Plain-language guide](../lesson-02/plain-language.md)).

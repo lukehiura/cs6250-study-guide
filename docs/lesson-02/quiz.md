@@ -1,8 +1,15 @@
 ---
 quiz:
-  auto_number: true
-  shuffle_answers: true
-  disable_after_submit: false
+  auto_number: True
+  shuffle_answers: True
+  disable_after_submit: False
+tags:
+  - lesson-02
+  - tcp
+  - transport
+  - quiz
+search:
+  boost: 1.5
 ---
 
 # Lesson 2: Interactive Quiz

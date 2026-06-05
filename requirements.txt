@@ -1,5 +1,5 @@
 mkdocs>=1.6
-mkdocs-material>=9.5
+mkdocs-material[imaging]>=9.5
 mkdocs-glightbox>=0.4
 mkdocs-quiz>=1.6
 mkdocs-git-revision-date-localized-plugin>=1.2

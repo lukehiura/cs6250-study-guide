@@ -40,13 +40,17 @@ theme:
     # Content & search
     - search.suggest
     - search.highlight
+    - search.share
+    - content.code.copy
     - content.tabs.link
     - content.action.edit
     - content.action.view
   icon:
+    logo: material/lan
     repo: fontawesome/brands/github
     edit: material/pencil
     view: material/eye
+  favicon: assets/favicon.png
 
 markdown_extensions:
   - admonition
@@ -72,7 +76,14 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  - privacy
   - search
+  - tags
+  - social:
+      cards_layout_options:
+        font_family: Source Sans 3
+  - optimize:
+      enabled: !ENV [CI, false]
   - glightbox
   - git-revision-date-localized:
       enable_creation_date: true
@@ -88,6 +99,21 @@ plugins:
 copyright: Copyright &copy; 2026 Luke Hiura — unofficial study notes for Georgia Tech CS 6250
 
 extra:
+  analytics:
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/thumb-up-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/thumb-down-outline
+          name: This page could be improved
+          data: 0
+          note: >-
+            Thanks for your feedback! Help us improve this page by
+            <a href="https://github.com/lukehiura/cs6250-study-guide/issues/new/" target="_blank" rel="noopener">opening a GitHub issue</a>.
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/lukehiura/cs6250-study-guide
@@ -98,9 +124,13 @@ extra_css:
 
 extra_javascript:
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - javascripts/feedback.js
 
 nav:
-  - Home: index.md
+  - Home:
+      - Overview: index.md
+      - Getting started: getting-started.md
+      - Tags: tags.md
   - Lessons:
       - Foundations:
           - Lesson 1:
@@ -130,14 +160,42 @@ nav:
               - Plain-language: lesson-05/plain-language.md
               - Quick study: lesson-05/quick-study-guide.md
               - Quiz: lesson-05/quiz.md
-          - Lesson 6: lesson-06/router-design-2.md
+          - Lesson 6:
+              - Guide: lesson-06/router-design-2.md
+              - Plain-language: lesson-06/plain-language.md
+              - Quick study: lesson-06/quick-study-guide.md
+              - Quiz: lesson-06/quiz.md
       - SDN:
-          - Lesson 7: lesson-07/sdn-1.md
-          - Lesson 8: lesson-08/sdn-2.md
+          - Lesson 7:
+              - Guide: lesson-07/sdn-1.md
+              - Plain-language: lesson-07/plain-language.md
+              - Quick study: lesson-07/quick-study-guide.md
+              - Quiz: lesson-07/quiz.md
+          - Lesson 8:
+              - Guide: lesson-08/sdn-2.md
+              - Plain-language: lesson-08/plain-language.md
+              - Quick study: lesson-08/quick-study-guide.md
+              - Quiz: lesson-08/quiz.md
       - Security:
-          - Lesson 9: lesson-09/security.md
-          - Lesson 10: lesson-10/surveillance-censorship.md
+          - Lesson 9:
+              - Guide: lesson-09/security.md
+              - Plain-language: lesson-09/plain-language.md
+              - Quick study: lesson-09/quick-study-guide.md
+              - Quiz: lesson-09/quiz.md
+          - Lesson 10:
+              - Guide: lesson-10/surveillance-censorship.md
+              - Plain-language: lesson-10/plain-language.md
+              - Quick study: lesson-10/quick-study-guide.md
+              - Quiz: lesson-10/quiz.md
       - Applications:
-          - Lesson 11: lesson-11/video.md
-          - Lesson 12: lesson-12/cdns-overlay.md
+          - Lesson 11:
+              - Guide: lesson-11/video.md
+              - Plain-language: lesson-11/plain-language.md
+              - Quick study: lesson-11/quick-study-guide.md
+              - Quiz: lesson-11/quiz.md
+          - Lesson 12:
+              - Guide: lesson-12/cdns-overlay.md
+              - Plain-language: lesson-12/plain-language.md
+              - Quick study: lesson-12/quick-study-guide.md
+              - Quiz: lesson-12/quiz.md
   - Practice: practice-questions.md

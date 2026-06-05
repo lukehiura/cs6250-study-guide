@@ -1,9 +1,15 @@
+---
+tags:
+  - lesson-06
+  - router-design
+---
+
 # Lesson 6: Router Design and Algorithms (Part 2)
 
 Continues **[Lesson 5](../lesson-05/router-design-1.md)** (router components, longest prefix match, tries, prefix expansion).
 
 !!! tip "Exam prep"
-    Need Part 1 first? See **[Lesson 5](../lesson-05/router-design-1.md)** ([Plain-language guide](../lesson-05/plain-language.md), [quick guide](../lesson-05/quick-study-guide.md), [quiz](../lesson-05/quiz.md)).
+    New to the material? Start with the **[Plain-language guide](plain-language.md)**. Need a condensed review? See the **[Quick Study Guide](quick-study-guide.md)**. For interactive practice, try the **[Lesson 6 Quiz](quiz.md)**. Need Part 1 first? See **[Lesson 5](../lesson-05/router-design-1.md)**.
 
 ---
 

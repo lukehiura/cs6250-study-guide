@@ -1,3 +1,14 @@
+---
+tags:
+  - lesson-03
+  - routing
+  - ospf
+  - igp
+  - plain-language
+search:
+  boost: 2
+---
+
 # Lesson 3: Intradomain Routing — Plain-Language Guide
 
 The simplest version of [Lesson 3](intradomain-routing.md). No jargon unless we explain it right away. Routing between companies is in [Lesson 4](../lesson-04/interdomain-routing.md). For exam detail, use the **[Quick Study Guide](quick-study-guide.md)** or **[Quiz](quiz.md)**.

@@ -1,3 +1,13 @@
+---
+tags:
+  - lesson-02
+  - tcp
+  - transport
+  - quick-study
+search:
+  boost: 2
+---
+
 # Lesson 2: Quick Study Guide — Transport Layer
 
 Condensed review for exams. New to the material? Start with the **[Plain-language guide](plain-language.md)**. For full explanations, diagrams, and official Q&A, see the [full Lesson 2 guide](transport-application.md). For interactive practice, try the **[Lesson 2 Quiz](quiz.md)**.

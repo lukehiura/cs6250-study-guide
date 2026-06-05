@@ -1,3 +1,10 @@
+---
+tags:
+  - lesson-04
+  - routing
+  - bgp
+---
+
 # Lesson 4: Interdomain Routing (BGP)
 
 How autonomous systems exchange reachability and apply **policy** at Internet scale. Intradomain (IGP) material is in **[Lesson 3](../lesson-03/intradomain-routing.md)**.

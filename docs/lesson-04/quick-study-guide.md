@@ -1,3 +1,13 @@
+---
+tags:
+  - lesson-04
+  - routing
+  - bgp
+  - quick-study
+search:
+  boost: 2
+---
+
 # Lesson 4: Quick Study Guide — Interdomain Routing (BGP)
 
 Condensed review for exams. New to the material? Start with the **[Plain-language guide](plain-language.md)**. Full detail: [Lesson 4 guide](interdomain-routing.md). Practice: [Lesson 4 Quiz](quiz.md). IGP (inside one AS): [Lesson 3](../lesson-03/intradomain-routing.md).

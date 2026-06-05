@@ -1,3 +1,11 @@
+---
+tags:
+  - lesson-03
+  - routing
+  - ospf
+  - igp
+---
+
 # Lesson 3: Intradomain Routing
 
 How routers move traffic **within** a single organization or administrative domain: forwarding vs routing, link-state vs distance-vector, and practical issues (count-to-infinity, poison reverse, hot potato).

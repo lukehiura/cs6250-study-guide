@@ -1,8 +1,14 @@
 ---
 quiz:
-  auto_number: true
-  shuffle_answers: true
-  disable_after_submit: false
+  auto_number: True
+  shuffle_answers: True
+  disable_after_submit: False
+tags:
+  - lesson-01
+  - foundations
+  - quiz
+search:
+  boost: 1.5
 ---
 
 # Lesson 1: Interactive Quiz

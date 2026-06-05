@@ -1,8 +1,14 @@
 ---
 quiz:
-  auto_number: true
-  shuffle_answers: true
-  disable_after_submit: false
+  auto_number: True
+  shuffle_answers: True
+  disable_after_submit: False
+tags:
+  - lesson-05
+  - router-design
+  - quiz
+search:
+  boost: 1.5
 ---
 
 # Lesson 5: Interactive Quiz

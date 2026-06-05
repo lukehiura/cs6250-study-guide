@@ -1,3 +1,12 @@
+---
+tags:
+  - lesson-05
+  - router-design
+  - plain-language
+search:
+  boost: 2
+---
+
 # Lesson 5: Router Design (Part 1) — Plain-Language Guide
 
 The simplest possible version of [Lesson 5](router-design-1.md). No jargon unless we explain it right away. Scheduling, QoS, and token buckets are in [Lesson 6](../lesson-06/router-design-2.md). When you want exam detail, use the **[Quick Study Guide](quick-study-guide.md)** or the **[Quiz](quiz.md)**.

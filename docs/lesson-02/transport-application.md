@@ -1,3 +1,10 @@
+---
+tags:
+  - lesson-02
+  - tcp
+  - transport
+---
+
 # Lesson 2: Transport Layer
 
 The transport layer sits above IP and provides **application-to-application** communication. Module 2 focuses on how TCP and UDP differ, how TCP achieves reliability and rate control, and how modern congestion control (including TCP CUBIC) works on high-speed networks.

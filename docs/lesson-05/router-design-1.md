@@ -1,3 +1,9 @@
+---
+tags:
+  - lesson-05
+  - router-design
+---
+
 # Lesson 5: Router Design and Algorithms (Part 1)
 
 Router architecture, control vs data plane, switching fabrics, and longest-prefix match (tries). Continues in **[Lesson 6](../lesson-06/router-design-2.md)** (packet classification, scheduling, rate control).
@@ -33,6 +39,8 @@ Consider a browser in an enterprise network (`a.b.c.0/24`) requesting a web page
 
 The router sits at the **network layer** of the Internet protocol stack, connecting hosts across different networks.
 
+![Browser request crossing enterprise, ISP, and CDN networks via a router](../images/router-cdn-topology.png){ width="700" }
+
 ---
 
 ## The Router's Challenges
@@ -46,6 +54,8 @@ The router sits at the **network layer** of the Internet protocol stack, connect
 | **Scheduling + fairness** | Decide who goes next; balance latency, throughput, starvation |
 | **Operations + security** | Measurement/telemetry and filtering/policy add complexity |
 
+![Router input port, switching fabric, and output port with throughput and queuing challenges](../images/router-challenges-switch-fabric.png){ width="700" }
+
 ---
 
 ## Control Plane vs Data Plane
@@ -56,6 +66,8 @@ The router sits at the **network layer** of the Internet protocol stack, connect
 - **Data plane** = fast path. Each router uses a local **forwarding table** to map header bits → output port at **line rate**.
 
 **Separation:** The controller decides what should happen; devices perform per-packet actions quickly and repeatedly. Key benefit: simpler devices + easier network-wide control/updates.
+
+![Control plane versus data plane responsibilities inside a router](../images/router-control-data-plane.png){ width="700" }
 
 ### Router Components
 
@@ -80,6 +92,8 @@ When a packet arrives, the router does a forwarding lookup in the **FIB**:
 - Data-plane operation: fast, per-packet, designed to run at line rate.
 - Routers store **prefixes** (e.g., `/24`, `/16`), not individual IP addresses. If multiple prefixes match, choose the **most specific** (longest) match.
 
+![Packet lookup in the FIB followed by switching across the router fabric](../images/router-lpm-packet-arrival.png){ width="700" }
+
 ### 2. Switching
 
 After lookup, the packet crosses the **switching fabric** — the router's internal backplane:
@@ -101,13 +115,7 @@ A **scheduler** chooses the next packet across queues (priority, weighted, or fa
 
 ### Router Architecture Summary
 
-```
-Input port → [Lookup] → [Switching fabric] → [Output queue] → [Scheduler] → Output link
-                ↑                                    ↑
-         Control plane                         Multiple queues
-         (routing protocols,                    per class/flow
-          FIB updates)
-```
+![Data-plane pipeline from lookup through switching, queuing, scheduling, and output](../images/router-data-plane-pipeline.png){ width="700" }
 
 Hardware validation and checksum happen inline. Control-plane side: route processing + protocol processing maintain the tables the data plane uses.
 
@@ -119,13 +127,19 @@ Hardware validation and checksum happen inline. Control-plane side: route proces
 
 Packet copied into shared router memory, then copied to the output port. Memory bandwidth limits throughput (~2× line rate needed: one write + one read per packet). Simple early design; doesn't scale to many high-speed ports. **One packet at a time.**
 
+![Switching via shared router memory — one packet at a time](../images/switching-via-memory.png){ width="700" }
+
 ### Switching via Bus
 
 Shared bus connects all inputs to outputs. Packets take turns (arbitration) — only **one packet crosses at a time**. Simple and low-cost; bus becomes bottleneck as port speeds grow.
 
+![Switching via a shared internal bus — one packet at a time](../images/switching-via-bus.png){ width="700" }
+
 ### Switching via Crossbar
 
 Configurable connections between inputs and outputs enable **parallel transfers**. Multiple packets cross simultaneously if they go to **different outputs**. If multiple inputs target the same output → arbitration/queuing at that output. **Can send multiple packets in parallel.**
+
+![Crossbar switching fabric enabling parallel transfers to different outputs](../images/switching-via-crossbar.png){ width="700" }
 
 ---
 
@@ -139,9 +153,15 @@ A **trie** stores keys by sharing common prefixes. For IP routing, lookup follow
 - While walking, remember the **last valid prefix** encountered (longest-prefix match).
 - Worst case: **O(W)** steps where W = address width (32 for IPv4).
 
+![Unibit trie structure with one branch per address bit](../images/unibit-trie-example.png){ width="700" }
+
+![Unibit trie lookup walking bits and tracking the longest matching prefix](../images/unibit-trie-lookup.png){ width="700" }
+
 ### Multibit Tries
 
 Instead of 1 bit per level, use a **stride** (e.g., 2 bits) → each node has up to 4 children: `00`, `01`, `10`, `11`. Fewer steps = faster lookup. **Tradeoff:** nodes are larger/sparser → more memory.
+
+![Multibit trie with stride greater than one bit per level](../images/multibit-trie-example.png){ width="700" }
 
 ### Prefix Expansion
 
@@ -163,6 +183,8 @@ With multibit tries, prefixes don't always align with the stride. **Prefix expan
 | P6 | `1000*` (len 4) | `100000*`, `100001*`, `100010*`, `100011*` → `100000*` **dropped** (exists as P7) |
 | P7 | `100000*` | no expansion needed |
 | P8, P9 | — | no expansion needed |
+
+![Prefix expansion example aligning shorter prefixes to multibit stride boundaries](../images/prefix-expansion-example.png){ width="700" }
 
 ---
 

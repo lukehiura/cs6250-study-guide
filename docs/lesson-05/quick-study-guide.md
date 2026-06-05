@@ -1,3 +1,12 @@
+---
+tags:
+  - lesson-05
+  - router-design
+  - quick-study
+search:
+  boost: 2
+---
+
 # Lesson 5: Quick Study Guide — Router Design (Part 1)
 
 Condensed review for exams. New to the material? Start with the **[Plain-language guide](plain-language.md)**. Full detail: [Lesson 5 guide](router-design-1.md). Practice: [Lesson 5 Quiz](quiz.md). Part 2 (scheduling, QoS): [Lesson 6](../lesson-06/router-design-2.md).

@@ -1,3 +1,13 @@
+---
+tags:
+  - lesson-02
+  - tcp
+  - transport
+  - plain-language
+search:
+  boost: 2
+---
+
 # Lesson 2: Transport Layer — Plain-Language Guide
 
 The simplest version of [Lesson 2](transport-application.md). Layer basics from [Lesson 1](../lesson-01/plain-language.md) help here. For exam detail, see the **[Quick Study Guide](quick-study-guide.md)** or the **[Quiz](quiz.md)**.

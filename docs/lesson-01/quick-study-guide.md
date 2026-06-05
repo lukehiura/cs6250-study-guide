@@ -1,3 +1,12 @@
+---
+tags:
+  - lesson-01
+  - foundations
+  - quick-study
+search:
+  boost: 2
+---
+
 # Lesson 1: Quick Study Guide — Internet Architecture
 
 A condensed review for exams. New to the material? Start with the **[Plain-language guide](plain-language.md)**. For full explanations, diagrams, and official Q&A, see the [full Lesson 1 guide](introduction.md). For interactive practice, try the **[Lesson 1 Quiz](quiz.md)**. Next module: **[Lesson 2 — Transport Layer](../lesson-02/transport-application.md)** ([Plain-language guide](../lesson-02/plain-language.md), [quiz](../lesson-02/quiz.md)).

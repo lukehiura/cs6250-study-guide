@@ -1,3 +1,13 @@
+---
+tags:
+  - lesson-04
+  - routing
+  - bgp
+  - plain-language
+search:
+  boost: 2
+---
+
 # Lesson 4: Interdomain Routing (BGP) — Plain-Language Guide
 
 The simplest possible version of [Lesson 4](interdomain-routing.md). No jargon unless we explain it right away. Inside-one-company routing is in [Lesson 3](../lesson-03/intradomain-routing.md). When you want exam detail, use the **[Quick Study Guide](quick-study-guide.md)** or the **[Quiz](quiz.md)**.

@@ -1,3 +1,9 @@
+---
+tags:
+  - lesson-01
+  - foundations
+---
+
 # Lesson 1: Introduction, History, and Internet Architecture
 
 This section covers the fundamental design philosophies of modern networking: history, layered architecture, encapsulation, the end-to-end principle, hourglass ossification, and Layer 2 switching.

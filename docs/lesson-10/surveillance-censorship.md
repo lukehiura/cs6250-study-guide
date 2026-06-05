@@ -1,4 +1,14 @@
+---
+tags:
+  - lesson-10
+  - security
+  - censorship
+---
+
 # Lesson 10: Internet Surveillance and Censorship
+
+!!! tip "Exam prep"
+    New to the material? Start with the **[Plain-language guide](plain-language.md)**. Need a condensed review? See the **[Quick Study Guide](quick-study-guide.md)**. For interactive practice, try the **[Lesson 10 Quiz](quiz.md)**.
 
 ---
 

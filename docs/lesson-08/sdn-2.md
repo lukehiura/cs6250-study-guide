@@ -1,4 +1,13 @@
+---
+tags:
+  - lesson-08
+  - sdn
+---
+
 # Lesson 8: SDN (Part 2)
+
+!!! tip "Exam prep"
+    New to the material? Start with the **[Plain-language guide](plain-language.md)**. Need a condensed review? See the **[Quick Study Guide](quick-study-guide.md)**. For interactive practice, try the **[Lesson 8 Quiz](quiz.md)**. Part 1: **[Lesson 7](sdn-1.md)**.
 
 ---
 

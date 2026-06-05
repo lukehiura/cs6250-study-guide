@@ -19,19 +19,23 @@ Prefer theme features over CSS. Extend via `theme.custom_dir: overrides` only wh
 
 ## Navigation structure
 
-Top-level **tabs** group course modules; each lesson is a **collapsible nested section** in the sidebar:
+Three header tabs keep the site clean: **Home · Lessons · Practice**.
+Inside the **Lessons** tab the sidebar shows module sections (Foundations, Routing, etc.) with collapsible per-lesson groups.
 
 ```yaml
 nav:
   - Home: index.md
-  - Foundations:
-      - Lesson 1 — Introduction:
-          - Guide: lesson-01/introduction.md
-          - Plain-language: lesson-01/plain-language.md
-          - Quick study: lesson-01/quick-study-guide.md
-          - Quiz: lesson-01/quiz.md
+  - Lessons:
+      - Foundations:
+          - Lesson 1:
+              - Guide: lesson-01/introduction.md
+              - Plain-language: lesson-01/plain-language.md
+              - Quick study: lesson-01/quick-study-guide.md
+              - Quiz: lesson-01/quiz.md
+  - Practice: practice-questions.md
 ```
 
+Lesson labels are short (`Lesson N`) — topic description lives in the Guide page title only.
 Child labels are always: **Guide**, **Plain-language**, **Quick study**, **Quiz**.
 
 ### Feature flags (current)

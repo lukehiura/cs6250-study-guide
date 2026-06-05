@@ -21,7 +21,9 @@
   font-weight: 600;
 }
 
-/* Lesson group headers (collapsible labels) */
+/* Module section headers (Foundations, Routing, etc.) —
+   rendered as non-link labels inside the Lessons tab */
+.md-nav--primary .md-nav__item--section > .md-nav__link,
 .md-nav--primary .md-nav__item--nested > label.md-nav__link {
   font-size: var(--cs-font-size-nav-group);
   font-weight: 600;
@@ -42,4 +44,12 @@
 
 .md-nav--primary .md-nav__item--nested > .md-nav > .md-nav__list .md-nav__link {
   font-size: var(--cs-font-size-nav);
+}
+
+/* Prevent long lesson names from wrapping — truncate with ellipsis */
+.md-nav--primary .md-nav__link .md-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
 }

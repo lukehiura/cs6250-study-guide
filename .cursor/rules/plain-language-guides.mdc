@@ -1,0 +1,68 @@
+---
+description: Plain-language lesson guides — analogies, tables, minimal jargon
+globs: docs/*-plain-language.md, docs/lesson-*/plain-language.md
+alwaysApply: false
+---
+
+# Plain-Language Guides
+
+**Read before editing:** `docs/lesson-01/plain-language.md`, `docs/lesson-04/plain-language.md`.
+
+## Purpose
+
+Simplest accurate version of the full lesson. Someone confused by the full guide should understand the core ideas here.
+
+## Required structure
+
+```markdown
+# Lesson N: Topic — Plain-Language Guide
+
+Intro paragraph linking to [full lesson](lesson-NN-....md), quick study, quiz.
+
+---
+
+## Summary
+2–4 sentences. Bold key terms.
+
+---
+
+## The one-sentence version
+Single sentence a student could recite.
+
+---
+
+## [Topic sections with plain headers]
+Tables, analogies, ASCII or mermaid diagrams...
+
+---
+
+## The whole lesson on one napkin   ← optional but preferred for Lesson 1-style
+Compact ASCII summary block
+
+---
+
+## Where to go next
+Links back to full guide, quick study, quiz.
+```
+
+## Writing rules
+
+- **Analogies first** — airline trip for layers, building/hallways for IGP vs BGP (`lesson-04/plain-language.md`)
+- **Tables over prose** for comparisons and timelines
+- **Jargon immediately translated** — "BGP (Border Gateway Protocol)" on first mention, then "BGP"
+- **Memory tricks** as short bold lines — `**Memory trick:** IGP = hallways...`
+- **Key takeaways** bullet lists after dense sections
+
+## Relationship to full guide
+
+- Cover the same concepts; omit proof-level detail and long algorithm walkthroughs
+- Link to full guide for "when you want exam detail"
+- If full guide has a diagram essential to understanding, reuse the same `images/...` reference
+
+## What NOT to do
+
+- Do not use exam-prep admonition blocks meant for full guides — use a simple intro paragraph
+- Do not paste full lesson sections verbatim
+- Do not add `<quiz>` blocks
+- Do not introduce concepts from later lessons without a one-line "we'll cover this in Lesson N" note
+- Do not use condescending tone — plain-language means clear and accessible, not childish

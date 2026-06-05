@@ -2,7 +2,7 @@
 
 Test your understanding with these questions. Try to answer before revealing the solution.
 
-For interactive practice, see the **[Lesson 1 Quiz](lesson-01-quiz.md)** and **[Lesson 2 Quiz](lesson-02-quiz.md)**.
+For interactive practice, see the **[Lesson 1 Quiz](lesson-01/quiz.md)** and **[Lesson 2 Quiz](lesson-02/quiz.md)**. New to Lesson 1? Start with the **[Plain-language guide](lesson-01/plain-language.md)**.
 
 ---
 

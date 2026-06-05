@@ -1,0 +1,72 @@
+---
+description: Markdown writing standards for all CS 6250 docs
+alwaysApply: true
+---
+
+# Writing Standards
+
+## Voice and audience
+
+Graduate-level CS 6250 students preparing for exams. Clear and rigorous — not dumbed down unless editing a plain-language guide.
+
+- Define jargon on first use; **bold** key terms.
+- Prefer short paragraphs and tables over walls of text.
+- Use analogies sparingly in full guides; freely in plain-language guides.
+
+## Markdown conventions
+
+```markdown
+# H1 — page title only (one per file)
+
+## H2 — major sections
+
+### H3 — subsections
+
+---   ← horizontal rule between major sections
+
+| Column | Column |   ← tables for comparisons, milestones, device layers
+```
+
+**Admonitions** (Material for MkDocs):
+
+```markdown
+!!! tip "Exam prep"       ← sibling links to plain-language / quick study / quiz
+!!! tip "Memory aid"      ← short mnemonic
+!!! warning "Exam point"  ← common mistake
+!!! info "Reference"      ← external citation
+!!! abstract "Takeaway"   ← section summary
+??? success "Answer"      ← hidden answer (practice-questions.md)
+```
+
+**Code and diagrams:**
+
+- Fenced code blocks for pseudocode and packet layouts
+- ` ```mermaid ` for topology/flow (see `docs/lesson-03/intradomain-routing.md`)
+- Math via `$...$` or `$$...$$` (MathJax loaded in `mkdocs.yml`)
+
+## Images
+
+- Path: `images/kebab-case-description.png` (relative to `docs/`)
+- Alt text must describe the diagram, not the filename
+- After adding an image file, reference it from the relevant lesson in the same edit
+
+## What NOT to do
+
+- Do not use `#` headings deeper than `###` unless the section truly needs it
+- Do not use HTML `<details>` when `??? success` admonitions work
+- Do not duplicate full lesson prose into plain-language guides — summarize and link to the full guide
+- Do not paste unsourced claims; cite Canvas readings or Kurose & Ross when the full guide does
+- Do not change `site_name`, theme palette, or plugin config in `mkdocs.yml` unless asked
+- Do not add npm/node dependencies — this is a Python/MkDocs project only
+
+## Terminology (use consistently)
+
+| Prefer | Avoid |
+|--------|-------|
+| Autonomous System (AS) | "autonomous system" without caps on first mention |
+| IGP / BGP | mixing "routing protocol" when the distinction matters |
+| intradomain / interdomain | "internal/external routing" without context |
+| end-to-end principle | "E2E" without defining it |
+| segment / datagram / frame | "packet" when the layer-specific name matters |
+
+Full cross-lesson term rules: see agent rule **terminology-consistency** when editing multiple lessons.

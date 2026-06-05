@@ -1,0 +1,63 @@
+---
+description: End-to-end checklist for adding or extending a CS 6250 lesson — nav, index, cross-links, sibling docs, images, build
+alwaysApply: false
+---
+
+# New Lesson Checklist
+
+Use when adding a **new module**, a **new doc type** for an existing lesson (plain-language, quick study, quiz), or doing a **major lesson expansion** that needs site-wide updates.
+
+## 1. Content
+
+- [ ] Full guide follows patterns in `docs/lesson-03/intradomain-routing.md` (or flat `lesson-NN-<topic>.md`)
+- [ ] Study questions from Canvas addressed (as `##` headings in full guide or in quick study Q&A)
+- [ ] Cross-links to prior/next lessons (e.g., Lesson 3 ↔ Lesson 4 for IGP/BGP)
+- [ ] Course references line: Module N Summary Video, Kurose & Ross chapters
+
+## 2. Sibling docs (if applicable)
+
+| Adding… | Also check |
+|---------|------------|
+| Full guide | Should plain-language / quick study / quiz be created or linked as "coming soon"? |
+| plain-language | Links to full guide; covers same core concepts simplified |
+| Quick study | Numbered sections + exam Q&A + memory sheet |
+| Quiz | YAML frontmatter + `<quiz>` blocks aligned with quick study |
+
+Update **cross-links in all existing siblings** when adding a new format.
+
+## 3. Site navigation
+
+- [ ] `mkdocs.yml` → add under correct lesson in `nav:` (match nesting of Lessons 1–3)
+- [ ] `docs/index.md` → Modules table row + Practice table if plain-language/quiz/quick study
+- [ ] No orphan pages — every new `docs/*.md` must appear in nav or redirect stub
+
+## 4. Images
+
+- [ ] New diagrams saved to `docs/images/kebab-case-name.png`
+- [ ] Referenced as `![descriptive alt](images/kebab-case-name.png)`
+- [ ] Reuse existing images when the same course diagram applies
+
+## 5. Build verification
+
+```bash
+pip install -r requirements.txt
+mkdocs build
+```
+
+Fix any broken links, missing images, or quiz syntax errors before finishing.
+
+## 6. Related pages
+
+- [ ] `docs/practice-questions.md` — add written Q&A if module has official study questions not yet covered
+
+## Filename conventions
+
+```
+docs/lesson-NN/
+  <topic>.md          # full guide (descriptive name)
+  plain-language.md
+  quick-study-guide.md
+  quiz.md
+```
+
+Match `mkdocs.yml` nav. Do not recreate flat `lesson-NN-*.md` files at `docs/` root — content lives only in `docs/lesson-NN/`.

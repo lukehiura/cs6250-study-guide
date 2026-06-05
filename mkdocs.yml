@@ -92,24 +92,35 @@ extra_javascript:
 nav:
   - Home: index.md
   - Lesson 1 - Introduction & Internet Architecture:
-      - Full guide: lesson-01-introduction.md
-      - Quick study guide: lesson-01-quick-study-guide.md
-      - Interactive quiz: lesson-01-quiz.md
+      - Full guide: lesson-01/introduction.md
+      - Plain-language guide: lesson-01/plain-language.md
+      - Quick study guide: lesson-01/quick-study-guide.md
+      - Interactive quiz: lesson-01/quiz.md
   - Lesson 2 - Transport Layer:
-      - Full guide: lesson-02-transport-application.md
-      - Quick study guide: lesson-02-quick-study-guide.md
-      - Interactive quiz: lesson-02-quiz.md
+      - Full guide: lesson-02/transport-application.md
+      - Plain-language guide: lesson-02/plain-language.md
+      - Quick study guide: lesson-02/quick-study-guide.md
+      - Interactive quiz: lesson-02/quiz.md
   - Lesson 3 - Intradomain Routing:
-      - Full guide: lesson-03-intradomain-routing.md
-      - Quick study guide: lesson-03-quick-study-guide.md
-      - Interactive quiz: lesson-03-quiz.md
-  - Lesson 4 - Interdomain Routing: lesson-04-interdomain-routing.md
-  - Lesson 5 - Router Design & Algorithms (Part 1): lesson-05-router-design-1.md
-  - Lesson 6 - Router Design & Algorithms (Part 2): lesson-06-router-design-2.md
-  - Lesson 7 - SDN (Part 1): lesson-07-sdn-1.md
-  - Lesson 8 - SDN (Part 2): lesson-08-sdn-2.md
-  - Lesson 9 - Internet Security: lesson-09-security.md
-  - Lesson 10 - Surveillance & Censorship: lesson-10-surveillance-censorship.md
-  - Lesson 11 - Applications (Video): lesson-11-video.md
-  - Lesson 12 - Applications (CDNs & Overlay Networks): lesson-12-cdns-overlay.md
+      - Full guide: lesson-03/intradomain-routing.md
+      - Plain-language guide: lesson-03/plain-language.md
+      - Quick study guide: lesson-03/quick-study-guide.md
+      - Interactive quiz: lesson-03/quiz.md
+  - Lesson 4 - Interdomain Routing:
+      - Full guide: lesson-04/interdomain-routing.md
+      - Plain-language guide: lesson-04/plain-language.md
+      - Quick study guide: lesson-04/quick-study-guide.md
+      - Interactive quiz: lesson-04/quiz.md
+  - Lesson 5 - Router Design & Algorithms (Part 1):
+      - Full guide: lesson-05/router-design-1.md
+      - Plain-language guide: lesson-05/plain-language.md
+      - Quick study guide: lesson-05/quick-study-guide.md
+      - Interactive quiz: lesson-05/quiz.md
+  - Lesson 6 - Router Design & Algorithms (Part 2): lesson-06/router-design-2.md
+  - Lesson 7 - SDN (Part 1): lesson-07/sdn-1.md
+  - Lesson 8 - SDN (Part 2): lesson-08/sdn-2.md
+  - Lesson 9 - Internet Security: lesson-09/security.md
+  - Lesson 10 - Surveillance & Censorship: lesson-10/surveillance-censorship.md
+  - Lesson 11 - Applications (Video): lesson-11/video.md
+  - Lesson 12 - Applications (CDNs & Overlay Networks): lesson-12/cdns-overlay.md
   - Practice Questions: practice-questions.md

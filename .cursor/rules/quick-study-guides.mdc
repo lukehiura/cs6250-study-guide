@@ -1,0 +1,70 @@
+---
+description: Quick study guides — condensed exam review, tables, high-yield Q&A
+globs: docs/*-quick-study-guide.md, docs/lesson-*/quick-study-guide.md
+alwaysApply: false
+---
+
+# Quick Study Guides
+
+**Read before editing:** `docs/lesson-01/quick-study-guide.md`, `docs/lesson-03/quick-study-guide.md`.
+
+## Purpose
+
+Last-minute exam review: dense facts, memory aids, and short-answer practice. Assumes the reader already studied the full guide or plain-language.
+
+## Required structure
+
+```markdown
+# Lesson N: Quick Study Guide — Topic
+
+Intro linking plain-language → full guide → quiz.
+
+---
+
+## 1. Big picture
+Core design ideas in 3–5 sentences.
+
+---
+
+## 2–N. Numbered topic sections
+Tables, bullet facts, !!! tip "Memory aid", !!! warning "Exam point"
+
+---
+
+## High-yield exam questions (or similar)
+### 1. Question text?
+Short direct answer — 2–6 sentences max.
+
+### 2. ...
+...
+
+---
+
+## Quick memory sheet
+| Topic | Memory aid |
+```
+
+## Content rules
+
+- **Number major sections** (`## 1.`, `## 2.`) for scannable review
+- **Tables** for layers, protocols, device comparisons, milestones
+- **Exam questions section** — 8–15 questions with **short** answers (not full-lesson depth)
+- **Memory aids** — one-liners students can recall under pressure
+- **!!! warning "Exam point"** for common wrong answers (OSI 7 vs Internet 5, E2E violations)
+
+## Relationship to other formats
+
+| Full guide | Quick study |
+|------------|-------------|
+| Full algorithm walkthrough | "Root = smallest ID, block ports that loop" |
+| Long prose on history | Milestone table |
+| Detailed NAT explanation | "NAT violates E2E — rewrites addresses in the middle" |
+
+Always link siblings in the intro. Update links if quiz/plain-language do not exist yet for that lesson.
+
+## What NOT to do
+
+- Do not duplicate entire full-guide sections — compress
+- Do not add `<quiz>` blocks — point to `*-quiz.md`
+- Do not use plain-language analogies as the primary explanation — quick study is fact-dense
+- Do not skip the memory sheet at the end

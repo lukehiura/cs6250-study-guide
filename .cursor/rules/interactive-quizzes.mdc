@@ -1,0 +1,84 @@
+---
+description: Interactive mkdocs-quiz pages — YAML frontmatter and quiz block syntax
+globs: docs/*-quiz.md, docs/lesson-*/quiz.md
+alwaysApply: false
+---
+
+# Interactive Quizzes
+
+**Read before editing:** `docs/lesson-01/quiz.md`, `docs/lesson-02/quiz.md`.
+
+Plugin: `mkdocs-quiz` (configured in `mkdocs.yml` — shuffle answers, progress bar, confetti).
+
+## File template
+
+```markdown
+---
+quiz:
+  auto_number: true
+  shuffle_answers: true
+  disable_after_submit: false
+---
+
+# Lesson N: Interactive Quiz
+
+Intro linking plain-language, quick study, practice questions.
+
+!!! info "Before you begin"
+    <!-- mkdocs-quiz intro -->
+
+---
+
+## Section name (themed groups)
+
+<quiz>
+Question text with [[fill-in]] blank?
+---
+Explanation shown after submit. **Bold** key terms.
+</quiz>
+
+<quiz>
+Multiple choice question?
+- [ ] Wrong
+- [x] Correct
+- [ ] Wrong
+
+Short explanation after blank line.
+</quiz>
+```
+
+## Question design
+
+- **Group by topic** with `##` section headers (Architecture, TCP, BGP policy, etc.)
+- **Mix formats** — multiple choice, multi-select (`- [x]` on several lines), fill-in-the-blank `[[answer]]`
+- **Explanations required** — after `---` (fill-in) or blank line after choices (MC). Teach on wrong answers.
+- **Align with quick study** — quiz questions should match high-yield exam topics in `*-quick-study-guide.md`
+- **Trick questions welcome** — "which is NOT a violation of E2E", "which is NOT a ramification of hourglass"
+
+## Fill-in syntax
+
+```markdown
+The transport layer unit is a [[segment]]. The network layer unit is a [[datagram]].
+```
+
+Acceptable alternate spellings are NOT supported — use the canonical course term.
+
+## Multi-select syntax
+
+```markdown
+- [x] Correct option A
+- [x] Correct option B
+- [ ] Wrong option
+```
+
+## Nav and discovery
+
+New quiz → add under lesson section in `mkdocs.yml` nav **and** `docs/index.md` Practice table.
+
+## What NOT to do
+
+- Do not omit YAML frontmatter — quiz plugin requires it
+- Do not use `??? success` collapsible answers — use `<quiz>` blocks only
+- Do not copy questions verbatim from `practice-questions.md` without checking answers still match
+- Do not add questions on topics not covered in the full lesson for that module
+- Do not install alternative quiz JS libraries — mkdocs-quiz only

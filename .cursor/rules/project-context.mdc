@@ -1,0 +1,98 @@
+---
+description: CS 6250 study guide — project purpose, structure, and non-negotiables
+alwaysApply: true
+---
+
+# CS 6250 Study Guide — Project Context
+
+Unofficial Georgia Tech **CS 6250: Computer Networks** study notes. Published as a MkDocs Material site to GitHub Pages.
+
+## Tech stack
+
+| Piece | Location |
+|-------|----------|
+| MkDocs config | `mkdocs.yml` |
+| All content | `docs/` |
+| Images | `docs/images/` (kebab-case `.png`) |
+| Lecture PDFs (reference only) | `docs/lectures/` |
+| Python deps | `requirements.txt` |
+| CI deploy | `.github/workflows/docs.yml` → `mkdocs build` on push to `main`/`master` |
+
+**Do not edit** PDFs in `docs/lectures/`. Cite them in prose when relevant.
+
+## Content layout
+
+Each lesson lives in its own folder under `docs/`:
+
+```
+docs/
+  index.md
+  practice-questions.md
+  images/
+  lesson-01/
+    introduction.md          # full guide
+    plain-language.md
+    quick-study-guide.md
+    quiz.md
+  lesson-02/
+    transport-application.md
+    plain-language.md
+    ...
+  lesson-03/
+    intradomain-routing.md
+    ...
+  lesson-05/
+    router-design-1.md
+    plain-language.md
+    quick-study-guide.md
+    quiz.md
+  lesson-06/
+    router-design-2.md       # full guide only (no siblings yet)
+  ...
+```
+
+| Format | Filename in `lesson-NN/` |
+|--------|--------------------------|
+| Full guide | `<topic>.md` (descriptive, not always `index.md`) |
+| Plain-language | `plain-language.md` |
+| Quick study | `quick-study-guide.md` |
+| Quiz | `quiz.md` |
+
+Not every lesson has all four formats yet. Add siblings as needed.
+
+**Canonical examples:**
+
+| Format | Path |
+|--------|------|
+| Full guide | `docs/lesson-01/introduction.md`, `docs/lesson-03/intradomain-routing.md` |
+| Plain-language | `docs/lesson-01/plain-language.md`, `docs/lesson-04/plain-language.md` |
+| Quick study | `docs/lesson-01/quick-study-guide.md` |
+| Quiz | `docs/lesson-01/quiz.md` |
+
+## Linking rules
+
+| From | To sibling in same lesson | To another lesson | To images |
+|------|---------------------------|-------------------|-----------|
+| `docs/index.md` | — | `lesson-NN/<file>.md` | `images/...` |
+| `docs/lesson-NN/*.md` | `plain-language.md`, `quiz.md`, etc. | `../lesson-MM/<file>.md` | `../images/...` |
+
+## Navigation — always keep in sync
+
+When adding or renaming a doc, update **both**:
+
+1. `mkdocs.yml` → `nav:` section (nested under the lesson)
+2. `docs/index.md` → Modules table and/or Practice table
+
+## Non-negotiables
+
+- **Accuracy first** — content reflects CS 6250 / Kurose & Ross course material, not generic blog posts.
+- **Relative links** — sibling links use short names; cross-lesson links use `../lesson-NN/...`.
+- **Local images** — `../images/descriptive-name.png` from lesson folders.
+- **No new doc types** — do not invent README files, CHANGELOGs, or extra markdown the user did not ask for.
+- **MkDocs Material syntax** — admonitions (`!!! tip`), collapsible answers (`??? success`), tables, mermaid, MathJax `$...$`.
+
+## Cross-linking between formats
+
+Every lesson variant should link siblings near the top. Follow `docs/lesson-01/introduction.md` (exam-prep admonition) or `docs/lesson-03/plain-language.md` (intro paragraph).
+
+Lesson 3 ↔ Lesson 4 cross-link explicitly at the IGP/BGP handoff.

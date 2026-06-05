@@ -1,0 +1,72 @@
+---
+description: Full lesson study guides — detailed Q&A, diagrams, course-aligned explanations
+globs: docs/lesson-*/introduction.md, docs/lesson-*/transport-application.md, docs/lesson-*/intradomain-routing.md, docs/lesson-*/interdomain-routing.md, docs/lesson-*/router-design-*.md, docs/lesson-*/sdn-*.md, docs/lesson-*/security.md, docs/lesson-*/surveillance-censorship.md, docs/lesson-*/video.md, docs/lesson-*/cdns-overlay.md
+alwaysApply: false
+---
+
+# Full Lesson Guides
+
+**Skip this rule** if the file is `plain-language.md`, `quiz.md`, or `quick-study-guide.md` inside a `lesson-NN/` folder.
+
+## Purpose
+
+Comprehensive reference: official study questions answered in depth, with diagrams and exam-relevant detail. This is the **source of truth** other formats summarize.
+
+**Read before editing:** `docs/lesson-01/introduction.md`, `docs/lesson-03/intradomain-routing.md`.
+
+## Page structure
+
+```markdown
+# Lesson N: Topic Title
+
+One-line scope statement.
+
+!!! tip "Exam prep"
+    Links to plain-language guide, quick study guide, quiz (when they exist).
+
+**Course references:** Module N Summary Video, Kurose & Ross sections.
+
+---
+
+## Concept section (explanatory)
+
+Prose + tables + diagrams...
+
+---
+
+## Official study question as heading?
+
+Many sections use the **exact study question** as an `##` heading, followed by the answer.
+See `docs/lesson-02/transport-application.md` — headings like `## What is multiplexing, and why is it necessary?`
+```
+
+## Content patterns
+
+1. **Explain then summarize** — prose first, then `!!! abstract "Takeaway"` or `!!! tip "Memory aid"` where helpful
+2. **Tables** for comparisons (UDP vs TCP, forwarding vs routing, OSI vs Internet model)
+3. **Diagrams** for anything spatial — encapsulation, topologies, algorithm steps. Check `docs/images/` before creating new assets; reuse when the same diagram applies
+4. **Cross-lesson links** — intradomain → `../lesson-04/interdomain-routing.md`; transport → routing when stack context matters
+5. **Step-by-step algorithms** — numbered lists + toy examples (spanning tree, Dijkstra, Bellman-Ford)
+
+## Study question headings
+
+When the Canvas study guide asks a question verbatim, use it as the section heading. Answer completely enough for a written exam — definitions, reasoning, and edge cases.
+
+Do not add fake `## Study Questions` appendix sections; integrate Q&A into the narrative flow like existing lessons.
+
+## Optional elements
+
+- External paper links (PDF) in intro — see Lesson 3 optional readings
+- Mermaid for AS/path diagrams
+- Pseudocode in fenced blocks — match style in `docs/lesson-03/intradomain-routing.md`
+
+## When adding a new full lesson
+
+Also trigger updates to: `mkdocs.yml` nav, `docs/index.md`, and consider whether plain-language / quick study / quiz siblings are needed (see **new-lesson-checklist** rule).
+
+## What NOT to do
+
+- Do not simplify to plain-language tone — that belongs in `*-plain-language.md`
+- Do not add `<quiz>` blocks — those go in `*-quiz.md`
+- Do not copy the quick study "12 exam questions" block wholesale — quick study condenses; full guide explains
+- Do not leave broken image refs — every `![](images/...)` must have a file in `docs/images/`

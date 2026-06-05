@@ -1,0 +1,78 @@
+---
+description: Cross-lesson networking terminology, naming consistency, and cross-reference patterns for CS 6250 docs
+alwaysApply: false
+---
+
+# Terminology & Cross-Reference Consistency
+
+Use when editing **multiple lessons**, doing a **consistency pass**, or when concepts span modules (transport → routing → BGP → SDN).
+
+## Layer stack (Lessons 1–2)
+
+Always top-to-bottom when listing:
+
+**Application → Transport → Network → Data Link → Physical**
+
+Data unit names: **Message → Segment → Datagram → Frame → Bits**
+
+Devices: **Hub** (bits) → **Switch/bridge** (MAC) → **Router** (IP)
+
+## Routing scope (Lessons 3–4)
+
+| Term | Meaning | Protocol examples |
+|------|---------|-------------------|
+| **Intradomain / IGP** | Within one AS | OSPF, RIP |
+| **Interdomain** | Between ASes | BGP |
+| **AS** (Autonomous System) | One org, one routing policy | — |
+| **Forwarding** | Data plane, per-packet | lookup FIB |
+| **Routing** | Control plane, builds tables | link-state, distance-vector |
+
+Cross-link: Lesson 3 full guide ↔ `lesson-04/interdomain-routing.md` at the handoff point.
+
+## Transport (Lesson 2)
+
+- **Multiplexing/demultiplexing** — UDP 2-tuple, TCP 4-tuple
+- **Reliability** — ARQ variants (Stop-and-Wait, Go-Back-N, Selective Repeat)
+- **Flow control** vs **congestion control** — never conflate
+- **AIMD**, **slow start**, **fast retransmit** — TCP-specific; cite when discussing fairness
+
+## BGP & business (Lesson 4)
+
+- **Peering** vs **transit** — different economic relationships
+- **LocalPref**, **AS-PATH**, **MED** — attribute names as course defines them
+- **Hot potato** vs **cold potato** routing
+- **IXP**, **route server** — interconnection vocabulary
+
+## Design principles (Lesson 1, referenced everywhere)
+
+- **End-to-end principle** — smart edges, dumb core
+- **Hourglass / ossification** — IP/TCP/UDP waist
+- **EvoArch** — evolutionary architecture, not "Evolution Architecture"
+
+## Cross-reference format
+
+```markdown
+See [Lesson 4](lesson-04/interdomain-routing.md) for BGP.
+For plain-language version, see the [Plain-language guide](lesson-04-plain-language.md).
+```
+
+Use relative paths from `docs/`. When updating a term in one lesson, grep `docs/` for the old phrasing.
+
+## Common inconsistencies to fix
+
+| Wrong | Right |
+|-------|-------|
+| "inter-domain" / "intra-domain" (hyphenated) | intradomain / interdomain (match existing docs) |
+| "packet" at every layer | segment, datagram, frame when layer matters |
+| "OSI model has 5 layers" | OSI has **7**; Internet model has **5** |
+| NAT as E2E-friendly | NAT **violates** end-to-end |
+| Wi-Fi error correction as E2E violation | Link-layer checking is **not** a violation (noisy medium) |
+
+## grep before bulk edits
+
+```bash
+rg "inter-domain|intra-domain" docs/
+rg "end.to.end|E2E" docs/
+```
+
+Align with the majority usage in the most recently edited lesson file for that module.

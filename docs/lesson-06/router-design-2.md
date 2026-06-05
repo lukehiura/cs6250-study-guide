@@ -373,16 +373,16 @@ Next, the head packets have F = 1017, 1015, and 1013. The packet with **F = 1013
 
 DRR provides bandwidth guarantees with **O(1) constant-time** round-robin. Each flow i has:
 
-- **Quantum Qᵢ** — bandwidth share allocated to the flow.
-- **Deficit counter Dᵢ** — remaining bandwidth credit (initialized to 0).
+- **Quantum $Q_i$** — bandwidth share allocated to the flow.
+- **Deficit counter $D_i$** — remaining bandwidth credit (initialized to 0).
 
-**Per turn:** Serve as many packets in flow i with size ≤ (Qᵢ + Dᵢ). Remaining credit carries over in Dᵢ. If all packets are serviced, reset Dᵢ to 0.
+**Per turn:** Serve as many packets in flow $i$ with size $\leq Q_i + D_i$. Remaining credit carries over in $D_i$. If all packets are serviced, reset $D_i$ to 0.
 
 **Example:** Four flows (F1–F4) with quantum Q = 500 for all. Initially, all deficit counters are 0 and the round-robin pointer points to F1.
 
 ![Deficit Round Robin — iteration 1 (pointer at F1, D₁ = 500)](../images/drr-iteration-1.png)
 
-**Iteration 1 (F1's turn):** Q₁ is added to D₁ → D₁ = 500. The head packet (size 200) satisfies 200 ≤ 500, so it is sent. D₁ becomes 300. The next packet (size 750) exceeds the remaining deficit, so it waits. The pointer advances to F2.
+**Iteration 1 (F1's turn):** $Q_1$ is added to $D_1$ → $D_1 = 500$. The head packet (size 200) satisfies $200 \leq 500$, so it is sent. $D_1$ becomes 300. The next packet (size 750) exceeds the remaining deficit, so it waits. The pointer advances to F2.
 
 ![Deficit Round Robin — iteration 2 (pointer at F2, D₁ = 300)](../images/drr-iteration-2.png)
 
@@ -575,7 +575,7 @@ Bit-by-bit Round Robin imagines transmitting **one bit from each active flow** p
 DRR provides bandwidth guarantees with **O(1) constant-time** round-robin:
 
 1. Each flow i has a **quantum Qᵢ** (bandwidth share) and **deficit counter Dᵢ** (initialized to 0).
-2. Each turn, serve packets in flow i with size ≤ (Qᵢ + Dᵢ).
+2. Each turn, serve packets in flow $i$ with size $\leq Q_i + D_i$.
 3. Remaining credit carries over in Dᵢ for the next turn.
 4. If all packets in the queue are serviced, reset Dᵢ to 0.
 
@@ -647,7 +647,7 @@ Token bucket shaping limits flow burstiness without requiring a separate queue p
 
 - A bucket per flow fills with tokens at rate **R** bits/second, up to maximum **B** tokens.
 - If the bucket is full, additional tokens are dropped.
-- A packet passes if enough tokens exist (≥ packet size in bits); otherwise it **waits** until tokens accumulate.
+- A packet passes if enough tokens exist ($\geq$ packet size in bits); otherwise it **waits** until tokens accumulate.
 - Burst size is limited to **B** bits.
 
 Implemented via a counter (max B, decremented on send) and a timer (increments at rate R). **Drawback:** requires one queue per flow. **Token bucket policing** (modified version) drops packets when no tokens are available, allowing a single shared queue.

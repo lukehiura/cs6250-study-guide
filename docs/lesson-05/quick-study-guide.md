@@ -195,7 +195,7 @@ Switching: memory (1) | bus (1) | crossbar (parallel if diff outputs)
 LPM: longest match wins; prefixes not hosts
 
 Unibit trie: 1 bit/level, O(32), track last prefix on path
-Multibit trie: stride s, 2^s children, fewer accesses, more memory
+Multibit trie: stride $s$, $2^s$ children, fewer accesses, more memory
 Prefix expansion: pad to stride; drop on collision with specific prefix
 
 CIDR: /n variable prefixes; aggregation; /24→255.255.255.0

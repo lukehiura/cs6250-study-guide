@@ -114,9 +114,9 @@ IP delivers **datagrams** **host-to-host** with **best effort** only. Transport 
 
 | Formula | Meaning |
 |---------|---------|
-| `LastByteRcvd - LastByteRead ≤ RcvBuffer` | Don’t overflow buffer |
-| `rwnd = RcvBuffer - (LastByteRcvd - LastByteRead)` | Spare room advertised to sender |
-| `LastByteSent - LastByteAcked ≤ rwnd` | Sender cap on unACKed bytes |
+| $\text{LastByteRcvd} - \text{LastByteRead} \leq \text{RcvBuffer}$ | Don’t overflow buffer |
+| $\text{rwnd} = \text{RcvBuffer} - (\text{LastByteRcvd} - \text{LastByteRead})$ | Spare room advertised to sender |
+| $\text{LastByteSent} - \text{LastByteAcked} \leq \text{rwnd}$ | Sender cap on unACKed bytes |
 
 **rwnd = 0 deadlock:** receiver full, sender stops; receiver drains but sends nothing → sender stuck.
 
@@ -149,7 +149,7 @@ IP delivers **datagrams** **host-to-host** with **best effort** only. Transport 
 
 **cwnd:** max unACKed bytes in flight; probe with ACKs; adapt up/down.
 
-**Limit:** `LastByteSent - LastByteAcked ≤ min(cwnd, rwnd)`
+**Limit:** $\text{LastByteSent} - \text{LastByteAcked} \leq \min(\text{cwnd}, \text{rwnd})$
 
 ### AIMD
 
@@ -208,19 +208,19 @@ IP delivers **datagrams** **host-to-host** with **best effort** only. Transport 
 
 | | BIC-TCP | CUBIC |
 |---|---------|-------|
-| Growth | Binary search between $W_{min}$ and $W_{max}$ | Single **cubic** function of time |
+| Growth | Binary search between $W_{\min}$ and $W_{\max}$ | Single **cubic** function of time |
 | Strength | Stable near saturation | Simpler; same stability idea |
 | Weakness | Slow if capacity jumps far above old max | — |
 
 ### CUBIC mechanics
 
-1. **Loss** at $W_{max}$ → multiply decrease (**β = 0.2**)
-2. Grow $W(t) = C(t-K)^3 + W_{max}$ where $t$ = time since last congestion event
-3. **Concave** (below $W_{max}$): grow fast toward last saturation
-4. **Plateau** near $W_{max}$: stable, high utilization
-5. **Convex** (above $W_{max}$): max-probe for new bandwidth
+1. **Loss** at $W_{\max}$ → multiply decrease ($\beta = 0.2$)
+2. Grow $W(t) = C(t-K)^3 + W_{\max}$ where $t$ = time since last congestion event
+3. **Concave** (below $W_{\max}$): grow fast toward last saturation
+4. **Plateau** near $W_{\max}$: stable, high utilization
+5. **Convex** (above $W_{\max}$): max-probe for new bandwidth
 6. **TCP-friendly region**: if cwnd < Reno would use → behave like **standard TCP** (short RTT / small BDP)
-7. **Fast convergence**: if new $W_{max}$ < old → shrink target faster (help new flows)
+7. **Fast convergence**: if new $W_{\max}$ < old → shrink target faster (help new flows)
 
 ### Why RTT-fair?
 
@@ -314,7 +314,7 @@ Dup ACK = **mild** → halve cwnd. Timeout = **severe** → much larger cut / re
 
 ### What is TCP CUBIC?
 
-Cubic growth in **time since loss** (not RTT); β=**0.2**; plateau near **W_max**; TCP-friendly on short RTT / small BDP; Linux default.
+Cubic growth in **time since loss** (not RTT); $\beta = 0.2$; plateau near $W_{\max}$; TCP-friendly on short RTT / small BDP; Linux default.
 
 ---
 
@@ -332,6 +332,6 @@ Cubic growth in **time since loss** (not RTT); β=**0.2**; plateau near **W_max*
 | AIMD | **Climb +1 MSS/RTT, fall ÷2 on dup ACK** |
 | Slow start | **Double per RTT until ssthresh, then AIMD** |
 | Reno loss | **Dup ACK = halve; timeout = reset hard** |
-| CUBIC | **W(t)=C(t-K)³+Wmax, β=0.2, time not RTT** |
-| Throughput | **∝ 1/(RTT·√p)** |
+| CUBIC | $W(t)=C(t-K)^3+W_{\max}$, $\beta=0.2$, time not RTT |
+| Throughput | $\propto 1/(\text{RTT} \cdot \sqrt{p})$ |
 | Fairness | **Same RTT fair; short RTT wins; per connection not per app** |

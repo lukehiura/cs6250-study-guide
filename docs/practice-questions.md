@@ -127,10 +127,10 @@ Which event usually indicates **milder** congestion, and what is the typical cwn
 
 ### Q6: CUBIC concave vs convex
 
-After a loss at $W_{max}$, what do the concave and convex portions of the cubic curve represent?
+After a loss at $W_{\max}$, what do the concave and convex portions of the cubic curve represent?
 
 ??? success "Answer"
-    - **Concave region** ($cwnd < W_{max}$): window grows **toward** the last saturation point — fast when far below, slower as it approaches the plateau.
-    - **Convex region** ($cwnd > W_{max}$): **max probing** — available bandwidth may have increased; grow above the old $W_{max}$ to find a new maximum.
+    - **Concave region** ($\text{cwnd} < W_{\max}$): window grows **toward** the last saturation point — fast when far below, slower as it approaches the plateau.
+    - **Convex region** ($\text{cwnd} > W_{\max}$): **max probing** — available bandwidth may have increased; grow above the old $W_{\max}$ to find a new maximum.
 
-    The **plateau near $W_{max}$** keeps utilization high with small oscillations compared to algorithms that spike growth right at saturation.
+    The **plateau near $W_{\max}$** keeps utilization high with small oscillations compared to algorithms that spike growth right at saturation.

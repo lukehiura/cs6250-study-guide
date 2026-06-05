@@ -83,6 +83,8 @@ Update **both** `mkdocs.yml` nav and `docs/index.md` modules table (see `project
 
 Do **not** add `navigation.prune`, `offline`, or Google Analytics.
 
+**Math (LaTeX):** `pymdownx.arithmatex` + `docs/javascripts/mathjax.js` (config, load first) + MathJax 3 in `extra_javascript`. Author with `$...$` inline and `$$...$$` display.
+
 ## Feedback widget
 
 GitHub Issues integration via [`docs/javascripts/feedback.js`](docs/javascripts/feedback.js):

@@ -647,7 +647,7 @@ Primarily **loss** (dup ACK, timeout); optionally **RTT increase**.
 
 ## How does a TCP sender limit the sending rate?
 
-UnACKed bytes ≤ **min(cwnd, rwnd)**; rate ≈ cwnd / RTT.
+UnACKed bytes $\leq \min(\text{cwnd}, \text{rwnd})$; rate $\approx \text{cwnd} / \text{RTT}$.
 
 ---
 
@@ -668,7 +668,7 @@ A **new connection** starts from a **cold start** with cwnd = 1. Pure AIMD would
 1. Set **cwnd = 1** packet.
 2. Send 1 packet; on ACK, **cwnd += 1** → send **2** packets.
 3. On each ACK in that RTT, **cwnd += 1** per ACK → after one RTT, cwnd roughly **doubles** (1 → 2 → 4 → 8 …).
-4. When **cwnd ≥ slow start threshold (ssthresh)**, switch to **congestion avoidance (AIMD)** — linear +1 MSS per RTT.
+4. When $\text{cwnd} \geq \text{ssthresh}$, switch to **congestion avoidance (AIMD)** — linear +1 MSS per RTT.
 
 ![Slow start: exponential growth of packets per RTT](../images/tcp-slow-start-packets.png){ width="550" }
 
@@ -788,7 +788,7 @@ Browsers opening many parallel HTTP connections can obtain **unfair** aggregate 
 
 ### Why standard TCP struggles on “long fat” paths
 
-**BDP** ≈ bandwidth × RTT = how many packets must be in flight to fill the pipe.
+**BDP** $\approx \text{bandwidth} \times \text{RTT}$ = how many packets must be in flight to fill the pipe.
 
 Standard TCP (Reno family) increases cwnd by about **1 MSS per RTT** in congestion avoidance. Example from the CUBIC paper:
 
@@ -802,35 +802,35 @@ High-speed variants (HSTCP, BIC-TCP, CUBIC, etc.) were developed to ramp up fast
 
 **BIC-TCP** (Binary Increase Congestion Control) was Linux’s default before CUBIC. After loss it remembers:
 
-- $W_{max}$ — window just before reduction
-- $W_{min}$ — window just after reduction
+- $W_{\max}$ — window just before reduction
+- $W_{\min}$ — window just after reduction
 
-It **binary-searches** between them (concave/logarithmic growth near the old saturation point) so the window stays near $W_{max}$ longer → **stable**, less overshoot at loss. If the window passes $W_{max}$ without loss, it **max-probes** with exponential growth to find a new maximum.
+It **binary-searches** between them (concave/logarithmic growth near the old saturation point) so the window stays near $W_{\max}$ longer → **stable**, less overshoot at loss. If the window passes $W_{\max}$ without loss, it **max-probes** with exponential growth to find a new maximum.
 
-**Tradeoff:** very stable, but can be **slow to react** when available bandwidth jumps far above the old $W_{max}$.
+**Tradeoff:** very stable, but can be **slow to react** when available bandwidth jumps far above the old $W_{\max}$.
 
 ### CUBIC’s core idea (course summary)
 
 On **high bandwidth–delay product (BDP)** networks, Reno’s low utilization motivated faster, stable growth. **TCP CUBIC** (Linux default) uses a **cubic polynomial** for cwnd vs **time since last loss** (not per-ACK like Reno).
 
-After **triple duplicate ACK** at window $W_{max}$:
+After **triple duplicate ACK** at window $W_{\max}$:
 
-1. **Multiplicative decrease** → $W_{min}$ (often ≈ half for TCP-friendliness)
-2. Optimal window is between $W_{min}$ and $W_{max}$, near $W_{max}$
-3. Grow **aggressively** when far below $W_{max}$
-4. Grow **slowly** as $W$ approaches $W_{max}$ (last loss point)
-5. If no loss past $W_{max}$, probe **higher** — prior loss may have been transient
+1. **Multiplicative decrease** → $W_{\min}$ (often ≈ half for TCP-friendliness)
+2. Optimal window is between $W_{\min}$ and $W_{\max}$, near $W_{\max}$
+3. Grow **aggressively** when far below $W_{\max}$
+4. Grow **slowly** as $W$ approaches $W_{\max}$ (last loss point)
+5. If no loss past $W_{\max}$, probe **higher** — prior loss may have been transient
 
-$$W(t) = C(t - K)^3 + W_{max}$$
+$$W(t) = C(t - K)^3 + W_{\max}$$
 
-- $W_{max}$ — cwnd when loss was detected
+- $W_{\max}$ — cwnd when loss was detected
 - $C$ — scaling constant (Linux **C = 0.4**)
-- $K$ — time for the cubic curve to reach $W_{max}$ with no further loss
+- $K$ — time for the cubic curve to reach $W_{\max}$ with no further loss
 - $t$ — **elapsed time since last loss** (congestion epoch), not RTT
 
 ![TCP CUBIC: W(t) cubic growth after loss at Wmax](../images/tcp-cubic-window-growth.png){ width="600" }
 
-CUBIC **replaces BIC’s piecewise phases** with this single cubic function. After loss, β = **0.2** in Linux (vs Reno’s 0.5).
+CUBIC **replaces BIC’s piecewise phases** with this single cubic function. After loss, $\beta = 0.2$ in Linux (vs Reno’s 0.5).
 
 ```mermaid
 flowchart TB
@@ -848,10 +848,10 @@ On each ACK in congestion avoidance, CUBIC compares current **cwnd** to the cubi
 | Region | Condition | Behavior |
 |--------|-----------|----------|
 | **TCP-friendly** | cwnd < $W_{tcp}(t)$ | Grow like standard TCP (AIMD-style) — important on **short RTT / small BDP** links |
-| **Concave** | cwnd < $W_{max}$ | Cubic curve rises toward last loss point — **aggressive** when far below saturation |
-| **Convex** | cwnd > $W_{max}$ | Cubic curve probes **above** old $W_{max}$ (“max probing”) — bandwidth may have increased |
+| **Concave** | cwnd < $W_{\max}$ | Cubic curve rises toward last loss point — **aggressive** when far below saturation |
+| **Convex** | cwnd > $W_{\max}$ | Cubic curve probes **above** old $W_{\max}$ (“max probing”) — bandwidth may have increased |
 
-**Plateau near $W_{max}$:** most window samples stay close to the last loss point → high link utilization with **small oscillations** (unlike convex-only schemes that spike growth right at saturation and cause big loss bursts).
+**Plateau near $W_{\max}$:** most window samples stay close to the last loss point → high link utilization with **small oscillations** (unlike convex-only schemes that spike growth right at saturation and cause big loss bursts).
 
 ### RTT-fairness (why time matters)
 
@@ -863,14 +863,14 @@ On short RTT paths, the **TCP-friendly region** keeps CUBIC from being more aggr
 
 ### Fast convergence
 
-When a **new flow** joins, existing flows should release bandwidth. **Fast convergence:** if the new $W_{max}$ after a loss is **less than** the previous epoch’s $W_{max}$, the path’s capacity likely shrank — CUBIC lowers $W_{max}$ further so the flow plateaus sooner and gives room to new flows.
+When a **new flow** joins, existing flows should release bandwidth. **Fast convergence:** if the new $W_{\max}$ after a loss is **less than** the previous epoch’s $W_{\max}$, the path’s capacity likely shrank — CUBIC lowers $W_{\max}$ further so the flow plateaus sooner and gives room to new flows.
 
 ### CUBIC vs Reno (exam summary)
 
 | | TCP Reno / NewReno | TCP CUBIC |
 |---|-------------------|-----------|
 | Growth in avoidance | ~+1 MSS per **RTT** | Cubic function of **time since loss** |
-| Decrease on loss | Often β = 0.5 (halve) | β = **0.2** |
+| Decrease on loss | Often $\beta = 0.5$ (halve) | $\beta = 0.2$ |
 | Best on | Moderate BDP, short RTT | **High BDP**, long RTT / high speed |
 | RTT fairness | Biased toward short RTT | More **RTT-fair** at same bottleneck |
 | Linux default | Optional / legacy | **Default** since 2.6.18 |
@@ -885,11 +885,11 @@ When a **new flow** joins, existing flows should release bandwidth. **Fast conve
 
 TCP CUBIC is a congestion control algorithm designed to be **more efficient on high-bandwidth, high-latency networks** than standard AIMD:
 
-1. After a loss event, CUBIC records the window size at which loss occurred ($W_{max}$) and reduces cwnd (β = 0.2 in Linux).
-2. The window growth follows $W(t) = C(t-K)^3 + W_{max}$ — **concave** below $W_{max}$, **convex** above it.
-3. **Far from $W_{max}$**: aggressive growth (concave).
-4. **Near $W_{max}$**: plateau — stable, high utilization.
-5. **Above $W_{max}$**: convex max-probing for new capacity.
+1. After a loss event, CUBIC records the window size at which loss occurred ($W_{\max}$) and reduces cwnd ($\beta = 0.2$ in Linux).
+2. The window growth follows $W(t) = C(t-K)^3 + W_{\max}$ — **concave** below $W_{\max}$, **convex** above it.
+3. **Far from $W_{\max}$**: aggressive growth (concave).
+4. **Near $W_{\max}$**: plateau — stable, high utilization.
+5. **Above $W_{\max}$**: convex max-probing for new capacity.
 
 CUBIC’s growth depends on **elapsed time** since the last congestion event, not RTT, improving **RTT-fairness** while mimicking Reno in the **TCP-friendly region** on short/low-BDP paths.
 
@@ -934,7 +934,7 @@ $$\boxed{\text{Throughput} \lesssim \frac{1.22 \cdot MSS}{RTT \cdot \sqrt{p}}}$$
 |--------|--------|
 | Larger **MSS** | Higher throughput |
 | Larger **RTT** | Lower throughput |
-| Larger **p** (more loss) | Lower throughput (∝ 1/√p) |
+| Larger **p** (more loss) | Lower throughput ($\propto 1/\sqrt{p}$) |
 
 In practice, **C < 1.22** because of small receive windows, timeouts, and other effects — this is an **upper bound**, not a guarantee.
 

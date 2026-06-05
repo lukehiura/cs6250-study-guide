@@ -370,7 +370,7 @@ If throughput = 10 Mbps and the selected bitrate is 5 Mbps, the buffer fills at 
 
 **Buffer-depletion rate** — The rate at which video data is consumed from the buffer for playback. During normal playback, this equals the **playback rate** (typically 1× real-time).
 
-**Buffer stable when:** filling rate ≥ depletion rate.
+**Buffer stable when:** filling rate $\geq$ depletion rate.
 **Buffer draining when:** filling rate < depletion rate → risk of rebuffering.
 
 ---

@@ -656,7 +656,7 @@ See [Worked example: three-node network](#worked-example-three-node-network-x-y-
 
 ### What is the computational complexity of link-state routing?
 
-**O(n²)** for naive Dijkstra: total node scans ≈ $(n-1)+(n-2)+\cdots+1 = n(n-1)/2$. See [Complexity](#complexity).
+**O(n²)** for naive Dijkstra: total node scans $\approx (n-1)+(n-2)+\cdots+1 = \frac{n(n-1)}{2}$. See [Complexity](#complexity).
 
 ### When does count-to-infinity occur?
 

@@ -267,17 +267,17 @@ In Linux CUBIC, the multiplicative decrease factor β after a loss is typically:
 - [ ] 1.0 (no decrease)
 - [ ] 0.8
 
-Reno often uses β ≈ 0.5; CUBIC uses a smaller decrease (β = 0.2 in the paper/Linux).
+Reno often uses $\beta \approx 0.5$; CUBIC uses a smaller decrease ($\beta = 0.2$ in the paper/Linux).
 </quiz>
 
 <quiz>
-When cwnd is **below** the last loss point $W_{max}$, CUBIC is in the:
-- [x] Concave region (aggressive growth toward $W_{max}$)
+When cwnd is **below** the last loss point $W_{\max}$, CUBIC is in the:
+- [x] Concave region (aggressive growth toward $W_{\max}$)
 - [ ] Convex max-probing region
 - [ ] TCP-friendly region only
 - [ ] Slow start phase
 
-Above $W_{max}$ it enters the **convex** region to probe for new capacity.
+Above $W_{\max}$ it enters the **convex** region to probe for new capacity.
 </quiz>
 
 <quiz>
@@ -319,7 +319,7 @@ More loss → lower throughput; the Mathis bound is $\text{Throughput} \lesssim 
 <quiz>
 In the simplified throughput model, the network delivers about [[1/p]] packets between loss events.
 ---
-Each sawtooth cycle ends with a loss; area under cwnd × this assumption yields $W \propto 1/\sqrt{p}$.
+Each sawtooth cycle ends with a loss; area under cwnd $\times$ this assumption yields $W \propto 1/\sqrt{p}$.
 </quiz>
 
 <quiz>

@@ -1,21 +1,42 @@
-/* ── Sidebar: lesson groups ───────────────────────────────────────── */
+/*
+ * CS 6250 study guide — sidebar & theme tweaks
+ *
+ * Material for MkDocs customizes via extra_css + CSS variables (:root > *).
+ * Nav behavior is configured in mkdocs.yml (prune, path, no sections/expand).
+ * See: https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/
+ */
 
-/* Consistent link color — no visited-link purple/blue drift */
-.md-nav--primary .md-nav__link {
-  color: var(--md-default-fg-color--light);
+/* ── Design tokens (Material pattern: :root > *) ───────────────────── */
+
+:root > * {
+  --cs-lesson-header-size: 0.7rem;
+  --cs-lesson-link-size: 0.72rem;
+  --cs-lesson-gap: 0.45rem;
+  --cs-lesson-indent: 0.5rem;
+  --cs-lesson-rail: 2px solid var(--md-default-fg-color--lightest);
+  --cs-lesson-muted: var(--md-default-fg-color--light);
+  --cs-lesson-text: var(--md-default-fg-color);
+  --cs-lesson-active: var(--md-primary-fg-color);
 }
 
-.md-nav--primary .md-nav__link:hover {
-  color: var(--md-default-fg-color);
+/* ── Primary sidebar (lesson column) ───────────────────────────────── */
+
+/* Normalize link color — prevents visited-link purple/blue drift */
+.md-nav--primary a.md-nav__link:any-link {
+  color: var(--cs-lesson-muted);
+}
+
+.md-nav--primary a.md-nav__link:any-link:hover {
+  color: var(--cs-lesson-text);
 }
 
 .md-nav--primary .md-nav__link--active,
-.md-nav--primary .md-nav__item--active > .md-nav__link {
-  color: var(--md-primary-fg-color);
+.md-nav--primary .md-nav__item--active > a.md-nav__link {
+  color: var(--cs-lesson-active);
   font-weight: 600;
 }
 
-/* Top-level lesson groups */
+/* Lesson group spacing */
 .md-nav--primary > .md-nav__list > .md-nav__item--nested {
   margin-top: 0.15rem;
 }
@@ -23,50 +44,49 @@
 .md-nav--primary > .md-nav__list > .md-nav__item--nested + .md-nav__item--nested,
 .md-nav--primary > .md-nav__list > .md-nav__item--nested + .md-nav__item:not(.md-nav__item--nested) {
   border-top: 1px solid var(--md-default-fg-color--lightest);
-  margin-top: 0.45rem;
-  padding-top: 0.45rem;
+  margin-top: var(--cs-lesson-gap);
+  padding-top: var(--cs-lesson-gap);
 }
 
-/* Collapsible lesson header */
+/* Collapsible lesson header (label toggles nested list) */
 .md-nav--primary > .md-nav__list > .md-nav__item--nested > label.md-nav__link {
   font-weight: 600;
-  font-size: 0.7rem;
+  font-size: var(--cs-lesson-header-size);
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--md-default-fg-color);
+  color: var(--cs-lesson-text);
   padding-top: 0.3rem;
   padding-bottom: 0.3rem;
   margin-bottom: 0.1rem;
 }
 
 .md-nav--primary > .md-nav__list > .md-nav__item--nested.md-nav__item--active > label.md-nav__link {
-  color: var(--md-primary-fg-color);
+  color: var(--cs-lesson-active);
 }
 
-/* Child links: compact, lightly indented */
+/* Nested guide links — left rail for visual hierarchy */
 .md-nav--primary > .md-nav__list > .md-nav__item--nested > .md-nav > .md-nav__list {
   margin-left: 0.35rem;
-  padding-left: 0.5rem;
-  border-left: 2px solid var(--md-default-fg-color--lightest);
+  padding-left: var(--cs-lesson-indent);
+  border-left: var(--cs-lesson-rail);
 }
 
-.md-nav--primary > .md-nav__list > .md-nav__item--nested > .md-nav > .md-nav__list > .md-nav__item > .md-nav__link {
-  font-size: 0.72rem;
+.md-nav--primary > .md-nav__list > .md-nav__item--nested > .md-nav > .md-nav__list > .md-nav__item > a.md-nav__link {
+  font-size: var(--cs-lesson-link-size);
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   padding-left: 0.55rem;
 }
 
 /* Single-page lessons (6–12), Home, Practice Questions */
-.md-nav--primary > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > .md-nav__link {
-  font-size: 0.72rem;
+.md-nav--primary > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > a.md-nav__link {
+  font-size: var(--cs-lesson-link-size);
   font-weight: 500;
   padding-top: 0.3rem;
   padding-bottom: 0.3rem;
 }
 
-/* Home link — visually distinct from lessons */
-.md-nav--primary > .md-nav__list > .md-nav__item:first-child > .md-nav__link {
+.md-nav--primary > .md-nav__list > .md-nav__item:first-child > a.md-nav__link {
   font-weight: 600;
   margin-bottom: 0.25rem;
 }

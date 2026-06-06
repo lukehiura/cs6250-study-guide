@@ -7,6 +7,21 @@ alwaysApply: true
 
 Unofficial Georgia Tech **CS 6250: Computer Networks** study notes. Published as a MkDocs Material site to GitHub Pages.
 
+## Editor configuration (`.vscode` vs `.cursor`)
+
+Cursor is a VS Code fork — it reads **both** folders, but they serve different jobs. Do not merge or duplicate between them.
+
+| Folder | Scope | What belongs here |
+|--------|-------|-------------------|
+| `.vscode/` | **Editor** (VS Code + Cursor) | `settings.json` (formatting, file watchers, YAML schema for `mkdocs.yml`), `extensions.json` (recommended/unwanted extensions) |
+| `.cursor/` | **AI agent** (Cursor only) | `mcp.json` (`mcpServers` key — not `.vscode/mcp.json`), `rules/*.mdc` (agent instructions) |
+
+Per [VS Code workspace docs](https://code.visualstudio.com/docs/configure/settings), shared editor settings live in `.vscode/settings.json`. Cursor-specific MCP uses `.cursor/mcp.json` with a different JSON shape than VS Code's `.vscode/mcp.json` (`servers` key).
+
+**This repo:** `.vscode/` holds MkDocs YAML validation and battery-friendly editor defaults; `.cursor/` holds cs6250 writing rules and workspace MCP (`reference-docs`, `github`).
+
+---
+
 ## Tech stack
 
 | Piece | Location |

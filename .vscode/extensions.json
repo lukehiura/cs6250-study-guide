@@ -1,0 +1,15 @@
+{
+  "recommendations": [],
+  "unwantedRecommendations": [
+    "ms-python.python",
+    "ms-python.debugpy",
+    "ms-toolsai.jupyter",
+    "ms-toolsai.jupyter-renderers",
+    "ms-toolsai.vscode-jupyter-cell-tags",
+    "ms-toolsai.vscode-jupyter-slideshow",
+    "swiftlang.swift-vscode",
+    "james-yu.latex-workshop",
+    "llvm-vs-code-extensions.lldb-dap",
+    "anysphere.remote-ssh"
+  ]
+}

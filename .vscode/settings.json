@@ -1,5 +1,23 @@
 {
+  // Editor workspace settings (VS Code standard). Cursor inherits this folder.
+  // AI rules → .cursor/rules/   |   MCP servers → .cursor/mcp.json
   "yaml.schemas": {
     "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
-  }
+  },
+  "git.autofetch": false,
+  "files.watcherExclude": {
+    "**/site/**": true,
+    "**/.git/objects/**": true,
+    "**/node_modules/**": true
+  },
+  "python.languageServer": "None",
+  "python.analysis.diagnosticMode": "off",
+  "python.terminal.activateEnvironment": false,
+  "jupyter.askForKernelRestart": false,
+  "notebook.experimental.remoteSave": false,
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.showContextMenu": false,
+  "latex-workshop.intellisense.package.enabled": false,
+  "swift.sourcekit-lsp.backgroundIndexing": "off",
+  "swift.disableAutoResolve": true
 }

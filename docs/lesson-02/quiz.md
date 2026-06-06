@@ -261,6 +261,12 @@ Growth is keyed to a **congestion epoch** (real time), not RTT — improving RTT
 </quiz>
 
 <quiz>
+Explain how CUBIC makes congestion window growth **independent of RTT**. The key is that growth depends on [[time]] between consecutive congestion events, not on RTT.
+---
+Reno is ACK-clocked (+1 MSS/RTT → short RTT wins). CUBIC’s target $W(t) = C(t-K)^3 + W_{\max}$ uses wall-clock $t$ since last loss — same target at $t$ seconds for any RTT; ACKs only control update frequency. Competing flows at the same bottleneck reach approximately the same cwnd → RTT-fairness.
+</quiz>
+
+<quiz>
 In Linux CUBIC, the multiplicative decrease factor β after a loss is typically:
 - [ ] 0.5 (halve the window)
 - [x] 0.2
@@ -288,6 +294,16 @@ When two TCP flows share a bottleneck and have the **same RTT**, AIMD tends to c
 - [ ] UDP taking all bandwidth
 
 With **different RTTs**, shorter RTT flows often get more bandwidth (classic TCP bias).
+</quiz>
+
+<quiz>
+TCP uses **AIMD** for congestion control. Would **AIAD**, **MIAD**, or **MIMD** converge to **equal fair share** like AIMD?
+- [ ] Yes — all four policies converge to fairness
+- [ ] AIAD and MIMD converge; MIAD does not
+- [x] No — none of the three alternatives converge to fairness like AIMD
+- [ ] Only MIAD converges to fairness
+
+**AIMD** only: additive increase favors the underdog; multiplicative decrease clears congestion. **AIAD** preserves $|x_1 - x_2|$; **MIMD** preserves ratio $x_1/x_2$; **MIAD diverges** (large flow starves small).
 </quiz>
 
 <quiz>

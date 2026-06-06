@@ -747,6 +747,49 @@ Consider **two** TCP connections on one link of capacity **R**, same RTT, only T
 
 Equal additive increase and proportional multiplicative decrease push the operating point toward the **intersection** of full-utilization and equal-share lines → **AIMD tends toward fairness** when RTTs match.
 
+### Alternative policies: AIAD, MIAD, MIMD
+
+TCP uses **AIMD** because it is the only common increase/decrease pairing that **converges to both efficiency and fairness**. Other pairings were studied (Chiu & Jain); they may utilize the link but **do not** reach equal share the way AIMD does.
+
+Plot two competing flows as $(x_1, x_2)$ in throughput space:
+
+- **Efficiency line** — $x_1 + x_2 = C$ (full link capacity $C$)
+- **Fairness line** — $x_1 = x_2$ (equal share $C/2$ each)
+
+**Convergence** means the operating point moves toward the **intersection** of those two lines over many increase/decrease cycles.
+
+| Policy | On increase | On decrease | Converges to fair $C/k$? | Behavior vs AIMD |
+|--------|-------------|-------------|--------------------------|------------------|
+| **AIMD** | $+a$ (additive) | $\times \beta$ (multiplicative) | **Yes** (same RTT) | Sawtooth around fair, efficient point |
+| **AIAD** | $+a$ | $-b$ (additive) | **No** | Zig-zags on efficiency line; **gap preserved** |
+| **MIMD** | $\times c$ | $\times d$ | **No** | Fills pipe but **locks initial ratio** |
+| **MIAD** | $\times c$ | $-b$ | **No** — **diverges** | Large flow **starves** small flow over cycles |
+
+#### AIAD — Additive Increase, Additive Decrease
+
+Both flows gain $+a$ per RTT and lose $-b$ on loss. Adding or subtracting the **same constant** preserves the absolute gap $|x_1 - x_2|$. Flows can oscillate across the **efficiency** line, but any initial unfairness **never closes**. The decrease is also **less aggressive** than AIMD’s proportional cut — congestion is cleared more slowly.
+
+#### MIMD — Multiplicative Increase, Multiplicative Decrease
+
+Both flows scale by the same factors on increase ($\times c$) and decrease ($\times d$). The **ratio** $x_1 / x_2$ is **unchanged** by every step — whoever started ahead stays ahead in proportion. May reach high utilization, but **never corrects** an initial imbalance. Increase is **more aggressive** than AIMD’s linear probe → more overshoot and loss.
+
+#### MIAD — Multiplicative Increase, Additive Decrease
+
+The **worst** pairing for fairness: multiplicative increase widens the absolute gap (the larger flow gains faster), while additive decrease subtracts the **same** amount from both (does not restore balance). Over cycles the bigger flow **consumes more capacity** and can **starve** the smaller one. **Does not converge** to fairness — trajectories **diverge** from the equal-share line.
+
+#### Why AIMD works
+
+AIMD combines the right geometry over **repeated cycles**:
+
+- **Additive increase** — same $+a$ to both flows reduces the **relative** gap, pulling trajectories toward the **fairness** line.
+- **Multiplicative decrease** — same fraction (e.g. $\times 1/2$) on loss backs both flows off the congestion cliff; one MD step alone preserves ratio, but **AI + MD together** systematically correct imbalance while probing capacity.
+
+!!! warning "Exam point"
+    **Only AIMD** converges to **efficiency + fairness** among these four. **AIAD** preserves $|x_1 - x_2|$; **MIMD** preserves $x_1/x_2$; **MIAD diverges**. None of the alternatives are as **stable** as AIMD’s sawtooth.
+
+!!! info "Reference"
+    Chiu & Jain, *Analysis of the Increase and Decrease Algorithms for Congestion Avoidance in Computer Networks*; Kurose & Ross, Ch. 3.
+
 ---
 
 ## Caution: when TCP is not fair
@@ -779,6 +822,21 @@ Browsers opening many parallel HTTP connections can obtain **unfair** aggregate 
 ## Is TCP fair in the case where two connections have different RTTs?
 
 **No** — shorter RTT flows grow cwnd faster (ACK-clocked). See [Caution](#caution-when-tcp-is-not-fair).
+
+---
+
+## Would AIAD, MIAD, or MIMD converge to fairness like AIMD?
+
+**No** — none of the three alternatives converge to **equal fair share** the way **AIMD** does.
+
+| Policy | Convergence to $x_1 = x_2 = C/2$? | Key reason |
+|--------|-------------------------------------|------------|
+| **AIMD** | **Yes** (same RTT) | AI shrinks relative gap; MD backs off congestion; cycles pull toward fair + efficient point |
+| **AIAD** | **No** | Additive ± same constant → $|x_1 - x_2|$ unchanged; may hit efficiency line but not fairness |
+| **MIMD** | **No** | Same multiply factor → ratio $x_1/x_2$ locked; efficient but permanently unfair if unequal start |
+| **MIAD** | **No** — **diverges** | MI widens gap; AD does not rebalance → larger flow dominates |
+
+**Stability:** AIAD/MIAD use **less aggressive** decreases than AIMD (additive cut vs halving) — poor congestion response. MIAD/MIMD use **more aggressive** increases (multiplicative vs +1 MSS/RTT) — more overshoot and loss. See [Alternative policies](#alternative-policies-aiad-miad-mimd).
 
 ---
 
@@ -853,13 +911,47 @@ On each ACK in congestion avoidance, CUBIC compares current **cwnd** to the cubi
 
 **Plateau near $W_{\max}$:** most window samples stay close to the last loss point → high link utilization with **small oscillations** (unlike convex-only schemes that spike growth right at saturation and cause big loss bursts).
 
-### RTT-fairness (why time matters)
+### RTT-fairness: how CUBIC decouples growth from RTT
 
-Classic Reno grows cwnd **once per RTT** (ACK-clocked). Flows with **shorter RTTs** complete more growth rounds per second → steal bandwidth.
+#### Traditional TCP (Reno/NewReno): ACK-clocked, RTT-dependent
 
-CUBIC’s target window is a function of **wall-clock time since the last loss** (a **congestion epoch**), not RTT. Competing flows at the same bottleneck tend toward **similar cwnd** regardless of RTT → better **RTT-fairness** on high-BDP paths.
+In congestion avoidance, Reno increases **cwnd** by about **1 MSS per RTT**. Each ACK bumps cwnd slightly so that over one full window of ACKs (one RTT), the window grows by one segment.
 
-On short RTT paths, the **TCP-friendly region** keeps CUBIC from being more aggressive than Reno where Reno already works well.
+Growth rate with respect to **real time** is roughly:
+
+$$\text{Growth rate} \approx \frac{1}{RTT}$$
+
+A flow with **RTT = 20 ms** completes ~50 growth rounds per second; a flow with **RTT = 200 ms** completes ~5. The short-RTT flow grows its window **10× faster** and can **unfairly dominate** bandwidth at the same bottleneck — even when both flows use AIMD.
+
+#### CUBIC: real-time clocking, RTT-independent target
+
+CUBIC does **not** tie target window size to ACK arrival rate. Instead, the **target** congestion window is a function of **wall-clock time** $t$ since the last **congestion event** (typically fast recovery after loss):
+
+$$W(t) = C(t - K)^3 + W_{\max}$$
+
+| Symbol | Meaning |
+|--------|---------|
+| $W(t)$ | Target cwnd at elapsed time $t$ |
+| $t$ | **Real time** (seconds) since last congestion event — **not** RTT |
+| $W_{\max}$ | Window just before the last loss |
+| $C$ | Scaling constant (Linux **C = 0.4**) |
+| $K$ | Time for the cubic curve to grow back to $W_{\max}$ |
+
+On each ACK, CUBIC reads the clock, computes $W(t)$, and adjusts **cwnd** toward that target — it does **not** blindly add a fixed fraction of MSS per ACK the way Reno does.
+
+#### Why this achieves RTT independence
+
+At **$t = 2$ seconds** since the last congestion event, the formula yields the **same target** $W(t)$ whether RTT is 20 ms or 200 ms. RTT only affects **how often** the sender recalculates (ACKs arrive more frequently on short-RTT paths):
+
+- **Short RTT** — many ACKs per second → many **small** adjustments toward $W(t)$
+- **Long RTT** — fewer ACKs → fewer, **larger** jumps toward the same $W(t)$
+
+At any given timestamp $t$, competing CUBIC flows at the same bottleneck tend toward **approximately the same window size** → **RTT-fairness**. The key feature is that growth depends on **time between consecutive congestion events**, not on RTT.
+
+On short RTT / small BDP paths, the **TCP-friendly region** keeps CUBIC from outrunning standard TCP where Reno already works well.
+
+!!! abstract "Practice Quiz 2–4 answer"
+    CUBIC’s window growth depends only on **time between consecutive congestion events** (e.g. fast recovery after loss), not on RTT. Competing CUBIC flows at the same bottleneck reach **approximately the same cwnd** regardless of RTT → **good RTT-fairness**.
 
 ### Fast convergence
 
@@ -892,6 +984,18 @@ TCP CUBIC is a congestion control algorithm designed to be **more efficient on h
 5. **Above $W_{\max}$**: convex max-probing for new capacity.
 
 CUBIC’s growth depends on **elapsed time** since the last congestion event, not RTT, improving **RTT-fairness** while mimicking Reno in the **TCP-friendly region** on short/low-BDP paths.
+
+---
+
+## Explain how in TCP CUBIC the congestion window growth becomes independent of RTTs
+
+**Reno (RTT-dependent):** cwnd grows ~**1 MSS per RTT** because increase is **ACK-clocked** — one full window of ACKs takes one RTT. Short-RTT flows complete more growth rounds per second ($\propto 1/RTT$) and grab more bandwidth.
+
+**CUBIC (RTT-independent target):** the **target** window is $W(t) = C(t-K)^3 + W_{\max}$, where $t$ is **real elapsed time** since the last **congestion event** (loss / fast recovery). The same $W(t)$ applies at $t$ seconds regardless of RTT.
+
+RTT only sets **how often** ACKs trigger an update toward that target — not the target itself. Flows competing at the same bottleneck therefore reach **approximately the same cwnd** independent of RTT → **RTT-fairness**.
+
+**Course one-liner:** Growth depends only on **time between consecutive congestion events**, not RTT.
 
 ---
 

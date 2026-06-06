@@ -238,19 +238,32 @@ TCP does not know the freeway's capacity ahead of time. It **probes**:
 
 ### Fairness — who gets how much road?
 
-If **k** TCP connections share one link, each should get about **1/k** of the bandwidth — **if they have the same RTT**.
+If **k** TCP connections share one link, each should get about **1/k** of the bandwidth — **if they use AIMD and the same RTT**.
 
 | Situation | Fair? |
 |-----------|-------|
-| Same RTT | Yes — AIMD converges toward equal share |
+| Same RTT + **AIMD** | Yes — converges toward equal share |
+| **AIAD / MIMD / MIAD** instead of AIMD | No — none converge to equal share like AIMD |
 | Shorter RTT wins | No — more ACKs per second → bigger window |
 | Browser with 11 tabs vs app with 1 connection | No — fairness is **per connection**, not per app |
+
+**Why only AIMD?** Additive increase helps the smaller flow catch up; multiplicative decrease (cut in half) clears congestion. **AIAD** keeps the same gap between flows forever. **MIMD** keeps the same **ratio** forever. **MIAD** makes the gap **worse** over time.
+
+**Memory trick:** AIMD = **climb slow, fall fast proportionally** → fair sawtooth. MIMD = **scale together** → unfair ratio locked in.
 
 ### Modern twist: TCP CUBIC (brief)
 
 On a **10 Gbps link across the ocean**, classic TCP grows too slowly — like adding one lane per hour on a 100-lane highway.
 
-**TCP CUBIC** (Linux default) uses a **cubic curve** based on **time since last loss**, not round-trip time. It ramps up faster on fat pipes and is more **RTT-fair**.
+**TCP CUBIC** (Linux default) breaks Reno’s **RTT dependency**:
+
+| | **Reno** | **CUBIC** |
+|---|----------|-----------|
+| What drives growth? | **ACKs** — ~+1 MSS per **RTT** | **Clock** — $W(t) = C(t-K)^3 + W_{\max}$ |
+| Short vs long RTT | Short RTT wins (10× faster growth) | Same **target** $W(t)$ at time $t$ regardless of RTT |
+| RTT’s role | Sets growth **rate** | Sets how **often** ACKs update toward target |
+
+**Memory trick:** Reno grows with **ACKs per second**; CUBIC grows with **seconds on the wall clock** since last loss.
 
 For exam formulas and CUBIC details → [full guide](transport-application.md) or [quick study guide](quick-study-guide.md).
 

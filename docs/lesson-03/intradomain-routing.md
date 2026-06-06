@@ -85,11 +85,32 @@ Both IGP families compute **least-cost routes** but differ in **information exch
 
 | | **Link-state (LS)** | **Distance-vector (DV)** |
 |---|---------------------|---------------------------|
-| **View** | Global topology (same map at every router) | Only neighbors’ distance vectors |
+| **View** | **Global** topology (same map at every router) | Only neighbors’ distance vectors |
+| **Also called** | **Global routing algorithm** | **Decentralized** routing algorithm |
 | **Algorithm** | Dijkstra (locally, per router) | Bellman-Ford (distributed) |
 | **Messages** | Flood **LSAs** to all (in area) | Exchange vectors with **neighbors only** |
 | **Examples** | **OSPF**, IS-IS | **RIP** |
 | **Convergence** | Generally fast after flood + Dijkstra | Can be slow; **count-to-infinity** on bad news |
+
+### What can edge weights represent?
+
+In intradomain routing graphs, each link has a **cost** $c(u,v)$. The operator chooses the metric so Dijkstra (or Bellman-Ford) finds a **least-cost path** — “shortest” means **minimum total weight**, not necessarily fewest hops.
+
+| Valid IGP link metric | Example use |
+|----------------------|-------------|
+| **Length of the cable** | Prefer shorter physical paths |
+| **Time delay** to traverse the link | Minimize latency |
+| **Monetary cost** | Prefer cheaper links |
+| **Link capacity** | Prefer higher-bandwidth links (often inverse weight) |
+| **Current load** on the link | Traffic-aware routing (dynamic weight) |
+
+**Not an IGP edge weight:** **Business relationships** (customer, peer, provider) — those drive **interdomain** **BGP** policy ([Lesson 4](../lesson-04/interdomain-routing.md)), not least-cost paths inside one AS.
+
+!!! warning "Exam point"
+    **Intradomain** = technical/performance metrics on links. **Interdomain** = policy and money between organizations.
+
+!!! note "Dynamic load weights"
+    Using **current load** as the metric means weights are **not static** — they change as traffic shifts. That is a **non-trivial** problem: link-state algorithms can show **pathological behavior** when costs oscillate rapidly (routes flap as load changes).
 
 ---
 
@@ -116,6 +137,8 @@ The **next hop** to v is the first node on the shortest path from u to v.
 
 ### Dijkstra’s algorithm
 
+**Classification (exam):** Dijkstra is the SPF step in a **link-state** (also **global routing**) algorithm — each router runs it locally on a **complete** topology learned from LSA flooding. It is **not** a distance-vector algorithm.
+
 **Notation (Kurose / course):**
 
 | Symbol | Meaning |
@@ -127,7 +150,10 @@ The **next hop** to v is the first node on the shortest path from u to v.
 | **p(v)** | **Predecessor** on that best-known path (for route reconstruction) |
 | **N′** | Subset of nodes whose shortest paths from u are **confirmed** |
 
-In link-state routing, **topology and link costs are known to all routers** (via LSA flooding). Each router runs Dijkstra **locally** with itself as **u**.
+In link-state routing, **topology and link costs are known to all routers** (via LSA flooding) **before** each router runs Dijkstra **locally** with itself as **u**.
+
+!!! warning "Exam point"
+    **False:** “All nodes learn the full topology only **after** Dijkstra terminates.” Link-state **broadcast/flood** distributes LSAs first; **then** every router independently runs SPF (Dijkstra) on the complete map.
 
 ![Link-state routing: Dijkstra pseudocode](../images/dijkstra-link-state-pseudocode.png){ width="520" }
 
@@ -183,6 +209,35 @@ In link-state routing, **topology and link costs are known to all routers** (via
 | z | 4 | u→x→y→z | **x** |
 
 Algorithm **exits after step 5** when all nodes are in N′.
+
+!!! warning "Exam point (Practice Quiz 3-2)"
+    Dijkstra runs **N − 1 iterations** after initialization (one node added to **N′** per iteration) until **N′ = N**. For **6 nodes**, that is always **5 iterations** — **regardless of source** (u or x) or how many **immediate neighbors** the source has. More neighbors after init does **not** mean more iterations.
+
+### Worked example: Dijkstra from source b (nodes a–f) {#worked-example-source-b}
+
+![Dijkstra practice topology — nodes a through f with link costs](../images/dijkstra-topology-abcdef.png)
+
+**Link costs:** a–b=3, a–c=1, a–d=5, b–c=5, c–d=2, c–e=4, d–f=5, e–f=1.
+
+**Initialization:** N′ = {b}. D(a)=3, D(c)=5; D(d), D(e), D(f)=∞.
+
+| Step | Add to N′ | Key updates |
+|------|-----------|-------------|
+| 1 | **a** (cost 3) | D(c)=min(5, 3+1)=**4**; D(d)=3+5=**8** |
+| 2 | **c** (cost 4) | D(d)=min(8, 4+2)=**6**; D(e)=4+4=**8** |
+| 3 | **d** (cost 6) | D(f)=6+5=11 |
+| 4 | **e** (cost 8) | D(f)=min(11, 8+1)=**9** |
+| 5 | **f** (cost 9) | Done — N′ = N |
+
+**Final least costs from b:**
+
+| Node | D(·) |
+|------|------|
+| a | **3** |
+| c | **4** |
+| d | **6** |
+| e | **8** |
+| f | **9** |
 
 ### Complexity (link-state / Dijkstra) {#complexity}
 
@@ -316,13 +371,19 @@ Distance-vector (DV) routing is the second major IGP family. Unlike link-state, 
 
 | Property | Meaning |
 |----------|---------|
+| **Distributed** | Each node knows only **direct links** and **neighbor distance vectors** — no central controller or global map |
 | **Iterative** | Repeats until neighbors have **no new updates** to send |
 | **Asynchronous** | Nodes need not be synchronized; updates arrive at different times |
-| **Distributed** | Each node computes locally; no central controller |
+| **Terminating** | Stops sending when no entry changes → network **converged** (until the next topology event) |
+
+!!! warning "Exam point (Practice Quiz 3-3)"
+    Distance-vector is **distributed**, **iterative**, and **asynchronous** — **not** centralized (that is link-state’s flood-then-SPF model with a full map at each router), **not** synchronous, and **not** non-terminating. **Count-to-infinity** is caused by **routing loops** with stale vectors after **bad news** — **not** by poison reverse (a fix), hot potato (BGP egress), or dropped packets (a symptom).
 
 Each node **x** maintains a **distance vector** $D_x$ — its current best cost to **every** destination **y**. Periodically (or on change), nodes **send** $D_x$ to **neighbors**, who use it to update their own vectors.
 
 ### Bellman-Ford equation
+
+The **Bellman-Ford equation** is the core update rule of **distance-vector** routing — **not** link-state / Dijkstra.
 
 For each destination **y**, node **x** updates:
 
@@ -496,7 +557,10 @@ Used with **split horizon** in RIP.
 
 ## RIP (Routing Information Protocol)
 
-**RIP** = distance-vector IGP using **hop count** (link cost = 1). Advertisements are **RIP response messages** (not raw DV tuples), sent **periodically** to neighbors.
+**RIP** = **distance-vector** **intradomain** (IGP) protocol using **hop count** (link cost = 1). Advertisements are **RIP response messages** (not raw DV tuples), sent **periodically** to neighbors.
+
+!!! warning "Exam point (Practice Quiz 3-4)"
+    **RIP is:** a **distance-vector** algorithm and an **intradomain** (IGP) protocol. **RIP is not:** link-state, interdomain (BGP), or **poison reverse** — poison reverse is a **loop-mitigation technique** RIP may use, not a protocol category.
 
 ![RIP example topology: routers A–D, subnets w–z](../images/rip-network-topology.png){ width="560" }
 
@@ -534,9 +598,12 @@ D learns a path to **z** through **A** that may be **shorter** than the old path
 
 ## Hot potato routing {#hot-potato-routing}
 
-Large networks use **IGP** inside and **BGP** at borders. When the destination is **outside** the AS, traffic must leave via an **egress** router. Often **multiple egresses** look equally good to **BGP** (same AS_PATH quality).
+Large networks use **IGP** inside and **BGP** at borders. When the destination is **outside** the AS, traffic must leave via an **egress** router. An AS may have **multiple egress points** to the same external destination — common for redundancy and traffic engineering. Often **multiple egresses** look equally good to **BGP** (same AS_PATH quality).
 
 **Hot potato:** pick the egress with **lowest IGP cost** from the current router — “get the packet out of my AS ASAP.”
+
+!!! warning "Exam point (Practice Quiz 3-5)"
+    **Multiple egresses** to one external destination: **True** — normal at AS borders. Hot potato uses **lowest IGP cost** to the egress (BGP decision step 6), **not** geographic closeness to the ingress. Operators set IGP weights for capacity, delay, or TE — physical distance is **not** guaranteed to match lowest cost.
 
 ![Hot potato: Dallas chooses SF (IGP 9) over NY (10)](../images/hot-potato-routing.png){ width="560" }
 
@@ -634,13 +701,45 @@ Weight changes converge **faster than failures** (no failure-detection delay) bu
 
 See [Forwarding vs routing](#forwarding-vs-routing) above.
 
+### What could edge weights represent in intradomain routing?
+
+When seeking a **least-cost path**, link weights in the graph can represent any **technical or economic metric** the operator configures:
+
+- **Length of the cable**
+- **Time delay** to traverse the link
+- **Monetary cost**
+- **Link capacity**
+- **Current load** on the link (dynamic — can cause pathological behavior in link-state routing when weights change rapidly)
+
+**Business relationships** are **not** IGP weights — they belong to **BGP** interdomain policy. See [What can edge weights represent?](#what-can-edge-weights-represent).
+
+### Does intradomain routing involve multiple administrative domains?
+
+**No.** **Intradomain** routing (IGP) operates **within** a **single** administrative domain / **Autonomous System**. **Interdomain** routing (**BGP**) connects **multiple** independently managed domains.
+
+### When does each router know the full network topology (link-state)?
+
+**Before** Dijkstra runs — after **LSA flooding** builds a consistent **link-state database (LSDB)** in each router. Dijkstra (SPF) then computes paths **locally** from that map; topology is **not** discovered by Dijkstra itself.
+
+### How many Dijkstra iterations for N nodes?
+
+**N − 1** iterations after initialization (add one node to **N′** per iteration until **N′ = N**). Independent of which node is the **source** or how many neighbors it has. Example: **6 nodes → 5 iterations** whether source is **u** or **x**.
+
 ### What is the main idea behind link-state routing?
 
 Every router obtains a **consistent topology** (via LSAs), runs **Dijkstra** from itself, and installs **next-hop** forwarding entries for least-cost paths.
 
 ### Example link-state algorithm?
 
-**Dijkstra’s algorithm.** Protocols: **OSPF**, IS-IS.
+**Dijkstra’s algorithm** — a **global routing** / **link-state** SPF step. Protocols: **OSPF**, IS-IS.
+
+### Which algorithm uses Bellman-Ford?
+
+**Distance-vector** routing (e.g., **RIP**). Link-state uses **Dijkstra** on a flooded topology map.
+
+### What is RIP an example of?
+
+A **distance-vector** **intradomain** (IGP) protocol — **not** link-state, interdomain, or poison reverse (that is a technique, not a protocol type).
 
 ### Walk through link-state / complexity?
 
@@ -649,6 +748,14 @@ See [Dijkstra’s algorithm](#dijkstras-algorithm) and [Complexity](#complexity)
 ### Main idea behind distance-vector?
 
 Neighbors exchange **cost-to-destination** vectors; update with **Bellman-Ford**; no global map.
+
+### What words describe the distance-vector algorithm?
+
+**Distributed**, **iterative**, **asynchronous** — and it **terminates** when vectors stabilize. **Not** centralized, synchronous, or non-terminating.
+
+### What causes count-to-infinity?
+
+**Routing loops** with **stale** distance vectors after link **failure** or cost **increase** — not poison reverse (a fix), hot potato (BGP), or dropped packets (symptom).
 
 ### Walk through distance-vector example?
 
@@ -660,7 +767,7 @@ See [Worked example: three-node network](#worked-example-three-node-network-x-y-
 
 ### When does count-to-infinity occur?
 
-On **increased** link cost or **link failure** — stale mutual routes cause costs to increment slowly.
+Link **failure** or cost **increase** in DV — **routing loops** with mutual stale routes cause costs to increment slowly.
 
 ### How does poison reverse help?
 
@@ -672,7 +779,11 @@ See [RIP](#rip-routing-information-protocol) and [OSPF](#ospf-open-shortest-path
 
 ### What is hot potato routing?
 
-Pick **closest egress** (minimum IGP cost) when multiple BGP exits look equally good.
+Pick **closest egress** by **lowest IGP cost** from the current router when BGP paths tie — **not** necessarily geographic distance. Multiple egresses to one external destination are common.
+
+### Multiple egresses to one external destination?
+
+**Yes** — ASes often connect via several border routers; BGP may offer multiple valid exits.
 
 ### How does a router process advertisements?
 

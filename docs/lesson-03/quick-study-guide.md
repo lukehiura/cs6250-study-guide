@@ -104,7 +104,10 @@ T1–T7: process LSAs (T2), flood (T4), SPF (T5–6), FIB (T7)
 
 ## 8. Hot potato
 
-Multiple BGP-equivalent egresses → pick **lowest IGP cost** egress (Dallas: SF=9 vs NY=10). IGP change can shift egress / BGP.
+Multiple BGP-equivalent egresses → pick **lowest IGP cost** egress (Dallas: SF=9 vs NY=10). **Not** always geographic closest — IGP weights are operator-configured. Multiple egresses to one external dest: **common**. IGP change can shift egress / BGP.
+
+!!! warning "Exam point (Practice Quiz 3-5)"
+    Multiple egress points: **True**. Geographic closest egress: **False** — use **IGP cost**, not map distance.
 
 ---
 
@@ -127,9 +130,41 @@ Multiple BGP-equivalent egresses → pick **lowest IGP cost** egress (Dallas: SF
 
 ## 11. High-yield exam Q&A
 
+### What can IGP link weights represent?
+
+**Length of cable**, **delay**, **monetary cost**, **link capacity**, **current load** (dynamic). **Not** business relationships — that's **BGP**.
+
 ### Forwarding vs routing?
 
 **Forwarding** = data plane table lookup per packet. **Routing** = control plane builds that table.
+
+### Intradomain vs multiple admin domains?
+
+**Intradomain (IGP)** = **one** AS / one admin domain. **Interdomain (BGP)** = **multiple** domains.
+
+### When is full topology known (link-state)?
+
+**Before** Dijkstra — after **LSA flood** into LSDB. **Not** after Dijkstra terminates.
+
+### Dijkstra iterations for N nodes?
+
+**N − 1** after init until **N′ = N**. **6 nodes → 5 iterations** — same for source **u** or **x**; neighbor count irrelevant.
+
+### Dijkstra from source b (a–f graph)?
+
+a=**3**, c=**4**, d=**6**, e=**8**, f=**9**.
+
+### Dijkstra = what kind of algorithm?
+
+**Global routing** / **link-state** — **not** distance-vector.
+
+### Bellman-Ford equation used by?
+
+**Distance-vector** (RIP). Link-state uses **Dijkstra**.
+
+### RIP is an example of?
+
+**Distance-vector** + **intradomain (IGP)** — not link-state, BGP, or poison reverse.
 
 ### Main idea of link-state?
 
@@ -138,6 +173,10 @@ Shared topology via LSAs; each router runs Dijkstra; install next hops.
 ### Main idea of distance-vector?
 
 Each router knows costs to all destinations via **neighbor advertisements** only; Bellman-Ford updates.
+
+### DV algorithm properties (Practice Quiz 3-3)?
+
+**Distributed | iterative | asynchronous** — terminates when stable. **Not** centralized, synchronous, or non-terminating.
 
 ### Count-to-infinity when?
 
@@ -153,7 +192,11 @@ Advertise **∞** to the neighbor you use for that dest — break 2-node loops.
 
 ### Hot potato?
 
-**Closest egress** (min IGP cost) when BGP exits tie.
+**Closest egress** = **lowest IGP cost** when BGP exits tie — **not** always geographic. Multiple egresses: **yes**.
+
+### Multiple egresses to external destination?
+
+**True** — redundancy / capacity at AS borders.
 
 ---
 
@@ -161,13 +204,20 @@ Advertise **∞** to the neighbor you use for that dest — break 2-node loops.
 
 | Topic | Memory aid |
 |-------|------------|
-| Scope | **IGP inside AS \| BGP between ASes** |
+| Scope | **IGP = one AS (inside) \| BGP = many ASes (between)** |
 | Planes | **Routing = map (slow) \| Forwarding = lookup (fast)** |
+| IGP weights | **Cable, delay, cost, capacity, load — not BGP business policy** |
 | Link-state | **LSA flood → Dijkstra → next hop (OSPF)** |
+| Dijkstra class | **Global routing \| link-state — not DV** |
+| Bellman-Ford | **Distance-vector only (RIP)** |
+| RIP classification | **DV + IGP — poison reverse is a technique, not RIP's category** |
 | Distance-vector | **Neighbor vectors → Bellman-Ford (RIP)** |
-| Dijkstra | **Grow N′, pick min D, relax; O(n²) naive** |
+| DV properties | **Distributed \| iterative \| async \| terminates** |
+| Dijkstra | **Grow N′, pick min D, relax; O(n²) naive; N−1 iterations** |
+| LS topology | **LSA flood first, then SPF — not learned by Dijkstra** |
 | DV good/bad news | **Good news fast \| bad news = count-to-infinity** |
+| Count-to-infinity cause | **Routing loops + stale vectors — not poison reverse** |
 | Poison reverse | **Advertise ∞ to neighbor you route through** |
 | RIP | **Hop count, max 15, 16=∞, UDP 520** |
 | OSPF | **Areas + backbone 0 + ABRs; duplicate LSA → ack** |
-| Hot potato | **BGP tie → lowest IGP cost to egress** |
+| Hot potato | **BGP tie → lowest IGP cost to egress (not always geographic)** |

@@ -224,8 +224,11 @@ IP delivers **datagrams** **host-to-host** with **best effort** only. Transport 
 
 ### Why RTT-fair?
 
-Reno: +1 MSS per **RTT** → short RTT wins.  
-CUBIC: growth keyed to **real time** between losses → competing flows at same bottleneck reach similar cwnd.
+**Reno:** +1 MSS per **RTT** (ACK-clocked) → growth rate $\approx 1/RTT$ → **short RTT wins**.
+
+**CUBIC:** target $W(t) = C(t-K)^3 + W_{\max}$ uses **wall-clock** $t$ since last congestion event — same target at $t$ seconds for 20 ms or 200 ms RTT. RTT only changes **update frequency** (many small steps vs few large jumps), not the target.
+
+**Exam answer:** Growth depends only on **time between consecutive congestion events** → competing flows at same bottleneck ≈ **same cwnd** → **RTT-fairness**.
 
 **Linux default** since kernel **2.6.18**.
 
@@ -251,6 +254,17 @@ Higher **RTT** or **p** → lower throughput. Upper bound in practice.
 **Goal:** k flows on link R → each ≈ **R/k**.
 
 **Same RTT + AIMD:** sawtooth in (throughput₁, throughput₂) space → converges to **equal share** at full utilization (points A→B→C→D).
+
+**Alternatives (exam):** **AIAD**, **MIAD**, **MIMD** do **not** converge to fairness like AIMD.
+
+| Policy | Fairness convergence? | One-line why |
+|--------|----------------------|--------------|
+| **AIMD** | **Yes** | AI favors underdog; MD clears congestion; cycles → $C/k$ each |
+| **AIAD** | **No** | Same ± constant → $|x_1 - x_2|$ never changes |
+| **MIMD** | **No** | Same × factors → ratio $x_1/x_2$ locked |
+| **MIAD** | **No** (diverges) | MI widens gap; AD doesn't rebalance |
+
+**Stability:** AIAD/MIAD — decrease too weak. MIAD/MIMD — increase too aggressive.
 
 **Not fair when:**
 
@@ -307,6 +321,17 @@ Dup ACK = **mild** → halve cwnd. Timeout = **severe** → much larger cut / re
 - **UDP:** (dest IP, dest port)
 - **TCP:** (src IP, src port, dest IP, dest port) — welcoming socket + connection socket per client
 
+### Flow control vs congestion control?
+
+| | Flow | Congestion |
+|---|------|------------|
+| Protects | Receiver buffer | Shared network |
+| Knob | **rwnd** | **cwnd** |
+
+### AIAD, MIAD, MIMD vs AIMD?
+
+**Only AIMD** converges to **efficiency + fairness**. **AIAD:** $|x_1-x_2|$ preserved. **MIMD:** ratio preserved. **MIAD:** diverges (big flow starves small). Alternatives less stable — weak decrease (AIAD/MIAD) or aggressive increase (MIAD/MIMD).
+
 ### Slow start vs AIMD?
 
 - **Slow start:** exponential cwnd growth until **ssthresh** (new connection, after timeout)
@@ -315,6 +340,10 @@ Dup ACK = **mild** → halve cwnd. Timeout = **severe** → much larger cut / re
 ### What is TCP CUBIC?
 
 Cubic growth in **time since loss** (not RTT); $\beta = 0.2$; plateau near $W_{\max}$; TCP-friendly on short RTT / small BDP; Linux default.
+
+### How does CUBIC make cwnd growth RTT-independent?
+
+Reno: **ACK-clocked**, +1 MSS/RTT → short RTT grows faster. CUBIC: $W(t)$ from **real time** since last congestion event — same target at $t$ regardless of RTT; ACKs only set update rate.
 
 ---
 
@@ -332,6 +361,6 @@ Cubic growth in **time since loss** (not RTT); $\beta = 0.2$; plateau near $W_{\
 | AIMD | **Climb +1 MSS/RTT, fall ÷2 on dup ACK** |
 | Slow start | **Double per RTT until ssthresh, then AIMD** |
 | Reno loss | **Dup ACK = halve; timeout = reset hard** |
-| CUBIC | $W(t)=C(t-K)^3+W_{\max}$, $\beta=0.2$, time not RTT |
+| CUBIC | $W(t)=C(t-K)^3+W_{\max}$, $\beta=0.2$, **time not RTT** → RTT-fair |
 | Throughput | $\propto 1/(\text{RTT} \cdot \sqrt{p})$ |
-| Fairness | **Same RTT fair; short RTT wins; per connection not per app** |
+| Fairness | **AIMD → fair (same RTT); AIAD/MIMD/MIAD do not** |

@@ -26,7 +26,7 @@ Two jobs, two speeds:
 
 Inside one organization, **IGP** (Internal Gateway Protocol) picks paths. Between organizations, **BGP** picks the next neighbor ([Lesson 4](../lesson-04/interdomain-routing.md)).
 
-The two main ways to build the map: **link-state** (everyone shares the full picture — **OSPF**) and **distance-vector** (routers only gossip with neighbors — **RIP**).
+The two main ways to build the map: **link-state** (everyone shares the full picture — **OSPF**; Dijkstra is a **global routing** algorithm) and **distance-vector** (routers only gossip with neighbors — **RIP**; uses the **Bellman-Ford** equation).
 
 ---
 
@@ -75,6 +75,21 @@ When a link breaks, routing protocols **converge** — routers agree on new path
 
 ---
 
+## Scenario: what does "shortest path" mean?
+
+Inside one organization, **IGP** picks paths on a graph where each link has a **weight**. "Least cost" can mean:
+
+- **Shorter cable**, **lower delay**, **cheaper link**, **more capacity**, or even **current load** on the link
+
+It does **not** mean **business relationships** — that's **BGP** between companies ([Lesson 4](../lesson-04/interdomain-routing.md)).
+
+**Intradomain** = **inside one** admin domain (one campus, one ISP's internal network). **Interdomain** = between separate organizations.
+
+!!! tip "Exam note"
+    Weights based on **live load** change constantly — tricky for link-state routing and can cause weird oscillations.
+
+---
+
 ## Scenario: a fiber cut on a big campus
 
 Georgia Tech–size network: dozens of buildings, hundreds of routers. A backhoe hits fiber between two buildings.
@@ -95,6 +110,8 @@ Nobody asks every neighbor for gossip. Everyone works from the **same shared map
 
 **Memory trick:** **Link-state = shared map. Distance-vector = neighbor gossip only.**
 
+**Memory trick:** Everyone gets the **same map** (LSA flood), then each router runs Dijkstra **from itself**. **N − 1** loop steps for **N** nodes — starting at **u** or **x** does not change the count.
+
 For Dijkstra symbols, worked graphs, and OSPF area diagrams, see the **[full guide](intradomain-routing.md)**.
 
 ---
@@ -109,7 +126,9 @@ Then **y** tells x: "I can reach z for cost **1**." x thinks: go to y first (cos
 
 That is **distance-vector**: each router keeps a list — **"my best cost to every place"** — and only talks to **neighbors**. The math rule is **Bellman-Ford**: pick the neighbor where `(wire cost to neighbor) + (neighbor's cost to destination)` is smallest.
 
-**RIP** (Routing Information Protocol) is the classic real-world example: count **hops** (each wire = 1), max **15** hops, **16 means unreachable**, updates about every **30 seconds** on **UDP port 520**.
+The algorithm is **distributed** (no central map), **iterative** (rounds of exchange until nothing changes), and **asynchronous** (each router updates when it hears from a neighbor — no global clock). It **does terminate** once the network stabilizes.
+
+**RIP** (Routing Information Protocol) is the classic real-world example: a **distance-vector**, **intradomain** protocol — count **hops** (each wire = 1), max **15** hops, **16 means unreachable**, updates about every **30 seconds** on **UDP port 520**. **Poison reverse** is a trick RIP can use to fight loops; it is **not** what RIP *is*.
 
 ---
 
@@ -123,7 +142,7 @@ Good news spreads fast. A link gets **cheaper**? Everyone updates in a few round
 2. **z** hears y say "x costs 6" and thinks: "I'll go through y!" Cost = 1 + 6 = **7**.
 3. Costs creep up: 6, 7, 8, 9… Packets can **loop** until the numbers get high enough that everyone gives up.
 
-That is **count-to-infinity**. It is why distance-vector can be **slow** after a failure.
+That is **count-to-infinity**. It is why distance-vector can be **slow** after a failure. The root cause is a **routing loop** — routers keep believing they can reach the destination through each other with ever-increasing costs.
 
 **Poison reverse** is a partial fix: if z reaches x **through** y, z tells y "x is unreachable." That stops simple two-router loops. Bigger loops need more tricks (split horizon in RIP).
 
@@ -136,9 +155,13 @@ That is **count-to-infinity**. It is why distance-vector can be **slow** after a
 
 ## Scenario: your ISP has two exits (hot potato)
 
-A big ISP connects to the rest of the Internet through several **border routers** — say San Francisco and New York. **BGP** (Lesson 4) may say both exits are equally good for reaching Netflix.
+A big ISP connects to the rest of the Internet through several **border routers** — say San Francisco and New York. The same external destination may be reachable through **more than one egress** (normal for redundancy).
 
-**Hot potato routing:** pick the exit with the **lowest internal cost** from where you are **right now**. A router in Dallas might send traffic out San Francisco (internal cost 9) instead of New York (cost 10).
+**BGP** (Lesson 4) may say both exits are equally good for reaching Netflix.
+
+**Hot potato routing:** pick the exit with the **lowest internal (IGP) cost** from where you are **right now**. A router in Dallas might send traffic out San Francisco (internal cost 9) instead of New York (cost 10).
+
+That is **not** the same as “geographically closest.” IGP link weights can reflect capacity, delay, or operator preference — so the cheapest exit by IGP is not always the nearest city on a map.
 
 Goal: get the packet **off your network fast**. Trade-off: the global trip might not be optimal — you optimized **your** hallways, not the whole Internet.
 
@@ -170,7 +193,7 @@ Fix:         poison reverse (helps 2-router loops)
 RIP:         hop count, max 15, 16 = too far
 OSPF:        areas + backbone, shared map per area
 
-Hot potato:  BGP says exits tie → pick nearest exit by internal cost
+Hot potato:  BGP says exits tie → pick lowest **IGP cost** egress (not always geographic)
 ```
 
 ---

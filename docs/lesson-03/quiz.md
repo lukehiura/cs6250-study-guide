@@ -22,6 +22,190 @@ Intradomain routing, link-state, distance-vector, and convergence issues. New to
 
 ---
 
+## Practice Quiz 3-1 (intradomain foundations)
+
+Canvas practice quiz — forwarding vs routing, IGP scope, and link metrics.
+
+<quiz>
+In **intradomain** routing, when seeking a **least-cost path**, what could the **weights on graph edges** represent? Select **all** that apply.
+- [x] Length of the cable
+- [x] Time delay to traverse the link
+- [x] Monetary cost
+- [ ] Business relationships
+- [x] Link capacity
+- [x] Current load on the link
+
+**Business relationships** drive **BGP** (interdomain) policy — not IGP link metrics inside one AS. **Current load** weights are **dynamic** and can cause pathological behavior in link-state routing.
+</quiz>
+
+<quiz>
+A packet is __________ when it is moved from a router's input link to the appropriate **output** link.
+- [ ] Routed
+- [x] Forwarded
+- [ ] Dropped
+- [ ] Acknowledged
+
+**Forwarding** is the **data-plane** action on a single router. **Routing** is the **control-plane** process that builds the forwarding table.
+</quiz>
+
+<quiz>
+Which action is **network-wide** (involves multiple routers)?
+- [x] Routing
+- [ ] Forwarding
+
+**Routing** protocols exchange information and compute paths across the network. **Forwarding** is a local table lookup per packet.
+</quiz>
+
+<quiz>
+**Intradomain** routing must involve **multiple** administrative domains.
+- [ ] True
+- [x] False
+
+**Intradomain** (IGP) routing is **within one** administrative domain / AS. **Interdomain** (BGP) connects **multiple** domains.
+</quiz>
+
+---
+
+## Practice Quiz 3-2 (link-state / Dijkstra)
+
+Canvas practice quiz — iteration count, LSA vs Dijkstra, and a worked Dijkstra example.
+
+![Link-state rerouting example — nodes u, v, w, x, y, z](../images/link-state-routing-graph.png)
+
+<quiz>
+In the **u–v–w–x–y–z** topology (6 nodes), **u** was the source in the course example. If **x** is the source instead (x has **more** direct neighbors than u), how many Dijkstra iterations run **after initialization**?
+- [ ] Fewer than when u was source (fewer ∞ nodes after init)
+- [x] The **same** number — **5** iterations (N − 1 = 6 − 1)
+- [ ] More than when u was source (more neighbors to consider)
+
+Each iteration adds **exactly one** node to **N′** until **N′ = N**. Neighbor count at the source does **not** change the iteration count.
+</quiz>
+
+<quiz>
+In Dijkstra's algorithm, all nodes in a network are aware of the entire network topology only **after** the algorithm's termination.
+- [ ] True
+- [x] False
+
+**Link-state flooding** distributes LSAs **before** SPF. Every router has the full map in its **LSDB**, **then** runs Dijkstra independently.
+</quiz>
+
+<quiz>
+Source **b** in the a–f topology below. Least cost from **b** to **a** is [[3]].
+---
+Direct link b–a cost 3; confirmed in iteration 1 when a is added to N′.
+</quiz>
+
+<quiz>
+Source **b** — least cost from **b** to **c** is [[4]].
+---
+After adding a: D(c)=min(5, 3+1)=4 via a–c.
+</quiz>
+
+<quiz>
+Source **b** — least cost from **b** to **d** is [[6]].
+---
+Via a then c: 3+1+2=6 beats direct-via-a path 3+5=8.
+</quiz>
+
+<quiz>
+Source **b** — least cost from **b** to **e** is [[8]].
+---
+Via c: 4+4=8 after c is added to N′.
+</quiz>
+
+<quiz>
+Source **b** — least cost from **b** to **f** is [[9]].
+---
+Via e: 8+1=9 beats via d: 6+5=11.
+</quiz>
+
+![Dijkstra practice topology — nodes a through f](../images/dijkstra-topology-abcdef.png)
+
+See the [worked example from source b](../intradomain-routing.md#worked-example-source-b) in the full guide.
+
+---
+
+## Practice Quiz 3-3 (distance-vector)
+
+Canvas practice quiz — DV algorithm properties and count-to-infinity.
+
+<quiz>
+Select the words that can describe the **distance-vector** algorithm. Select **all** that apply.
+- [x] Distributed
+- [ ] Centralized
+- [x] Iterative
+- [x] Asynchronous
+- [ ] Synchronous
+- [ ] Non-terminating
+
+Each router knows only **direct links** and **neighbor vectors** — no central map (**not centralized**). Updates repeat in rounds (**iterative**) whenever a neighbor advertises or a local link changes (**asynchronous** — no global clock). The algorithm **terminates** when no vector changes.
+</quiz>
+
+<quiz>
+Which of the following can **cause** the count-to-infinity problem?
+- [ ] Poison reverse
+- [x] Routing loops
+- [ ] Hot potato routing
+- [ ] Dropped packets
+
+**Routing loops** let stale vectors bounce (A→B→A…) so costs creep up until **∞**. **Poison reverse** is a **mitigation**, not a cause. **Hot potato** is BGP egress choice. **Dropped packets** may follow from loops but are not the algorithmic root cause.
+</quiz>
+
+---
+
+## Practice Quiz 3-4 (algorithm classification)
+
+Canvas practice quiz — Dijkstra vs Bellman-Ford, global vs link-state, and what RIP is.
+
+<quiz>
+Dijkstra's algorithm is a [[global]] routing algorithm, which is also referred to as a [[link-state]] algorithm.
+---
+Each router has the **full topology** (via LSA flood) before running SPF — a **global** view. **Link-state** is the IGP family name (OSPF, IS-IS). **Not** distance-vector.
+</quiz>
+
+<quiz>
+The **Bellman-Ford equation** is used by the ______________ algorithm.
+- [ ] Link-state
+- [x] Distance vector
+
+$D_x(y) = \min_v \{ c(x,v) + D_v(y) \}$ updates each router from **neighbor advertisements** only. **Dijkstra** is the link-state SPF step.
+</quiz>
+
+<quiz>
+The **Routing Information Protocol (RIP)** is an example of ______________. Select **all** that apply.
+- [ ] A link-state algorithm
+- [x] A distance vector algorithm
+- [ ] Poison reverse
+- [ ] An interdomain routing algorithm
+- [x] An intradomain routing algorithm
+
+**RIP** is an **IGP** (inside one AS) that exchanges **distance vectors** (hop count). **Poison reverse** is a **technique** RIP may use — not what RIP *is*. **BGP** is interdomain.
+</quiz>
+
+---
+
+## Practice Quiz 3-5 (hot potato routing)
+
+Canvas practice quiz — multiple egress points and how hot potato chooses among them.
+
+<quiz>
+There may be **multiple egress points** from an administrative domain to an external destination.
+- [x] True
+- [ ] False
+
+Large ASes often peer via **several border routers** (redundancy, capacity). BGP may advertise equally good paths through **multiple exits** to the same external prefix.
+</quiz>
+
+<quiz>
+**Hot potato routing** always selects the egress point that is **geographically closest** to the ingress point.
+- [ ] True
+- [x] False
+
+Hot potato picks the egress with **lowest IGP cost** from the **current** router (BGP step 6). IGP weights reflect operator policy (capacity, delay, TE) — **not** strict geographic distance.
+</quiz>
+
+---
+
 ## Forwarding & routing
 
 <quiz>
@@ -194,12 +378,12 @@ ABRs connect each area to the backbone; inter-area routing is ABR → backbone �
 
 <quiz>
 **Hot potato routing** selects an egress point by:
-- [x] Lowest IGP cost to that egress (closest exit)
+- [x] Lowest IGP cost to that egress (closest exit by **IGP metric**)
 - [ ] Longest AS_PATH
 - [ ] Highest BGP LOCAL_PREF from a peer
 - [ ] Random choice among exits
 
-Goal: hand traffic to another AS quickly and save internal resources.
+Goal: hand traffic to another AS quickly and save internal resources. **Not** necessarily the geographically nearest border — IGP weights are configurable.
 </quiz>
 
 <quiz>

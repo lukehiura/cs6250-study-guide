@@ -22,7 +22,7 @@ Condensed review for exams. New to the material? Start with the **[Plain-languag
 - **BGP** is the de facto **interdomain** protocol; path-vector with **AS-PATH** loop prevention.
 
 !!! tip "Memory aid"
-    **IGP = hallways inside the building. BGP = which exit door and which neighbor you trust.**
+    **IGP = hallways** (inside the building). **eBGP = exit doors** (between buildings). **iBGP = intercom** (which exit for which outside destination). Easy to mix up — all three cooperate on every external packet.
 
 ---
 
@@ -38,16 +38,28 @@ Condensed review for exams. New to the material? Start with the **[Plain-languag
 
 **Also know:** **PoP** (customer connection point), **multi-homing** (multiple providers), **settlement-free peering** (no payment for direct exchange).
 
-Topology: historically **hierarchical**; **flattening** as IXPs/CDNs let smaller networks connect directly.
+Topology: historically **hierarchical** (traffic up/down via Tier-1 transit); **flattening** as **direct peering** and **IXPs** let networks connect locally without the middleman detour.
+
+**Direct peering:** two ASes exchange traffic settlement-free, bypassing transit. **IXP:** one cable into a shared fabric → peer with many neighbors. **Why flatten:** lower latency + lower transit bills (especially CDN/streaming traffic).
 
 ---
 
 ## 3. Autonomous System (AS)
 
-- Group of routers under **one administrative authority** with one routing policy.
-- Identified by **ASN** (Autonomous System Number).
+- Group of routers under **one administrative authority** with one routing policy — **physical** network (fiber, routers, data centers), not abstract.
+- Identified by **ASN** (Autonomous System Number) — global ID for BGP participation (apply via regional registry, e.g. ARIN).
+- **Not a server node** — one host vs an entire network infrastructure.
 - One org may run **multiple ASes** (business separation, traffic engineering).
 - **Border routers** run **eBGP** to neighbors; internal routers use **IGP** + often **iBGP**.
+
+!!! warning "Exam point"
+    **AS ≠ IXP.** AS = the network (**who**). IXP = facility where ASes meet (**where**). You need an AS/ASN **before** connecting at an IXP — renting IXP space does not create an AS.
+
+| | **AS** | **IXP** |
+|---|--------|---------|
+| **Type** | Network entity | Physical switch fabric / colo |
+| **Job** | Route traffic; BGP policy | Neutral peering venue |
+| **Analogy** | Airline | Airport terminal |
 
 ---
 
@@ -62,6 +74,9 @@ Topology: historically **hierarchical**; **flattening** as IXPs/CDNs let smaller
 **Provider charging:** fixed fee within bandwidth cap, or **95th percentile** of periodic samples (ignore top 5% spikes).
 
 **Peering caveats:** valid while traffic not **highly asymmetric**; Tier-1 peers need similar size; smaller ISPs peer to save transit costs.
+
+!!! warning "Exam point"
+    Peering needs a border **eBGP handshake** (prefixes, capacity, location) — **not** agreement on **internal** IGP/TE. Each AS is a **black box** to its peer; internal routing stays private.
 
 ---
 
@@ -112,17 +127,30 @@ Implemented in practice via **LocalPref** ranges (e.g., customer 90–99, peer 8
 
 ---
 
-## 8. eBGP vs iBGP
+## 8. IGP vs eBGP vs iBGP
 
-| | **eBGP** | **iBGP** |
-|---|----------|----------|
-| **Between** | Routers in **different** ASes | Routers in **same** AS |
-| **Purpose** | Learn routes from **outside** neighbors | Spread eBGP-learned routes **inside** AS |
-| **Topology** | One session per neighbor AS | Often **full mesh** (each BGP router ↔ every other) |
+!!! warning "Exam point"
+    All three sound similar and cooperate on external traffic — but **iBGP ≠ IGP**. iBGP disseminates external routes; it does **not** compute internal paths.
+
+| | **IGP** | **eBGP** | **iBGP** |
+|---|---------|----------|----------|
+| **Scope** | Inside one AS | Between ASes | Inside one AS |
+| **Purpose** | Shortest/cost paths between internal routers | Learn external routes at borders; apply policy | Spread eBGP-learned routes internally |
+| **Examples** | OSPF, RIP, IS-IS | — | — |
+| **Analogy** | Hallways | Exit doors | Intercom (*"use Exit A for Google"*) |
+
+**Team-up (external destination):**
+
+1. **iBGP** → pick **which border router** (exit) for the prefix
+2. **IGP** → forward packet **to** that border router
+3. **eBGP** → hand off to neighboring AS
+
+**Internal destination:** **IGP only**.
+
+| eBGP vs iBGP detail | **eBGP** | **iBGP** |
+|---------------------|----------|----------|
+| **Topology** | One session per neighbor AS | Often **full mesh** |
 | **AS-PATH** | Prepends local ASN | Does not prepend |
-| **vs IGP** | — | **Not an IGP** — does not compute internal shortest paths |
-
-**Together:** BGP picks **which border** to use; **IGP** finds path **to** that border (FIB build).
 
 ---
 
@@ -165,9 +193,26 @@ Compare routes **attribute-by-attribute** until one wins:
 
 ## 11. IXPs and route servers
 
-**IXP** — physical infrastructure (switches in colo) where **participant ASes** exchange traffic locally.
+**IXP** — secure colo + shared **switching fabric** where **participant ASes** exchange traffic locally (~500 worldwide).
+
+!!! warning "Exam point"
+    An IXP does **not** route participant traffic. It provides the **physical bridge** (switch fabric); each AS brings **routers** and runs **BGP**. Routing policy stays on participant hardware.
+
+| Role | IXP operator | Participant AS |
+|------|--------------|----------------|
+| Provides | Building, fabric, port, security | Own border routers, fiber into fabric |
+| Decides | Neutral interconnection only | Who to peer with; import/export policy |
 
 **Why peer at IXP:** keep local traffic local, lower cost, lower latency, DDoS visibility, innovation hub.
+
+**Who peers directly (drivers of flat topology):**
+
+| Side | Examples | Motive |
+|------|----------|--------|
+| CDNs / caching | Cloudflare, Akamai, Fastly | Serve cached content locally; skip transit |
+| Streaming / video | Netflix, YouTube, Twitch | Bandwidth-heavy; Open Connect–style caches |
+| Cloud / hyperscalers | AWS, Azure, GCP, Meta, Apple | Low latency to mobile & home ISPs |
+| ISPs | Tier-1/2/3 access providers | Cut transit bills when customers use those services |
 
 **Peering modes:** public (shared fabric), private (dedicated cross-connect), bilateral (pairwise BGP), **multilateral** (via **route server**), remote peering.
 
@@ -186,15 +231,11 @@ Compare routes **attribute-by-attribute** until one wins:
 
 ### ISPs, IXPs, and CDNs?
 
-**ISPs** sell connectivity (tiered). **IXPs** are local meet-up points for traffic exchange. **CDNs** are content networks for efficient delivery.
-
-### What is an AS?
-
-Routers under one admin authority, one policy, unique **ASN**. **IGP** inside, **BGP** at borders.
+**ISPs** sell connectivity (tiered). **IXPs** are local meet-up points (switch fabric). **CDNs** cache content near users. **CDNs, streamers, and cloud providers** peer heavily with **ISPs** to save transit cost and reduce latency — a major reason the topology is flattening.
 
 ### Transit vs peering?
 
-**Transit:** customer pays; full reachability both ways. **Peering:** no payment; limited route ads (own + customers).
+**Transit:** customer pays; full reachability both ways. **Peering:** no payment; limited route ads (own + customers). Peering negotiates **border** rules (where, capacity, prefixes) — **not** internal IGP/TE; each AS stays a **black box**.
 
 ### Import/export rules?
 
@@ -202,7 +243,11 @@ Export **customer** routes to all; **peer/provider** routes to **customers only*
 
 ### eBGP vs iBGP?
 
-**eBGP** between ASes learns external routes. **iBGP** inside AS disseminates them (full mesh typical). **iBGP ≠ IGP**.
+**eBGP** between ASes learns external routes. **iBGP** inside AS disseminates them (full mesh typical). **iBGP ≠ IGP** — see §8 for all three together.
+
+### IGP vs eBGP vs iBGP?
+
+**IGP** = internal paths. **eBGP** = border exchange with neighbors. **iBGP** = tell internal routers which exit to use. Flow: iBGP picks border → IGP reaches border → eBGP hands off.
 
 ### BGP decision steps?
 
@@ -216,9 +261,25 @@ LocalPref → AS-PATH → origin → MED → eBGP>iBGP → IGP cost → router I
 
 Misconfigs, churn, table growth, lack of built-in security. Mitigations: filters, limits, aggregation, flap damping.
 
+### What is an AS?
+
+Physical network under one admin + one policy; identified by **ASN**. **Not** a server. **BGP** at borders, **IGP** inside. Examples: ISPs, CDNs, universities, cloud providers.
+
+### AS vs IXP?
+
+**AS** = independent network (**who**). **IXP** = colo/switch fabric where ASes peer (**where**). AS exists before IXP connection.
+
+### What is direct peering?
+
+Settlement-free traffic exchange between two ASes **without** a transit middleman — usually limited routes (own + customers). Drives **flattening** when done at IXPs. Covers **border** details only (location, capacity, prefixes) — **not** internal policy alignment.
+
+### Must peering ASes align internal policies?
+
+**No.** Each AS is **autonomous** and opaque to its peer. Peering negotiates the **eBGP handoff**; internal **IGP**/TE stays private. Exam trap: "internal policies and traffic engineering" → **False**.
+
 ### What is an IXP?
 
-Switch fabric where ASes interconnect locally; needs ASN, BGP router, port, GTC.
+Secure colo with a shared **switch fabric** where ASes interconnect locally — **not** a giant router in the middle. Participants bring routers, plug into the fabric, peer via BGP. Needs ASN, BGP router, port, GTC.
 
 ### How does a route server work?
 
@@ -235,7 +296,8 @@ BGP step 6: pick egress with **lowest IGP cost** to NEXT-HOP border router.
 ```
 IGP inside AS | BGP between ASes (policy-driven, not just shortest)
 
-AS: one admin, ASN, border routers run eBGP
+AS: one admin, ASN, physical network — NOT a server | AS ≠ IXP (who vs where)
+Peering: settlement-free direct exchange | Flattening: peer/IXP bypass Tier-1 detour
 
 Transit: customer pays provider (both directions)
 Peering: free, limited routes (own + customers), balanced traffic
@@ -246,12 +308,13 @@ Import: customer > peer > provider
 BGP: TCP sessions, UPDATE/withdraw, prefixes
 AS-PATH (loops, length) | NEXT-HOP (border router)
 
-eBGP: between ASes | iBGP: spread external routes inside (full mesh)
-iBGP ≠ IGP — IGP routes TO border; BGP picks WHICH border
+eBGP: between ASes (exit doors) | iBGP: intercom inside AS | IGP: hallways inside AS
+iBGP ≠ IGP — iBGP picks WHICH border; IGP routes TO border
 
 Decision: LocalPref → AS-PATH → origin → MED → eBGP>iBGP → IGP cost → router ID
 LocalPref: higher = preferred EXIT | MED: neighbor hint for ENTRY
 
 Risks: global propagation of misconfig; flap damping, filters, aggregation
-IXP: local peering hub | Route server: O(n) sessions, control only
+IXP: switch fabric + colo — does NOT route for you | Peering drivers: CDN, video, cloud ↔ ISP
+RS: O(n) BGP sessions, control only
 ```

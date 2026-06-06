@@ -97,15 +97,41 @@ The ecosystem forms a **hierarchical structure**: smaller networks (access ISPs)
 
 ### Hierarchical vs Flat Topology
 
-The ecosystem was **hierarchical** in the Internet's early days. As IXPs and CDNs have grown, the structure is **morphing from hierarchical to flat** — access ISPs may connect directly to Tier-1 ISPs, content providers, or IXPs, bypassing regional tiers.
+The ecosystem was **hierarchical** in the Internet's early days. A local ISP sending traffic to a neighboring ISP often routed **up** through a Tier-1 **transit** provider (paying fees) and back **down** — even for geographically local traffic.
+
+As **IXPs** and **CDNs** have grown, the structure is **morphing from hierarchical to flat**:
+
+- **Direct peering** — two ASes exchange traffic settlement-free, bypassing transit middlemen.
+- **IXPs** — one physical connection per AS to a shared switch fabric enables peering with many neighbors locally.
+- Access ISPs may connect directly to Tier-1 ISPs, content providers, or IXPs, bypassing regional tiers.
+
+**Example:** Streaming Netflix often flows from a CDN or ISP cache **in your metro area** via an IXP — not across a continent through a global backbone.
 
 ### Autonomous Systems
 
 Each network (ISP, CDN, enterprise) may operate as an **Autonomous System (AS)**:
 
-- A group of routers (and links) under the **same administrative authority**.
+- A group of routers (and links) under the **same administrative authority** — real physical infrastructure (fiber, routers, data centers), not abstract terminology.
 - An ISP may operate as a single AS or through **multiple ASes**.
 - Each AS implements its own policies, traffic engineering, interconnection strategies, and controls how traffic enters/exits.
+
+**ASN vs AS vs IXP:**
+
+| Concept | What it is |
+|---------|------------|
+| **AS** | The **network** — routers, links, and policy under one organization |
+| **ASN** | The **globally unique ID** assigned when the network participates in BGP (e.g. via ARIN) |
+| **IXP** | A **facility** where existing ASes choose to interconnect — not where ASes are "created" |
+
+!!! warning "Exam point"
+    An **AS is not a server node**. A server is one host; an AS can contain millions of devices. An **AS is not an IXP** — the AS is the network (**who**); the IXP is the meeting place (**where**).
+
+| | **AS** | **IXP** |
+|---|--------|---------|
+| **Type** | Logical network entity | Physical interconnection facility |
+| **Owner** | ISP, CDN, cloud provider, university | IXP operator (consortium, colo provider, etc.) |
+| **Function** | Routes traffic; applies BGP policy | Provides switch fabric for participants to peer |
+| **Analogy** | Airline (Delta, United) | Airport terminal where airlines meet (JFK, Heathrow) |
 
 ### Routing Protocols: IGP vs BGP
 
@@ -138,9 +164,27 @@ A **financial settlement** determines how much the customer pays the provider. T
 
 In a peering relationship, two ASes share access to a **subset** of each other's routing tables. Routes shared between peers are often restricted to each AS's **own customers**.
 
+**Direct peering** is a voluntary agreement between two independent networks to connect and exchange traffic **directly** rather than through a **transit** provider — typically **settlement-free** (neither pays the other). Benefits: lower **latency**, lower **transit** costs, and paths that bypass the hierarchical "up to Tier-1 and back down" detour. Peering may occur via private cross-connects or at an **IXP** switching fabric.
+
 - Agreement holds as long as traffic exchanged is **not highly asymmetric**.
 - **Tier-1 peering** — peers must be of similar size and handle proportional traffic; a larger ISP lacks incentive to peer with a much smaller one.
 - **Smaller ISP peering** — both save money they would pay providers by forwarding traffic directly when significant volume is destined for each other (or each other's customers).
+
+#### Peering Agreements: Border Rules Only
+
+BGP involves a **handshake** — an **eBGP** session between border routers — but peering does **not** require ASes to align **internal** policies or traffic engineering. The Internet is built on **Autonomous Systems** that remain **autonomous**: each peer treats the other as an opaque **black box**.
+
+| Negotiated at the border | Stays internal (private) |
+|--------------------------|----------------------------|
+| Physical location (IXP, facility, cross-connect) | IGP choice (OSPF, IS-IS, RIP) |
+| Interconnection capacity | Intradomain path computation and congestion control |
+| Which **prefixes** each peer may advertise/accept | Internal topology, switch vendors, staffing |
+| Financial terms (usually settlement-free) | Import/export policy details beyond the peering contract |
+
+Peers care about the **handoff** — "I will accept traffic for these prefixes; you accept mine." They do **not** care how the neighbor routes packets **inside** its own AS. BGP design goal: each AS implements routing policy **independently and confidentially**.
+
+!!! warning "Exam point"
+    Peering agreements cover **border-level** reachability and capacity — **not** internal traffic engineering alignment. Saying two ASes must find common ground on **internal** policies before peering is **false**.
 
 ### How Providers Charge Customers
 
@@ -305,6 +349,26 @@ Advertised routes include a reachable prefix plus **BGP attributes**. Two notabl
 ---
 
 ## BGP: eBGP and iBGP
+
+!!! warning "Exam point"
+    **IGP**, **eBGP**, and **iBGP** are easy to confuse — all three operate inside or at the edge of an **AS**, but each has a distinct role. **iBGP is not an IGP.**
+
+| Protocol | Scope | Purpose | Office-building analogy |
+|----------|-------|---------|-------------------------|
+| **IGP** (OSPF, RIP, IS-IS) | **Within** one AS | Compute shortest/cost-based paths between **internal** routers | **Hallways** — physical navigation inside the building |
+| **eBGP** | **Between** ASes | Border routers exchange reachability; apply **import/export policy** | **Exit doors** — which neighbor do we hand traffic to? |
+| **iBGP** | **Within** one AS | Disseminate **eBGP-learned** external routes to all internal BGP speakers | **Intercom** — *"For prefix X, use border router A"* |
+
+### How IGP, eBGP, and iBGP Work Together
+
+For a packet destined **outside** the local AS:
+
+1. **eBGP** — a border router learns the external prefix from a neighbor AS (with policy filters applied).
+2. **iBGP** — that border router tells **all internal BGP routers** which external prefixes are reachable and which **NEXT-HOP** (border router) to use.
+3. **IGP** — each internal router computes the path **to that border router** across the AS.
+4. **eBGP** — the border router forwards the packet to the **next AS**.
+
+For destinations **inside** the AS, only the **IGP** computes paths — BGP is not used for ordinary intradomain reachability.
 
 BGP has two flavors, both used to disseminate routes for **external destinations**:
 
@@ -471,6 +535,21 @@ IXPs are **physical infrastructures** enabling ASes to interconnect and directly
 
 Example: **DE-CIX** in Frankfurt — core sites (3, 6) plus additional sites (1–4, 7) at different colocation facilities.
 
+### The IXP Does Not Route Traffic
+
+Physically, an IXP is a secure **colocation facility** (often a campus of interconnected data centers in a major city). Operationally, it is **not** a transit provider or a giant router that receives one participant's packets, selects a destination, and forwards them to another.
+
+The IXP operator provides a neutral **switching fabric** — a high-speed shared Ethernet switch (or redundant mesh of switches). **Participant ASes** colocate their own **border routers**, connect them to that fabric, and use **BGP** to decide which neighbors to peer with and which prefixes to accept. Data-plane packets flow **directly** between participant routers on the fabric; the IXP does not inspect destinations or make forwarding decisions on their behalf.
+
+| Layer | IXP operator | Participant AS |
+|-------|--------------|----------------|
+| **Physical** | Rack space, power, cooling, security, fiber to shared switch | Own routers and cables into the fabric |
+| **Control (BGP)** | Optional **route server** (control plane only) | Bilateral or multilateral BGP sessions; import/export policy |
+| **Data** | Switch fabric forwards frames between ports | Routers forward IP traffic peer-to-peer |
+
+!!! warning "Exam point"
+    Saying an IXP **routes** traffic for participants is a common mistake. The IXP provides **interconnection infrastructure**; **routing policy** stays with each AS's own hardware. (A **route server** runs BGP on the **control plane** to scale peering — it still does **not** carry participant data traffic.)
+
 ### Why IXPs Matter
 
 | Reason | Detail |
@@ -503,6 +582,20 @@ Example: **DE-CIX** in Frankfurt — core sites (3, 6) plus additional sites (1�
 - **Lower costs** — cheaper than volume-based third-party transit.
 - **Better performance** — reduced delay.
 - **Incentives** — major content providers (e.g., Google) may require presence at specific IXPs to peer.
+
+### Who Peers Directly and Why
+
+Peering saves **money** and cuts **latency**. The networks that peer most aggressively move the largest volumes of data — which is why **CDNs** and content-heavy companies are primary drivers of today's **flattening** Internet topology.
+
+| Who | Examples | Why they peer |
+|-----|----------|---------------|
+| **CDNs** | Cloudflare, Akamai, Fastly; Google, Netflix (also course examples) | Cache sites, images, and video **close to users**. A local ISP that peers with a CDN at an IXP can serve millions of sites without sending that traffic through distant **transit** paths. |
+| **Streaming & video** | Netflix, YouTube (Google), Twitch (Amazon) | Video dominates Internet bandwidth. Peering (or placing caches inside ISP facilities) keeps playback smooth and avoids expensive backbone haul — e.g., Netflix **Open Connect** appliances inside ISP data centers or at IXPs. |
+| **Cloud & hyperscalers** | AWS, Azure, Google Cloud, Meta, Apple | Consumer and enterprise apps need low-latency paths to users. Peering with mobile and home ISPs keeps image, API, and sync traffic off congested **transit** routes. |
+| **ISPs** (the other side) | Comcast, AT&T, Spectrum; regional access ISPs | If customers spend most of their time on Netflix, YouTube, and social apps, the ISP saves **transit fees** by peering directly with those networks instead of paying a middleman. |
+
+!!! tip "Memory aid"
+    **Heavy data + many users → direct peering.** Content and cloud on one side of the bridge; **ISPs** on the other. IXPs are where they meet.
 
 ### IXP Services
 
@@ -815,19 +908,59 @@ See [Lesson 3 — Forwarding vs routing](../lesson-03/intradomain-routing.md#for
 - **IXPs** — Physical interconnection infrastructure (~500 worldwide) where ISPs, CDNs, and enterprises exchange traffic locally. Enable peering without transit costs.
 - **CDNs** — Content provider networks (Google, Netflix) with distributed data centers for controlled, cost-efficient delivery. Connect via ISPs and IXPs.
 
+**Who drives direct peering today:** CDNs, streaming/video platforms, and cloud **hyperscalers** (high data volume, latency-sensitive) peer with **ISPs** at IXPs (or via private interconnects) to avoid transit costs and shorten paths. If a business moves huge amounts of data to consumers quickly, it almost certainly peers directly.
+
 Also: **PoPs** (customer connection points), **multi-homing** (multiple providers), **settlement-free peering** (direct exchange). Topology evolving from hierarchical to flat.
 
 ---
 
 ## What is an AS?
 
-An **Autonomous System (AS)** is a group of routers (and links) operating under the **same administrative authority**, presenting a unified routing policy. Identified by a unique **ASN**.
+An **Autonomous System (AS)** is a group of routers (and links) operating under the **same administrative authority**, presenting a unified routing policy. Identified by a unique **ASN** (Autonomous System Number).
 
+- **Physical reality** — an AS is fiber, routers, switches, and data centers operated by one organization (ISPs, CDNs, cloud providers, large universities). It is **not** a single server node.
 - An ISP may operate as one AS or **multiple ASes** (business separation, traffic engineering).
 - Each AS sets its own policies, interconnection strategies, and controls traffic ingress/egress.
 - **BGP** at borders; **IGP** (OSPF, IS-IS, RIP) within.
 
-Examples: ISPs, CDNs, universities, enterprises.
+Examples: Comcast, Google (AS15169), AWS, Georgia Tech.
+
+**ASN** is the global ID; **AS** is the network itself. You obtain an ASN when your network needs to participate in interdomain **BGP** — independently of whether you ever connect at an IXP.
+
+---
+
+## What is the difference between an AS and an IXP?
+
+| | **Autonomous System (AS)** | **Internet Exchange Point (IXP)** |
+|---|---------------------------|-----------------------------------|
+| **What** | An independent **network** operated by one organization | A **physical facility** with a shared switching fabric |
+| **Role** | Generates, consumes, and routes traffic; runs BGP policy | Neutral **meeting place** where ASes peer — does **not** route participant traffic |
+| **Identified by** | **ASN** (global number) | Geographic location and operator name (e.g. DE-CIX Frankfurt) |
+
+An AS exists **before** connecting at an IXP. The IXP is infrastructure existing networks use to peer efficiently — not the source of AS identity.
+
+---
+
+## What is direct peering?
+
+**Direct peering** (often just **peering**) is a settlement-free agreement between two ASes to exchange traffic **directly** instead of via a **transit** provider. Each peer typically advertises only its own prefixes and its own customers — not routes learned from providers or other peers.
+
+**Why it matters for topology:** Peering at **IXPs** (or via private interconnects) lets local ISPs reach CDNs, streamers, and cloud providers **locally**, flattening the historical hierarchy where traffic rode up through Tier-1 backbones and back down.
+
+---
+
+## Must peering ASes align on internal policies?
+
+**No.** Peering involves an **eBGP handshake** at the border, but ASes do **not** need common ground on **internal** policies or traffic engineering. Each **Autonomous System** is **autonomous** — peers treat each other as **black boxes**.
+
+**What a peering agreement typically covers:**
+
+1. **Physical location** — which IXP or facility
+2. **Capacity** — link speed (e.g. 100 Gbps)
+3. **Prefixes** — which IP address blocks each may send
+4. **Financial terms** — usually settlement-free if traffic is roughly balanced
+
+**What stays private:** IGP choice, internal topology, congestion control, switch vendors — anything **inside** the AS. BGP's design allows each AS to implement policy **independently and confidentially**.
 
 ---
 
@@ -906,6 +1039,28 @@ Policies are driven by **business relationships** and implemented via **route fi
 
 ---
 
+## How do IGP, eBGP, and iBGP work together?
+
+Treat an **AS** as one organization under one administrative authority. Three protocol roles:
+
+| Protocol | Where | Role |
+|----------|-------|------|
+| **IGP** | Inside the AS | Intradomain path computation (OSPF, RIP, IS-IS) |
+| **eBGP** | Between ASes | Learn and advertise external reachability at borders; enforce business policy |
+| **iBGP** | Inside the AS | Disseminate externally learned routes — **does not** compute internal hop-by-hop paths |
+
+**Outbound packet flow (external destination):**
+
+1. Internal router uses **iBGP** information to choose **which border router** exits the AS for that prefix.
+2. **IGP** forwards the packet across the AS **to** that border router.
+3. Border router uses **eBGP** to hand off to the neighboring AS.
+
+**Internal destination:** **IGP only** — no BGP path selection needed.
+
+See also [Lesson 3 — Intradomain routing](../lesson-03/intradomain-routing.md) for IGP detail and [hot potato routing](../lesson-03/intradomain-routing.md#hot-potato-routing) (BGP step 6 uses IGP cost to NEXT-HOP).
+
+---
+
 ## What is the difference between iBGP and eBGP?
 
 Both disseminate routes for **external destinations**.
@@ -967,7 +1122,9 @@ Compare routes **attribute-by-attribute** until one wins:
 
 ## What is an IXP?
 
-An **Internet Exchange Point (IXP)** is physical infrastructure (switches in data centers, often redundant/distributed) where **participant ASes** interconnect and exchange traffic directly via **BGP**, rather than through transit providers.
+An **Internet Exchange Point (IXP)** is physical infrastructure — typically a secure colocation facility with a shared **switching fabric** — where **participant ASes** interconnect and exchange traffic **locally**, rather than through transit providers.
+
+The IXP operator provides the **building, switch fabric, and port**; participants bring their own **routers**, connect to the fabric, and run **BGP** to peer directly. The IXP does **not** act as a middleman that routes participant traffic — forwarding decisions are made by each AS's border routers. (Optional **route servers** help scale BGP on the **control plane** only; data still flows directly between participants on the fabric.)
 
 Requirements: public ASN, BGP router, port on IXP switch, GTC agreement. Costs: circuit setup, monthly port fee, possible membership — but traffic exchange is typically **settlement-free** (not volume-priced).
 

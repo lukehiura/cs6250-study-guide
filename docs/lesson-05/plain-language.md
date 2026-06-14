@@ -59,9 +59,9 @@ Think of a busy airport.
 | **Who** | Airline ops center | Gate agents at each terminal |
 | **Speed** | Slow — updates routes over minutes or hours | Fast — scan every boarding pass instantly |
 | **Job** | Decide which flights exist and where they go | Move each passenger to the right gate |
-| **In a router** | Runs OSPF/BGP, builds the forwarding table | Looks up destination → forwards the packet |
+| **In a router** | Runs OSPF/BGP, builds the forwarding table (**software**) | Looks up destination → forwards the packet (**hardware**) |
 
-The ops center decides **what the map should say**. Gate agents **use** the map on every passenger without re-planning the whole airline.
+The ops center decides **what the map should say**. Gate agents **use** the map on every passenger without re-planning the whole airline. The data plane works on a **much shorter timescale** — every packet, not every routing update.
 
 **Key takeaways:**
 
@@ -139,7 +139,28 @@ How do routers search millions of prefixes that fast? With a **trie** (say "try"
 
 **Unibit trie — one question at a time:**
 
-Like a phone tree: "Press 0 or 1. Press 0 or 1. Press 0 or 1…" — one bit per step, up to **32 steps** for IPv4. Along the way, remember the **last valid prefix** you passed. That's your longest match.
+Like a phone tree: "Press 0 or 1…" — one bit per step, up to **32 steps** for IPv4. The course uses nine prefixes (**P1–P9**) — the same ones from Practice Quiz 5-2:
+
+| Prefix | Pattern |
+|--------|---------|
+| P1 | `101*` |
+| P2 | `111*` |
+| P3 | `11001*` |
+
+To **store** P1 (`101*`): root → 1 → 0 → 1. To **store** P7 (`100000*`): root → 1 → then five 0-branches.
+
+To **look up** a packet: walk the trie bit by bit, remember the **last prefix label** you pass (e.g., P4 `1*` before you reach P2 `111*`). When you can't go further, that last label is your longest match.
+
+**Squares vs ovals in the diagram:**
+
+| Shape | What it means |
+|-------|---------------|
+| **Square** | Normal node — choose **0** or **1**, one bit at a time |
+| **Oval (P9)** | **Compressed branch** — only one valid path existed, so several bits are stored together (e.g. `01`); you must match them all at once |
+
+**Why P3 became an oval:** P3 = `11001*`. After `110`, the next bits are always `0` then `1`, and no other prefix shares that stretch. Two one-way square nodes collapse into oval **P9** instead of wasting empty pointers.
+
+**Why `10*` returns P4, not P8 or P1:** P8 = `100*` and P1 = `101*` — both need a **third** bit. Lookup for `10*` stops after 2 bits; the last label recorded is **P4** (`1*`) at depth 1. The `10` square is just a fork — P8 and P1 live one level deeper. **Rule:** a prefix appears where **its bits end**, not at every node you pass through.
 
 **Problem:** 32 steps is too many at wire speed.
 
@@ -158,7 +179,7 @@ Suppose the stride is 2 bits but you have a rule for `11*`. You stretch it into 
 
 **Memory trick:** Unibit = **one question at a time**. Multibit = **multiple-choice at each level**. Prefix expansion = **stretch short rules to fit the quiz format**.
 
-![Unibit trie lookup walking bits and tracking the longest matching prefix](../images/unibit-trie-lookup.png)
+![Unibit trie for the P1–P9 prefix database](../images/unibit-trie-p1-p9-structure.png)
 
 ---
 
@@ -185,20 +206,25 @@ Old **classful** addressing gave you Class A, B, or C — often way too much or 
 
 ## Scenario: why routers are so hard to build
 
-Four everyday pressures that show up in real networks:
+Four pressures from measurement studies and scaling trends:
 
 | Pressure | What you notice | Why engineers care |
 |----------|-----------------|-------------------|
-| **Lookup speed** | Everything feels fine until it doesn't | 900k+ prefixes, nanoseconds per packet |
-| **Memory type** | — | DRAM too slow; SRAM fast but tiny; TCAM fast but power-hungry |
-| **Fabric throughput** | Internal jam even when links look idle | Inside must keep up with **all ports combined** |
-| **Hot destinations** | One viral video hammers the same path | A few prefixes carry most traffic → caching helps |
+| **Many concurrent flows** | No single "hot" destination | **Caching fails** in backbone routers — every packet needs lookup |
+| **Small packets (TCP ACKs)** | Tiny packets flood the router | **Packets/sec** matters as much as Gbps |
+| **Memory access count** | — | Lookup speed ≈ number of **memory accesses** (1–2 allowed at line rate) |
+| **Prefix table growth** | Routing table keeps growing | 150k+ prefixes heading toward 500k–1M; fast **BGP updates** required |
 
-**Traffic facts that shape design:**
+**Memory tradeoff:** DRAM is cheap but too slow; SRAM/TCAM is fast but expensive and limited. That's why tries, multibit strides, and prefix expansion exist.
 
-1. **Bursty** — Netflix at 8pm isn't the average; routers need buffers for spikes.
-2. **Small packets** — a flood of tiny packets means lookups/sec matter as much as Gbps.
-3. **Uneven prefix lengths** — rules range from `/8` to `/32`; algorithms must handle all of them.
+**Router bottleneck families** (each has causes and solutions explored later in the module):
+
+| Bottleneck | Sample fix |
+|------------|------------|
+| Prefix lookups | Compressed multibit tries |
+| Switching / HOL blocking | Crossbar + virtual output queues |
+| Fair queueing | WFQ, deficit round robin |
+| Security at scale | Bloom-filter traceback |
 
 ![Router input port, switching fabric, and output port with throughput and queuing challenges](../images/router-challenges-switch-fabric.png)
 

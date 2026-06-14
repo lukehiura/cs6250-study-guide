@@ -29,10 +29,25 @@ Condensed review for exams. New to the material? Start with the **[Plain-languag
 
 | | Control plane | Data plane |
 |---|---------------|------------|
-| Speed | Slow (protocol timers) | Per-packet (ns) |
+| **Implementation** | **Software** (routing processor) | **Hardware** (input ports, fabric) |
+| Speed | Slow (protocol timers) | Per-packet (ns) — **shorter timescale** |
 | Job | OSPF/BGP, compute FIB, SNMP/config | LPM, forward, checksum/TTL |
 | Location | Routing processor | Input ports + hardware |
 | SDN | Can be centralized controller | Devices execute installed rules |
+
+### Classify operations (Canvas practice quiz)
+
+| Operation | Plane |
+|-----------|-------|
+| Computing paths based on a protocol | **Control** |
+| Running protocols to build a routing table | **Control** |
+| Running Spanning Tree protocol | **Control** |
+| Configuring a middlebox (load balancing logic) | **Control** |
+| Forwarding packets at Layer 3 | **Data** |
+| Switching packets across the fabric | **Data** |
+| Decrementing TTL | **Data** |
+| Computing IP header checksum | **Data** |
+| Forwarding per installed middlebox rules | **Data** |
 
 ---
 
@@ -70,30 +85,56 @@ Condensed review for exams. New to the material? Start with the **[Plain-languag
 
 ## 6. Tries
 
-### Unibit
+### Unibit (P1–P9 database)
 
-- One bit per level; 0/1 branches.
-- Track **last valid prefix** along path → LPM.
-- Worst case **O(W)** steps (W=32 IPv4).
+| Prefix | Pattern |
+|--------|---------|
+| P1 | `101*` |
+| P2 | `111*` |
+| P3 | `11001*` |
+| P4 | `1*` |
+| P5 | `0*` |
+| P6 | `1000*` |
+| P7 | `100000*` |
+| P8 | `100*` |
+
+- One bit per level; 0/1 pointers from root.
+- Track **last valid prefix** on path → LPM when search fails.
+- **Substring rule:** shorter prefix (P4 `1*`) stored on path to longer (P2 `111*`).
+- **Square** = normal 0/1 branch; **oval (P9)** = compressed one-way branch (match multi-bit label at once).
+- **One-way branches** compressed (P9 = `01` on path to P3 — no other prefix shares `110` then `01`).
+- **Prefix stored where its bits end** — `10*` → **P4** (`1*`), not P8 (`100*`) or P1 (`101*`); need 3rd bit for those.
+- Worst case **O(32)** memory accesses for IPv4.
+
+**LPM walk:** trace bits → record prefixes on path → on failure, return last recorded.
 
 ### Multibit
 
-- Stride **s** bits per level → up to $2^s$ children per node.
-- Fewer memory accesses; **larger/sparser** nodes.
+- **Stride k** → $2^k$ children per node; fewer levels than unibit.
+- **Why:** 32 unibit accesses × ~60 ns ≈ **1.92 μs** — too slow at wire speed.
+- **Fixed** vs **variable** stride tries.
 
-### Prefix expansion
+### Prefix expansion (controlled)
 
-- Expand shorter prefixes to stride-aligned lengths.
-- **Collision** with more-specific entry → **drop expanded copy**.
-- Trade: **memory** for **lookup speed**.
+- Pad prefixes to **multiples of stride length**.
+- **Collision** with existing entry → **drop expanded copy**.
+- More entries, fewer distinct lengths → faster indexing.
+
+**Quiz example (stride 3):** P3=`1*` → `100*`, `110*`, `111*` (`101*` dropped — P1 owns it). P2=`0*` → `000*`, `001*`, `010*`, `011*`.
 
 ### Fixed vs variable stride
 
 | | Fixed stride | Variable stride |
 |---|--------------|-----------------|
-| Implementation | Simpler | More complex |
-| Memory | May waste on sparse levels | Optimize per subtree |
-| Lookups | Uniform depth per level | Fewer accesses where dense |
+| Stride per level | Same **k** everywhere | **k** encoded in each pointer |
+| Prefix lengths | Multiples of **k** only | Multiples of **k** per node |
+| Memory | More entries (e.g., 8-entry node for 2 remaining bits) | **Fewer entries** — tune per subtree |
+| Optimization | Simpler | **Dynamic programming** for optimal strides |
+| Lookup | Fewer accesses than unibit | Fewer accesses + less memory than fixed |
+
+**Fixed stride 3 lookup:** remember last prefix on pointer chain; stop at empty pointer (`001` → P5; `100000` → P7).
+
+**Variable stride quiz (n1–n17):** a→**n2,n3**; d→**n4,n5**; c→**n8,n9**; b→n16; e→n10; f→n12; g→n13; h→n14; i→n15; rest **none**. Short prefixes label **every** matching child subtree.
 
 **After expansion (stride s):** new prefixes only at lengths that are multiples of s per trie level (e.g., stride 8 on IPv4 → lengths 8, 16, 24, 32).
 
@@ -113,28 +154,40 @@ Condensed review for exams. New to the material? Start with the **[Plain-languag
 
 ---
 
-## 8. Traffic characteristics (design consequences)
+## 8. Traffic observations → lookup design
 
-1. **Bursty** → need buffers; design for peaks.
-2. **Small packets common** → **packets/sec** stresses lookup, not just Gbps.
-3. **Non-uniform prefix lengths** → LPM structures must handle /8–/32.
-4. **Few hot prefixes carry most traffic** → **caching** popular FIB entries helps.
+| Observation | Inference |
+|-------------|-----------|
+| ~250k concurrent flows | Caching **poor** in backbone routers |
+| ~50% TCP ACKs (40 bytes) | **Wire-speed** lookup on small packets |
+| Lookup = memory accesses | Speed measured by **# of accesses** |
+| Prefix lengths /8–/32 | Naive LPM ≈ **24 accesses** |
+| 150k+ prefixes (→ 500k–1M) | Tables must scale |
+| Unstable BGP/multicast | Fast **updates** (ms–s) |
+| High speeds need SRAM | **Minimize memory** |
+
+**Four takeaways:** (1) many flows → no caching; (2) memory accesses dominate speed; (3) fast BGP updates; (4) SRAM vs DRAM tradeoff.
 
 ---
 
 ## 9. Bottlenecks & fundamental problems
 
-**Two fundamental problems:**
+**Fundamental problems:**
 
-1. Link speeds grew faster than per-packet processing (lookup harder than exact match).
-2. Routing table size growth (900k+ prefixes).
+1. **Bandwidth/population scaling** — more devices, traffic, faster links.
+2. **Services at high speeds** — QoS, security, measurement at line rate.
 
-**Bottlenecks:**
+**Bottleneck → sample solution:**
 
-- LPM at line rate
-- Memory: DRAM slow, SRAM limited, TCAM fast but costly
-- Fabric throughput vs aggregate input rate
-- Output port contention → queuing, HOL blocking (detail in Lesson 6)
+| Bottleneck | Sample solution |
+|------------|-----------------|
+| Prefix lookups | Compressed multibit tries |
+| Packet classification | Decision trees; CAM parallelism |
+| Switching / HOL | Crossbar; **VOQ** |
+| Fair queueing | WFQ; DRR; DiffServ |
+| Security | Bloom-filter traceback |
+
+Prefix lookups: LPM at line rate. Memory: DRAM slow, SRAM limited, TCAM fast but costly. Fabric: aggregate input rate vs crossbar throughput.
 
 ---
 

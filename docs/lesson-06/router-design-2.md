@@ -137,7 +137,9 @@ Assume we have a **two-dimensional rule** — classifying packets using both sou
 | R₆ | 10* | 1* |
 | R₇ | * | 00* |
 
-![Example with 7 destination-source rules](../images/packet-classification-7-rules.png)
+![Database at Router R — packet classification rules with To, From, Traffic Type, and Forwarding Directive](../images/packet-classification-database-router-r.png){ width="700" }
+
+![Example with 7 destination-source rules for set-pruning trie construction](../images/packet-classification-7-rules.png){ width="600" }
 
 The simplest approach is to build a **trie on the destination prefixes**, and then for every leaf node in the destination trie, "hang" **source tries**. By S₁ we denote the source prefix of rule R₁, S₂ of rule R₂, and so on. For every destination prefix D in the destination trie, we **prune** the set of rules to those compatible with D.
 
@@ -194,9 +196,14 @@ The **grid of tries** approach reduces wasted time in backtracking by using **pr
 3. Instead of backtracking, a switch pointer (labeled `0`) points to node **x**, where it fails again.
 4. Follow another switch pointer to node **y**, where the algorithm terminates.
 
-The precomputed switch pointers allow us to take **shortcuts** — we avoid backtracking to find an ancestor node and then traversing its source trie. We still proceed to match the source and keep track of our current best source match, but we skip source tries with source fields shorter than our current source match.
+The precomputed switch pointers allow us to take **shortcuts** — we avoid backtracking to find an ancestor node and then traversing its source trie. We still proceed to match the source and keep track of our current best source match, but we **skip source tries with source fields shorter than our current source match**.
 
-![Grid of tries with switch pointers](../images/grid-of-tries.png)
+!!! abstract "Takeaway"
+    Grid of tries = backtracking with precomputed shortcuts. Switch pointers are labeled by the bit value that caused the failure, and they jump directly to the next candidate source trie.
+
+![Grid of tries — avoiding memory blowup by storing rules once](../images/backtracking-tries.png){ width="700" }
+
+![Grid of tries with precomputed switch pointers to skip failed source tries](../images/grid-of-tries-switch-pointers.png){ width="700" }
 
 !!! info "Reference"
     Varghese, *Network Algorithmics*, Section 12.5.3
@@ -226,6 +233,10 @@ Consider three input lines (A, B, C) and four output lines (1, 2, 3, 4). Next to
 ![Take-a-ticket scheduling — Round 3](../images/take-ticket-round-3.png)
 
 While A sends its packet in the first iteration, the **entire queue for B and C is waiting**. We refer to this problem as **head-of-line (HOL) blocking** — the entire queue is blocked by the progress of the head of the queue, even when packets behind the head are destined for idle output ports.
+
+The timeline below shows the effect across all output links. Empty slots mean no packet was sent at that time — wasted capacity caused by HOL blocking:
+
+![HOL blocking timeline — empty slots caused by take-a-ticket serialization](../images/hol-blocking-timeline.png){ width="700" }
 
 ---
 
@@ -620,7 +631,7 @@ Traffic **policing** and **shaping** are mechanisms to limit the output rate of 
 - **Policer** — When the traffic rate reaches the maximum configured rate, excess traffic is **dropped** or the packet's marking is changed. The output rate appears as a **saw-toothed wave** (peaks clipped at the threshold).
 - **Shaper** — Excess packets are retained in a **queue or buffer** and scheduled for later transmission. Excess traffic is **delayed** instead of dropped, producing a **smooth, constant** output rate.
 
-![Policing vs shaping output rate comparison](../images/leaky-bucket-policing-vs-shaping.png)
+![Policing vs shaping output rate comparison — saw-tooth vs smooth constant rate](../images/leaky-bucket-policing-vs-shaping.png){ width="700" }
 
 Traffic shaping and policing can work in tandem.
 
@@ -634,7 +645,7 @@ The leaky bucket is analogous to water flowing into a leaky bucket, with water l
 - If the bucket is full, the new packet is dropped.
 - Irrespective of input rate, the **output rate is constant**, producing uniform packet distribution. Can be implemented as a single-server queue.
 
-![Leaky bucket analogy: water bucket and network implementation](../images/leaky-bucket-analogy.png)
+![Leaky bucket analogy: faucet (unregulated input), bucket (buffer), constant drip output (regulated flow)](../images/leaky-bucket-analogy.png){ width="700" }
 
 !!! info "Reference"
     Kurose & Ross, Edition 6, Section 7.5.2

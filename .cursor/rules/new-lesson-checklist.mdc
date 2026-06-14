@@ -33,8 +33,8 @@ Update **cross-links in all existing siblings** when adding a new format.
 
 ## 4. Images
 
-- [ ] New diagrams saved to `docs/images/kebab-case-name.png`
-- [ ] Referenced as `![descriptive alt](images/kebab-case-name.png)`
+- [ ] New diagrams saved to `docs/images/lesson-NN/kebab-case-name.png`
+- [ ] Referenced from `docs/lesson-NN/*.md` as `![descriptive alt](../images/lesson-NN/kebab-case-name.png)`
 - [ ] Reuse existing images when the same course diagram applies
 
 ## 5. Build verification

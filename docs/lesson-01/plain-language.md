@@ -54,7 +54,7 @@ You never think about any of this. **Layers** exist so each step has one job —
 - You can switch from Wi‑Fi to 5G without changing your browser — swap one layer, keep the rest.
 - Each layer wraps the one above in a new envelope (**encapsulation**). Routers only read the **outside** label (IP), not your page content.
 
-![Layering and functionality illustrated with the airline analogy](../images/layering-functionality.png)
+![Layering and functionality illustrated with the airline analogy](../images/lesson-01/layering-functionality.png)
 
 **Memory trick for data names going down:** **M**essage → **S**egment → **D**atagram → **F**rame → **B**its
 
@@ -125,7 +125,7 @@ Internet:        App       | Trans | Net | Link | Phys   (5)
 
 **Socket** = the door between your app and the network: IP address + **port number** (which app on the machine).
 
-![Diagram comparing seven-layer OSI model to five-layer Internet Protocol Stack](../images/osi-model.png)
+![Diagram comparing seven-layer OSI model to five-layer Internet Protocol Stack](../images/lesson-01/osi-model.png)
 
 ---
 
@@ -148,7 +148,7 @@ A **learning bridge** (switch) builds a table from traffic:
 1. Your laptop sends from port 3 → "laptop lives on port 3"
 2. Frame for the printer → if known, send to that port only; if unknown, **flood** to all ports until someone answers
 
-![Illustration of a learning bridge](../images/learning-bridge.png)
+![Illustration of a learning bridge](../images/lesson-01/learning-bridge.png)
 
 **Memory trick:** learn from **source**, forward to **destination**.
 
@@ -160,7 +160,7 @@ Your office has two paths between switches for backup. Good for reliability — 
 
 **Spanning Tree** fix: keep all cables plugged in, but **block** some ports in software so traffic follows one loop-free tree.
 
-![Extended LAN topology with loops](../images/spanning-tree-loops.png)
+![Extended LAN topology with loops](../images/lesson-01/spanning-tree-loops.png)
 
 Switches gossip until they agree:
 
@@ -168,7 +168,7 @@ Switches gossip until they agree:
 2. Each switch picks shortest path to root
 3. Block ports that would create a loop
 
-![Resulting spanning tree after algorithm converges](../images/spanning-tree-result.png)
+![Resulting spanning tree after algorithm converges](../images/lesson-01/spanning-tree-result.png)
 
 **Memory trick:** backup cables stay **physical**; forwarding follows a **tree** only.
 
@@ -190,7 +190,7 @@ Think **USB-C in the middle**: tons of devices on top, tons of cables and charge
 
 Almost every app uses **IP + TCP or UDP**. That shared middle is why your phone, laptop, and smart TV all interoperate — but it also makes change slow (**ossification**). **IPv6** is better on paper; switching billions of devices is hard.
 
-![Evolutionary Architecture Model showing the hourglass shape](../images/evoarch-hourglass.png)
+![Evolutionary Architecture Model showing the hourglass shape](../images/lesson-01/evoarch-hourglass.png)
 
 **EvoArch (one paragraph):** Researchers modeled how protocol stacks evolve. Protocols lots of apps depend on (like **TCP**) become hard to replace even if something better appears. Over time you get an hourglass — wide top and bottom, narrow waist. Exam detail: [full guide — EvoArch](introduction.md#the-evoarch-model).
 
@@ -208,7 +208,7 @@ Link adds:           [ L | N | T | M ]          (frame)
 Physical sends:      bits on the wire
 ```
 
-![Encapsulation across layers, switches, and routers](../images/encapsulation.png)
+![Encapsulation across layers, switches, and routers](../images/lesson-01/encapsulation.png)
 
 ---
 

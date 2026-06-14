@@ -63,7 +63,7 @@ For example, when a browser in an enterprise network reaches a web server hosted
 
 Today's Internet is a complex **ecosystem** built of a network of networks. The basis includes **Internet Service Providers (ISPs)**, **Internet Exchange Points (IXPs)**, and **Content Delivery Networks (CDNs)**.
 
-![Interconnection of ISPs — Tier 1, regional, access ISPs, IXPs, and content providers](../images/isp-interconnection.png)
+![Interconnection of ISPs — Tier 1, regional, access ISPs, IXPs, and content providers](../images/lesson-04/isp-interconnection.png)
 
 ### Network Types
 
@@ -83,7 +83,7 @@ Today's Internet is a complex **ecosystem** built of a network of networks. The 
 
 The ecosystem forms a **hierarchical structure**: smaller networks (access ISPs) connect to larger ones (regional → Tier-1) as **customers** of their **providers**.
 
-![Competition and cooperation — customer-provider relationships across ISP tiers](../images/competition-cooperation-networks.png)
+![Competition and cooperation — customer-provider relationships across ISP tiers](../images/lesson-04/competition-cooperation-networks.png)
 
 - ISPs **compete** at every level (Tier-1 vs Tier-1, regional vs regional).
 - Competing ISPs must also **cooperate** to provide global connectivity to their customers.
@@ -151,7 +151,7 @@ Example IGPs: OSPF, IS-IS, RIP, E-IGRP.
 
 The prevalent forms of business relationships between ASes are **provider-customer (transit)** and **peering**.
 
-![Autonomous Systems business relationships — transit and peering between ISPs and customers](../images/as-business-relationships.png)
+![Autonomous Systems business relationships — transit and peering between ISPs and customers](../images/lesson-04/as-business-relationships.png)
 
 ### Provider-Customer (Transit)
 
@@ -205,7 +205,7 @@ While peering forwards traffic at no cost, provider ASes have a financial incent
 
 AS business relationships drive an AS's **routing policies** and determine which routes to **import** or **export**. Advertising a route to a neighbor means that neighbor may select it — and traffic may flow through your network. Import/export decisions are therefore **policy decisions**, implemented via **route filters** (rules controlling which routes a router advertises to neighboring ASes).
 
-![Common inter-AS relationships — transit ($) and peering between ISPs and customers](../images/transit-peering-relationships.png)
+![Common inter-AS relationships — transit ($) and peering between ISPs and customers](../images/lesson-04/transit-peering-relationships.png)
 
 ### Exporting Routes
 
@@ -302,7 +302,7 @@ A pair of routers (**BGP peers**) exchange routing information over a semi-perma
 | **eBGP** (external) | Routers in **different** ASes | 3a ↔ 1c |
 | **iBGP** (internal) | Routers in the **same** AS | 3c ↔ 3a |
 
-![eBGP and iBGP sessions across AS1, AS2, and AS3](../images/ebgp-ibgp-sessions.png)
+![eBGP and iBGP sessions across AS1, AS2, and AS3](../images/lesson-04/ebgp-ibgp-sessions.png)
 
 ### BGP Messages
 
@@ -379,13 +379,13 @@ BGP has two flavors, both used to disseminate routes for **external destinations
 
 **eBGP-speaking routers** learn external routes and pass them to all routers in the AS via **iBGP**. Border routers of AS1, AS2, and AS3 establish eBGP sessions to learn external routes; inside AS2, those routes are disseminated over iBGP.
 
-![eBGP between AS1–AS2–AS3; iBGP within AS2](../images/ibgp-ebgp-as-sessions.png)
+![eBGP between AS1–AS2–AS3; iBGP within AS2](../images/lesson-04/ibgp-ebgp-as-sessions.png)
 
 ### iBGP Full Mesh
 
 Route dissemination within an AS uses a **full mesh** of iBGP sessions — each eBGP-speaking router maintains an iBGP session with **every other BGP router** in the AS to send updates about routes learned over eBGP.
 
-![iBGP full mesh within an AS; eBGP to neighboring ASes; external route info disseminated internally](../images/ibgp-ebgp-full-mesh.png)
+![iBGP full mesh within an AS; eBGP to neighboring ASes; external route info disseminated internally](../images/lesson-04/ibgp-ebgp-full-mesh.png)
 
 ### iBGP Is Not an IGP
 
@@ -406,7 +406,7 @@ ASes operate under different administrative authorities with different business 
 
 ### Router Model
 
-![BGP decision process — in-queues, processor, neighbor tables, forwarding table, export filters, out-queues](../images/bgp-decision-process-router.png)
+![BGP decision process — in-queues, processor, neighbor tables, forwarding table, export filters, out-queues](../images/lesson-04/bgp-decision-process-router.png)
 
 Conceptually ([Dovrolis et al.](https://www.cc.gatech.edu/home/dovrolis/Papers/bgp-scale-conext08.pdf)):
 
@@ -422,7 +422,7 @@ When multiple advertisements exist for the same destination, the router **compar
 
 With **no policy**, the router would simply pick the shortest path (fewest hops) — this rarely happens in practice.
 
-![BGP decision process — seven-step attribute comparison](../images/bgp-decision-process-steps.png)
+![BGP decision process — seven-step attribute comparison](../images/lesson-04/bgp-decision-process-steps.png)
 
 | Step | Attribute | Controlled by |
 |------|-----------|---------------|
@@ -438,13 +438,13 @@ With **no policy**, the router would simply pick the shortest path (fewest hops)
 
 **LocalPref** prefers routes learned through a specific neighbor AS over others — controlling **where traffic exits** the AS (outbound).
 
-![LocalPref example — AS B learns destination x via AS A and AS C](../images/bgp-localpref-attribute.png)
+![LocalPref example — AS B learns destination x via AS A and AS C](../images/lesson-04/bgp-localpref-attribute.png)
 
 Example: AS B learns destination **x** via AS A and AS C. If B prefers routing through A (peering/business), it assigns a **higher LocalPref** to routes from A. Internal routers then select A as the exit point.
 
 An operator can assign **non-overlapping LocalPref ranges** by business relationship:
 
-![LocalPref ranges by relationship — customer, peer, provider, backup](../images/bgp-localpref-ranges.png)
+![LocalPref ranges by relationship — customer, peer, provider, backup](../images/lesson-04/bgp-localpref-ranges.png)
 
 | Relationship | LocalPref range |
 |--------------|-----------------|
@@ -531,7 +531,7 @@ IXPs are **physical infrastructures** enabling ASes to interconnect and directly
 - **Fully redundant switching fabric** for fault tolerance.
 - Equipment in data centers (reliability, power, physical security).
 
-![DE-CIX Frankfurt (2012) — core sites and distributed colocation facilities](../images/de-cix-frankfurt.png)
+![DE-CIX Frankfurt (2012) — core sites and distributed colocation facilities](../images/lesson-04/de-cix-frankfurt.png)
 
 Example: **DE-CIX** in Frankfurt — core sites (3, 6) plus additional sites (1–4, 7) at different colocation facilities.
 
@@ -618,7 +618,7 @@ A **Route Server (RS)**:
 1. **Collects** routing information from IXP participants connected to it.
 2. Runs its own **BGP decision process** and **re-advertises** results (e.g., best route selection) to all RS peer routers.
 
-![Multilateral vs bilateral BGP peering at an IXP](../images/multilateral-bilateral-peering.png)
+![Multilateral vs bilateral BGP peering at an IXP](../images/lesson-04/multilateral-bilateral-peering.png)
 
 | Mode | BGP sessions | Scalability |
 |------|--------------|-------------|
@@ -632,7 +632,7 @@ A routing daemon maintains:
 - **Master RIB** — all BGP paths received from peers.
 - **AS-specific RIBs** — per-participant session state.
 
-![BIRD route server — Master RIB, AS-specific RIBs, import/export filters](../images/bird-route-server.png)
+![BIRD route server — Master RIB, AS-specific RIBs, import/export filters](../images/lesson-04/bird-route-server.png)
 
 **Two filter types:**
 
@@ -702,9 +702,9 @@ At Internet scale, destinations are **prefixes** (address blocks like `a.b.c.0/2
 
 The Internet is a **network of networks** — not one operator, but thousands of independent ASes cooperating and competing:
 
-![Interconnection of ISPs](../images/isp-interconnection.png)
+![Interconnection of ISPs](../images/lesson-04/isp-interconnection.png)
 
-![Competition and cooperation among networks](../images/competition-cooperation-networks.png)
+![Competition and cooperation among networks](../images/lesson-04/competition-cooperation-networks.png)
 
 | Network Type | Role |
 |--------------|------|
@@ -721,7 +721,7 @@ Networks **compete** (customers, performance, market share) and **cooperate** (n
 
 ### Import/Export Policy at a Glance
 
-![Transit and peering relationships with export rules](../images/transit-peering-relationships.png)
+![Transit and peering relationships with export rules](../images/lesson-04/transit-peering-relationships.png)
 
 ```
 Routes learned from:          Export to:
@@ -735,7 +735,7 @@ Import preference (ranking):
 
 ### AS Business Relationships
 
-![AS business relationships — transit and peering](../images/as-business-relationships.png)
+![AS business relationships — transit and peering](../images/lesson-04/as-business-relationships.png)
 
 **Customer–Provider (Transit)**
 
@@ -778,13 +778,13 @@ Interdomain routing is rarely about the shortest path — the selected path refl
 
 Each border router runs a control-plane pipeline:
 
-![BGP decision process — router model](../images/bgp-decision-process-router.png)
+![BGP decision process — router model](../images/lesson-04/bgp-decision-process-router.png)
 
 ```
 Receive BGP messages → Import Policies → Decision Making → Install in FIB → Send BGP messages (export)
 ```
 
-![BGP decision process — seven-step attribute ranking](../images/bgp-decision-process-steps.png)
+![BGP decision process — seven-step attribute ranking](../images/lesson-04/bgp-decision-process-steps.png)
 
 1. **Import** — apply import policies: reject routes, tag them, assign preference attributes (e.g., LocalPref).
 2. **Decision** — compare candidate routes attribute-by-attribute in fixed order until one path is selected.
@@ -793,9 +793,9 @@ Receive BGP messages → Import Policies → Decision Making → Install in FIB 
 
 ### Key BGP Attributes
 
-![LocalPref — AS B chooses exit via AS A or AS C](../images/bgp-localpref-attribute.png)
+![LocalPref — AS B chooses exit via AS A or AS C](../images/lesson-04/bgp-localpref-attribute.png)
 
-![LocalPref ranges by business relationship](../images/bgp-localpref-ranges.png)
+![LocalPref ranges by business relationship](../images/lesson-04/bgp-localpref-ranges.png)
 
 **LocalPref** — set **inside your AS**. Controls which exit to use for **outbound** traffic. Higher values = preferred during path selection. Typical assignment:
 
@@ -807,11 +807,11 @@ Receive BGP messages → Import Policies → Decision Making → Install in FIB 
 
 ### BGP Mechanics
 
-![eBGP and iBGP sessions across AS1, AS2, AS3](../images/ebgp-ibgp-sessions.png)
+![eBGP and iBGP sessions across AS1, AS2, AS3](../images/lesson-04/ebgp-ibgp-sessions.png)
 
-![eBGP between AS1–AS2–AS3; iBGP within AS2](../images/ibgp-ebgp-as-sessions.png)
+![eBGP between AS1–AS2–AS3; iBGP within AS2](../images/lesson-04/ibgp-ebgp-as-sessions.png)
 
-![iBGP full mesh within an AS](../images/ibgp-ebgp-full-mesh.png)
+![iBGP full mesh within an AS](../images/lesson-04/ibgp-ebgp-full-mesh.png)
 
 - Neighbors establish a session over **TCP** (port 179) via **OPEN** messages.
 - **UPDATE** messages announce new routes or withdraw old ones (incremental operation).
@@ -850,7 +850,7 @@ BGP errors **don't stay local** — they spread across neighbors, causing slow c
 
 IXPs provide **interconnection infrastructure** — a physical switching fabric where **participant ASes** (ISPs, CDNs, enterprises, cloud providers) exchange traffic locally.
 
-![DE-CIX Frankfurt IXP infrastructure](../images/de-cix-frankfurt.png)
+![DE-CIX Frankfurt IXP infrastructure](../images/lesson-04/de-cix-frankfurt.png)
 
 To peer at an IXP, a network needs:
 
@@ -870,9 +870,9 @@ To peer at an IXP, a network needs:
 
 ### How Route Servers Work
 
-![Multilateral vs bilateral BGP peering](../images/multilateral-bilateral-peering.png)
+![Multilateral vs bilateral BGP peering](../images/lesson-04/multilateral-bilateral-peering.png)
 
-![BIRD route server architecture](../images/bird-route-server.png)
+![BIRD route server architecture](../images/lesson-04/bird-route-server.png)
 
 1. Route server maintains one **master table**.
 2. When member X announces prefix P1 → **import filters** check if X is allowed to advertise P1 (prevents route leaks).
@@ -1205,7 +1205,7 @@ See [Lesson 3 — OSPF](../lesson-03/intradomain-routing.md#ospf-open-shortest-p
 
 RP lowers barriers to connecting to IXPs worldwide — often more **cost-effective** for localized or regional network operators.
 
-![Multiple remote IXP peerings — ASx connects to IXP A and IXP B via a remote provider](../images/multiple-remote-ixp-peerings.png)
+![Multiple remote IXP peerings — ASx connects to IXP A and IXP B via a remote provider](../images/lesson-04/multiple-remote-ixp-peerings.png)
 
 ### How to Detect Remote Peering
 

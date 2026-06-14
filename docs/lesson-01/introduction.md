@@ -78,7 +78,7 @@ A useful analogy is the airline system. To travel from one city to another, a pa
 
 The same principle applies to Internet architecture. Each layer focuses on one part of communication. Lower layers handle physical transmission and local delivery. Higher layers support end-to-end communication and applications.
 
-![Layering and functionality illustrated with the airline analogy](../images/layering-functionality.png)
+![Layering and functionality illustrated with the airline analogy](../images/lesson-01/layering-functionality.png)
 
 ### Why Layering Helps
 
@@ -126,11 +126,11 @@ The main difference is that the Internet model combines the application, present
 
 The interface between the application layer and the transport layer is the **socket interface**. Application developers use sockets to send and receive data over the network. It is then up to the application developer to decide what functionality the application needs and how the application should use the transport-layer services below it.
 
-![Application endpoints may not be on the same media](../images/application-api.png)
+![Application endpoints may not be on the same media](../images/lesson-01/application-api.png)
 
 Layering gives the Internet important benefits, including scalability, modularity, and flexibility. It allows different technologies and protocols to evolve independently, as long as each layer continues to provide the expected service to the layer above it.
 
-![Diagram comparing seven-layer OSI model to five-layer Internet Protocol Stack](../images/osi-model.png)
+![Diagram comparing seven-layer OSI model to five-layer Internet Protocol Stack](../images/lesson-01/osi-model.png)
 
 Layering also has some limitations:
 
@@ -294,7 +294,7 @@ End hosts implement all five layers because they create and consume application 
 
 This keeps complexity at the **edges** of the network while keeping the core **simple and focused on forwarding** — a principle that connects directly to the end-to-end principle.
 
-![Encapsulation across layers, switches, and routers](../images/encapsulation.png)
+![Encapsulation across layers, switches, and routers](../images/lesson-01/encapsulation.png)
 
 !!! abstract "Takeaway"
     Encapsulation explains how layered communication works in practice: each layer adds the information it needs, and each device processes only the layers required for its role.
@@ -423,7 +423,7 @@ This separation gave application designers flexibility while keeping the underly
 
 In practice, real networks sometimes violate the end-to-end principle to solve practical problems. These violations are not always "bad" — they often address real constraints like security, policy enforcement, and IPv4 address scarcity.
 
-![End-to-end violation: NAT boxes](../images/nat-boxes.png)
+![End-to-end violation: NAT boxes](../images/lesson-01/nat-boxes.png)
 
 ### Firewalls
 
@@ -442,7 +442,7 @@ NAT was introduced as a practical response to the shortage of public IPv4 addres
 3. The NAT stores the mapping: `120.70.39.4:5001` ↔ `10.0.0.4:3345`.
 4. When the response arrives at `120.70.39.4:5001`, the NAT rewrites the destination back to `10.0.0.4:3345` and forwards it inside.
 
-![NAT translation table example](../images/nat-translation.png)
+![NAT translation table example](../images/lesson-01/nat-translation.png)
 
 **Why NAT violates e2e:** In the original model, hosts are globally addressable and can communicate directly. With NAT, inside hosts are **not reachable** from the public Internet unless the NAT has a mapping. An outside host cannot initiate a connection to a device behind NAT. The NAT box becomes an active participant — rewriting addresses and ports — rather than a simple forwarder.
 
@@ -473,7 +473,7 @@ The Internet protocol stack is often described as having an **hourglass shape**:
 - **Middle (narrow waist):** A small set of core protocols — primarily **IPv4**, **TCP**, and **UDP**.
 - **Top (wide):** Many applications — web, email, video streaming, real-time communication, cloud services.
 
-![Evolutionary Architecture Model showing the hourglass shape](../images/evoarch-hourglass.png)
+![Evolutionary Architecture Model showing the hourglass shape](../images/lesson-01/evoarch-hourglass.png)
 
 ### Was the Internet Always This Shape?
 
@@ -513,7 +513,7 @@ EvoArch represents a protocol stack as a **layered directed acyclic graph**:
 - **Products P(u)** = protocols/applications above u that depend on u
 - **Layer l(u)** = the layer where protocol u lives
 
-![Layered Acyclic Network model](../images/evoarch-layered-network.png)
+![Layered Acyclic Network model](../images/lesson-01/evoarch-layered-network.png)
 
 ### Layer Generality
 
@@ -544,7 +544,7 @@ EvoArch runs in discrete rounds:
 
 After many rounds, the stack narrows toward a small waist and expands again — the hourglass emerges naturally.
 
-![Toy Network with Four Layers showing evolutionary values and generality](../images/evoarch-toy-network.png)
+![Toy Network with Four Layers showing evolutionary values and generality](../images/lesson-01/evoarch-toy-network.png)
 
 ### TCP/UDP as an Evolutionary Shield for IPv4
 
@@ -607,7 +607,7 @@ A learning bridge maintains a **forwarding table** that maps MAC addresses to po
 | Y | 2 |
 | Z | 2 |
 
-![Forwarding table maintained by a bridge](../images/bridge-forwarding-table.png)
+![Forwarding table maintained by a bridge](../images/lesson-01/bridge-forwarding-table.png)
 
 ### How the Bridge Learns
 
@@ -618,7 +618,7 @@ When a frame arrives, the bridge looks at two things:
 
 If a frame from Host A arrives on port 1, the bridge records: "A is reachable through port 1." Over time, the table fills in automatically.
 
-![Illustration of a learning bridge](../images/learning-bridge.png)
+![Illustration of a learning bridge](../images/lesson-01/learning-bridge.png)
 
 ### Known vs. Unknown Destinations
 
@@ -648,7 +648,7 @@ Network designers add redundant links between switches for reliability. But redu
 
 **Goal:** Keep physical redundancy for reliability, but avoid forwarding loops.
 
-![Extended LAN topology with loops](../images/spanning-tree-loops.png)
+![Extended LAN topology with loops](../images/lesson-01/spanning-tree-loops.png)
 
 ### The Spanning Tree Idea
 
@@ -691,7 +691,7 @@ In the topology with bridges B1–B7:
 - B3 may initially hear from B2 (who thinks B2 is root), but eventually learns B1 is the true root
 - Ports that would create cycles are **blocked** (disabled for forwarding, but physically still connected)
 
-![Resulting spanning tree after algorithm converges](../images/spanning-tree-result.png)
+![Resulting spanning tree after algorithm converges](../images/lesson-01/spanning-tree-result.png)
 
 ### Convergence
 

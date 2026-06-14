@@ -44,7 +44,7 @@ See `docs/lesson-02/transport-application.md` — headings like `## What is mult
 
 1. **Explain then summarize** — prose first, then `!!! abstract "Takeaway"` or `!!! tip "Memory aid"` where helpful
 2. **Tables** for comparisons (UDP vs TCP, forwarding vs routing, OSI vs Internet model)
-3. **Diagrams** for anything spatial — encapsulation, topologies, algorithm steps. Check `docs/images/` before creating new assets; reuse when the same diagram applies
+3. **Diagrams** for anything spatial — encapsulation, topologies, algorithm steps. Check `docs/images/lesson-NN/` before creating new assets; reuse when the same diagram applies
 4. **Cross-lesson links** — intradomain → `../lesson-04/interdomain-routing.md`; transport → routing when stack context matters
 5. **Step-by-step algorithms** — numbered lists + toy examples (spanning tree, Dijkstra, Bellman-Ford)
 
@@ -69,4 +69,4 @@ Also trigger updates to: `mkdocs.yml` nav, `docs/index.md`, and consider whether
 - Do not simplify to plain-language tone — that belongs in `*-plain-language.md`
 - Do not add `<quiz>` blocks — those go in `*-quiz.md`
 - Do not copy the quick study "12 exam questions" block wholesale — quick study condenses; full guide explains
-- Do not leave broken image refs — every `![](images/...)` must have a file in `docs/images/`
+- Do not leave broken image refs — every `![](../images/lesson-NN/...)` must have a file in `docs/images/lesson-NN/`

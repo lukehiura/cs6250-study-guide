@@ -155,7 +155,7 @@ In link-state routing, **topology and link costs are known to all routers** (via
 !!! warning "Exam point"
     **False:** “All nodes learn the full topology only **after** Dijkstra terminates.” Link-state **broadcast/flood** distributes LSAs first; **then** every router independently runs SPF (Dijkstra) on the complete map.
 
-![Link-state routing: Dijkstra pseudocode](../images/dijkstra-link-state-pseudocode.png){ width="520" }
+![Link-state routing: Dijkstra pseudocode](../images/lesson-03/dijkstra-link-state-pseudocode.png){ width="520" }
 
 **Initialization:**
 
@@ -173,13 +173,13 @@ In link-state routing, **topology and link costs are known to all routers** (via
 
 ### Worked example: link-state rerouting (source u)
 
-![Link-state rerouting example topology](../images/link-state-routing-graph.png){ width="560" }
+![Link-state rerouting example topology](../images/lesson-03/link-state-routing-graph.png){ width="560" }
 
 **Link costs:** u–v=2, u–x=1, u–w=5, v–x=2, v–w=3, x–w=3, x–y=1, w–y=1, w–z=5, y–z=2.
 
 **Initialization (step 0):** N′ = {u}. Direct neighbors: D(v)=2, D(x)=1, D(w)=5; all others ∞; p(neighbors)=u.
 
-![Dijkstra iterations for source u](../images/link-state-dijkstra-example-table.png){ width="700" }
+![Dijkstra iterations for source u](../images/lesson-03/link-state-dijkstra-example-table.png){ width="700" }
 
 | Step | N′ | D(v),p(v) | D(w),p(w) | D(x),p(x) | D(y),p(y) | D(z),p(z) |
 |------|-----|-----------|-----------|-----------|-----------|-----------|
@@ -215,7 +215,7 @@ Algorithm **exits after step 5** when all nodes are in N′.
 
 ### Worked example: Dijkstra from source b (nodes a–f) {#worked-example-source-b}
 
-![Dijkstra practice topology — nodes a through f with link costs](../images/dijkstra-topology-abcdef.png)
+![Dijkstra practice topology — nodes a through f with link costs](../images/lesson-03/dijkstra-topology-abcdef.png)
 
 **Link costs:** a–b=3, a–c=1, a–d=5, b–c=5, c–d=2, c–e=4, d–f=5, e–f=1.
 
@@ -310,7 +310,7 @@ Each area runs its **own** OSPF instance and LSDB. **Backbone** contains all ABR
 
 ### Processing OSPF messages in the router
 
-![OSPF processing: route processor, FIB, interface cards](../images/ospf-router-model.png){ width="620" }
+![OSPF processing: route processor, FIB, interface cards](../images/lesson-03/ospf-router-model.png){ width="620" }
 
 | Component | Role |
 |-----------|------|
@@ -327,7 +327,7 @@ Each area runs its **own** OSPF instance and LSDB. **Backbone** contains all ABR
 
 ### OSPF processing timeline (T1–T7)
 
-![OSPF processing flowchart T3–T7](../images/ospf-processing-flowchart.png){ width="520" }
+![OSPF processing flowchart T3–T7](../images/lesson-03/ospf-processing-flowchart.png){ width="520" }
 
 | Time | Event |
 |------|--------|
@@ -393,7 +393,7 @@ where **v** ranges over **neighbors** of x, **c(x,v)** is the direct link cost, 
 
 **Interpretation:** “Go to neighbor v first, then follow v’s best path to y” — take the **minimum** over all neighbors v.
 
-![Distance vector: Bellman-Ford at node u to reach z](../images/distance-vector-bellman-ford-example.png){ width="640" }
+![Distance vector: Bellman-Ford at node u to reach z](../images/lesson-03/distance-vector-bellman-ford-example.png){ width="640" }
 
 **Example (same 6-node graph as link-state):** At **u**, to reach **z**:
 
@@ -407,7 +407,7 @@ $$D_u(z) = \min\{7,\, 4,\, 8\} = 4$$
 
 ### Distance-vector algorithm (pseudocode)
 
-![Distance vector routing pseudocode](../images/distance-vector-pseudocode.png){ width="520" }
+![Distance vector routing pseudocode](../images/lesson-03/distance-vector-pseudocode.png){ width="520" }
 
 **Initialization:**
 
@@ -434,7 +434,7 @@ Then for each destination y:
 
 Each node knows only **direct** links. Rows labeled “From” store each node’s distance vector; ∞ means “not received yet.”
 
-![Distance vector example — iteration 1](../images/distance-vector-iteration-1.png){ width="700" }
+![Distance vector example — iteration 1](../images/lesson-03/distance-vector-iteration-1.png){ width="700" }
 
 | Node | Own vector $D_x(\cdot)$ |
 |------|-------------------------|
@@ -456,7 +456,7 @@ $$D_x(z) = \min\{ c(x,y)+D_y(z),\; c(x,z)+D_z(z) \} = \min\{2+1,\; 7+0\} = 3$$
 
 x’s table now includes y’s and z’s vectors from iteration 1. **Key:** path to z via y (2+1=**3**) beats direct link (7).
 
-![Distance vector example — iteration 2](../images/distance-vector-iteration-2.png){ width="700" }
+![Distance vector example — iteration 2](../images/lesson-03/distance-vector-iteration-2.png){ width="700" }
 
 Nodes y and z perform the same updates in parallel.
 
@@ -464,7 +464,7 @@ Nodes y and z perform the same updates in parallel.
 
 Nodes process any **changed** vectors from iteration 2. In this topology, **all three tables match** — no further improvements.
 
-![Distance vector example — iteration 3](../images/distance-vector-iteration-3.png){ width="700" }
+![Distance vector example — iteration 3](../images/lesson-03/distance-vector-iteration-3.png){ width="700" }
 
 **Converged distance matrix** (each row = costs from that source):
 
@@ -496,7 +496,7 @@ Topology: nodes **x**, **y**, **z** with c(x,y)=4, c(y,z)=1, c(x,z)=50 (before c
 
 ### Good news: cost decrease (x–y: 4 → 1)
 
-![DV link cost decrease: x-y cost 4 to 1](../images/dv-link-cost-decrease.png){ width="400" }
+![DV link cost decrease: x-y cost 4 to 1](../images/lesson-03/dv-link-cost-decrease.png){ width="400" }
 
 | Time | What happens |
 |------|----------------|
@@ -508,7 +508,7 @@ Topology: nodes **x**, **y**, **z** with c(x,y)=4, c(y,z)=1, c(x,z)=50 (before c
 
 ### Bad news: count-to-infinity (y–x: 4 → 60)
 
-![DV count-to-infinity: y-x cost increases to 60](../images/dv-count-to-infinity.png){ width="400" }
+![DV count-to-infinity: y-x cost increases to 60](../images/lesson-03/dv-count-to-infinity.png){ width="400" }
 
 | Time | What happens |
 |------|----------------|
@@ -533,7 +533,7 @@ y does **not** yet know the direct link is 60.
 
 ## Poison reverse
 
-![Poison reverse topology](../images/dv-poison-reverse.png){ width="400" }
+![Poison reverse topology](../images/lesson-03/dv-poison-reverse.png){ width="400" }
 
 **Idea:** If **z** reaches **x** through **y**, then **z advertises $D_z(x) = \infty$ to y** (a deliberate lie). y then never sends x-traffic via z while z’s path depends on y.
 
@@ -562,7 +562,7 @@ Used with **split horizon** in RIP.
 !!! warning "Exam point (Practice Quiz 3-4)"
     **RIP is:** a **distance-vector** algorithm and an **intradomain** (IGP) protocol. **RIP is not:** link-state, interdomain (BGP), or **poison reverse** — poison reverse is a **loop-mitigation technique** RIP may use, not a protocol category.
 
-![RIP example topology: routers A–D, subnets w–z](../images/rip-network-topology.png){ width="560" }
+![RIP example topology: routers A–D, subnets w–z](../images/lesson-03/rip-network-topology.png){ width="560" }
 
 | Property | Value |
 |----------|--------|
@@ -574,7 +574,7 @@ Used with **split horizon** in RIP.
 
 ### Router D’s table (example)
 
-![RIP routing table at router D](../images/rip-router-d-table.png){ width="480" }
+![RIP routing table at router D](../images/lesson-03/rip-router-d-table.png){ width="480" }
 
 Example: to reach subnet **w**, next router **A**, **2 hops**. Subnet **x** is **1 hop** (likely direct; next router “–”).
 
@@ -582,13 +582,13 @@ Example: to reach subnet **w**, next router **A**, **2 hops**. Subnet **x** is *
 
 When **D** receives **A**’s RIP advertisement:
 
-![RIP: advertisement received from router A](../images/rip-advertisement-from-a.png){ width="480" }
+![RIP: advertisement received from router A](../images/lesson-03/rip-advertisement-from-a.png){ width="480" }
 
 D learns a path to **z** through **A** that may be **shorter** than the old path via **B**.
 
 ### Updated table at D
 
-![RIP: router D table after merge](../images/rip-updated-table-d.png){ width="480" }
+![RIP: router D table after merge](../images/lesson-03/rip-updated-table-d.png){ width="480" }
 
 **Merge rule:** For each subnet in the advertisement, if $1 + \text{hops from A} < \text{current hops}$, update next router and hop count.
 
@@ -605,7 +605,7 @@ Large networks use **IGP** inside and **BGP** at borders. When the destination i
 !!! warning "Exam point (Practice Quiz 3-5)"
     **Multiple egresses** to one external destination: **True** — normal at AS borders. Hot potato uses **lowest IGP cost** to the egress (BGP decision step 6), **not** geographic closeness to the ingress. Operators set IGP weights for capacity, delay, or TE — physical distance is **not** guaranteed to match lowest cost.
 
-![Hot potato: Dallas chooses SF (IGP 9) over NY (10)](../images/hot-potato-routing.png){ width="560" }
+![Hot potato: Dallas chooses SF (IGP 9) over NY (10)](../images/lesson-03/hot-potato-routing.png){ width="560" }
 
 **Example:** Router in **Dallas** (B) can send toward destination **D** via **San Francisco** (A, IGP cost **9**) or **New York** (C, IGP cost **10**). Both egresses have equally good BGP paths → choose **SF** (lower IGP cost).
 
@@ -625,7 +625,7 @@ BGP decision step 6: **lowest IGP cost to NEXT_HOP** — see [Lesson 4](../lesso
 
 Operators often tune **OSPF/IS-IS link weights** to steer traffic — not just accept default shortest paths. A classic framework has three phases: **measure → model → control**.
 
-![Traffic engineering: measure, model, control loop](../images/traffic-engineering-framework.png){ width="560" }
+![Traffic engineering: measure, model, control loop](../images/lesson-03/traffic-engineering-framework.png){ width="560" }
 
 ```mermaid
 flowchart TB

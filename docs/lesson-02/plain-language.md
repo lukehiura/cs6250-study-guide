@@ -66,7 +66,7 @@ Loading the actual page needs every piece of HTML, in order. Your browser opens 
 | 2 | Server → Client: **SYN-ACK** — "Yes, I'm here too" |
 | 3 | Client → Server: **ACK** — "Great, let's go" |
 
-![TCP three-way handshake sequence diagram](../images/tcp-three-way-handshake.png){ width="650" }
+![TCP three-way handshake sequence diagram](../images/lesson-02/tcp-three-way-handshake.png){ width="650" }
 
 **Memory trick:** **SYN → SYN-ACK → ACK**
 
@@ -121,7 +121,7 @@ Your laptop runs Chrome, Spotify, Slack, and a game — all at once. How does ea
 | **Demultiplexing** | Receiver: read the label, deliver to the correct app |
 | **Socket** | An app's "door" on the network, tied to a **port number** |
 
-![Transport-layer multiplexing and demultiplexing across three hosts](../images/transport-multiplexing-demux.png){ width="700" }
+![Transport-layer multiplexing and demultiplexing across three hosts](../images/lesson-02/transport-multiplexing-demux.png){ width="700" }
 
 ### UDP: one door per port (2-tuple)
 
@@ -137,7 +137,7 @@ TCP needs all four:
 
 A web server on port 80 might have **10,000 browsers** connected at once. It tells them apart with the full 4-tuple.
 
-![TCP four-tuple demultiplexing at a web server](../images/tcp-four-tuple-demux.png){ width="700" }
+![TCP four-tuple demultiplexing at a web server](../images/lesson-02/tcp-four-tuple-demux.png){ width="700" }
 
 **How a web server works:**
 
@@ -159,7 +159,7 @@ A web server on port 80 might have **10,000 browsers** connected at once. It tel
 | Feels like | Postcard | Registered mail with tracking |
 | Good for | DNS, games, live streams | Web, email, file downloads |
 
-![Popular applications and their transport protocols](../images/applications-transport-protocols.png){ width="700" }
+![Popular applications and their transport protocols](../images/lesson-02/applications-transport-protocols.png){ width="700" }
 
 ---
 
@@ -173,7 +173,7 @@ You're downloading a 500 MB file. Somewhere on the Internet, segment **#847** va
 2. Sender's timer expires → **retransmit**
 3. Or: **3 duplicate ACKs** in a row → **fast retransmit** (don't wait for the timer)
 
-![Fast retransmit after three duplicate ACKs for segment 7](../images/tcp-fast-retransmit.png){ width="650" }
+![Fast retransmit after three duplicate ACKs for segment 7](../images/lesson-02/tcp-fast-retransmit.png){ width="650" }
 
 | ARQ style | Plain English | Problem |
 |-----------|---------------|---------|
@@ -195,7 +195,7 @@ Imagine pouring water into a bucket while someone drains it through a small hole
 | **rwnd** (receive window) | "I have this much empty space left" |
 | **Sender rule** | Don't send more un-ACKed data than **rwnd** |
 
-![Receive buffer, spare room, and receive window rwnd](../images/tcp-flow-control-buffer.png){ width="600" }
+![Receive buffer, spare room, and receive window rwnd](../images/lesson-02/tcp-flow-control-buffer.png){ width="600" }
 
 If the bucket is full, receiver says **rwnd = 0**. Sender stops. When space opens up, sender sends tiny **probes** to ask "room yet?"
 
@@ -215,7 +215,7 @@ TCP does not know the freeway's capacity ahead of time. It **probes**:
 | **AIMD** | Grow slowly (+1 segment per RTT); on loss, **cut in half** |
 | Result | A **sawtooth** graph — climb, hit congestion, drop, try again |
 
-![Congestion window sawtooth pattern over time](../images/tcp-cwnd-sawtooth.png){ width="600" }
+![Congestion window sawtooth pattern over time](../images/lesson-02/tcp-cwnd-sawtooth.png){ width="600" }
 
 ### Two different brakes
 

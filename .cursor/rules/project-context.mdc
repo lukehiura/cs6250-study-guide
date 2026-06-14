@@ -28,7 +28,7 @@ Per [VS Code workspace docs](https://code.visualstudio.com/docs/configure/settin
 |-------|----------|
 | MkDocs config | `mkdocs.yml` |
 | All content | `docs/` |
-| Images | `docs/images/` (kebab-case `.png`) |
+| Images | `docs/images/lesson-NN/` (kebab-case `.png`, one folder per lesson) |
 | Lecture PDFs (reference only) | `docs/lectures/` |
 | Python deps | `requirements.txt` |
 | CI deploy | `.github/workflows/docs.yml` → `mkdocs build` on push to `main`/`master` |
@@ -44,6 +44,9 @@ docs/
   index.md
   practice-questions.md
   images/
+    lesson-01/
+    lesson-02/
+    ...
   lesson-01/
     introduction.md          # full guide
     plain-language.md
@@ -88,8 +91,8 @@ Not every lesson has all four formats yet. Add siblings as needed.
 
 | From | To sibling in same lesson | To another lesson | To images |
 |------|---------------------------|-------------------|-----------|
-| `docs/index.md` | — | `lesson-NN/<file>.md` | `images/...` |
-| `docs/lesson-NN/*.md` | `plain-language.md`, `quiz.md`, etc. | `../lesson-MM/<file>.md` | `../images/...` |
+| `docs/index.md` | — | `lesson-NN/<file>.md` | `images/lesson-NN/...` |
+| `docs/lesson-NN/*.md` | `plain-language.md`, `quiz.md`, etc. | `../lesson-MM/<file>.md` | `../images/lesson-NN/...` |
 
 ## Navigation — always keep in sync
 
@@ -104,7 +107,7 @@ Nav is grouped by course module (Foundations, Routing, Router Design, SDN, Secur
 
 - **Accuracy first** — content reflects CS 6250 / Kurose & Ross course material, not generic blog posts.
 - **Relative links** — sibling links use short names; cross-lesson links use `../lesson-NN/...`.
-- **Local images** — `../images/descriptive-name.png` from lesson folders.
+- **Local images** — `../images/lesson-NN/descriptive-name.png` from lesson folders (match the lesson that owns the diagram).
 - **No new doc types** — do not invent README files, CHANGELOGs, or extra markdown the user did not ask for.
 - **MkDocs Material syntax** — admonitions (`!!! tip`), collapsible answers (`??? success`), tables, mermaid, MathJax `$...$`.
 

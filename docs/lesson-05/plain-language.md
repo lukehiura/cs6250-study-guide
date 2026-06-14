@@ -46,7 +46,7 @@ You never see any of this. It happens in **nanoseconds** per packet.
 
 **Memory trick:** **Lookup → Switch → Queue → Schedule → Out.**
 
-![Data-plane pipeline from lookup through switching, queuing, scheduling, and output](../images/router-data-plane-pipeline.png)
+![Data-plane pipeline from lookup through switching, queuing, scheduling, and output](../images/lesson-05/router-data-plane-pipeline.png)
 
 ---
 
@@ -69,7 +69,7 @@ The ops center decides **what the map should say**. Gate agents **use** the map 
 - **Forwarding** = data plane (read the map per packet).
 - In **SDN** (later lessons), the "ops center" can live on a separate controller — same split, more centralized.
 
-![Control plane versus data plane responsibilities inside a router](../images/router-control-data-plane.png)
+![Control plane versus data plane responsibilities inside a router](../images/lesson-05/router-control-data-plane.png)
 
 ---
 
@@ -104,7 +104,7 @@ Imagine packets as cars trying to cross an intersection inside the router. Three
 
 **Why it matters:** If the inside of the router is slower than the line speed, packets pile up → delay and drops. Only **crossbar** can move **multiple packets at once** (as long as they don't fight for the same output).
 
-![Crossbar switching fabric enabling parallel transfers to different outputs](../images/switching-via-crossbar.png)
+![Crossbar switching fabric enabling parallel transfers to different outputs](../images/lesson-05/switching-via-crossbar.png)
 
 ---
 
@@ -129,7 +129,7 @@ A packet to `10.1.2.3` matches **both** rules. The `/16` is more specific → **
 
 **Why it's hard:** At 40 Gbps, the router might get only **1–2 memory lookups** per packet — not time to scan a whole phone book.
 
-![Packet lookup in the FIB followed by switching across the router fabric](../images/router-lpm-packet-arrival.png)
+![Packet lookup in the FIB followed by switching across the router fabric](../images/lesson-05/router-lpm-packet-arrival.png)
 
 ---
 
@@ -179,7 +179,7 @@ Suppose the stride is 2 bits but you have a rule for `11*`. You stretch it into 
 
 **Memory trick:** Unibit = **one question at a time**. Multibit = **multiple-choice at each level**. Prefix expansion = **stretch short rules to fit the quiz format**.
 
-![Unibit trie for the P1–P9 prefix database](../images/unibit-trie-p1-p9-structure.png)
+![Unibit trie for the P1–P9 prefix database](../images/lesson-05/unibit-trie-p1-p9-structure.png)
 
 ---
 
@@ -226,7 +226,7 @@ Four pressures from measurement studies and scaling trends:
 | Fair queueing | WFQ, deficit round robin |
 | Security at scale | Bloom-filter traceback |
 
-![Router input port, switching fabric, and output port with throughput and queuing challenges](../images/router-challenges-switch-fabric.png)
+![Router input port, switching fabric, and output port with throughput and queuing challenges](../images/lesson-05/router-challenges-switch-fabric.png)
 
 ---
 

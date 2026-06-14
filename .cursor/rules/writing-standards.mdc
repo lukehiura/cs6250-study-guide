@@ -46,7 +46,7 @@ Graduate-level CS 6250 students preparing for exams. Clear and rigorous — not 
 
 ## Images
 
-- Path: `images/kebab-case-description.png` (relative to `docs/`)
+- Path: `images/lesson-NN/kebab-case-description.png` (relative to `docs/`; `NN` matches the lesson that owns the diagram)
 - Alt text must describe the diagram, not the filename
 - After adding an image file, reference it from the relevant lesson in the same edit
 

@@ -70,7 +70,7 @@ Which action is **network-wide** (involves multiple routers)?
 
 Canvas practice quiz — iteration count, LSA vs Dijkstra, and a worked Dijkstra example.
 
-![Link-state rerouting example — nodes u, v, w, x, y, z](../images/link-state-routing-graph.png)
+![Link-state rerouting example — nodes u, v, w, x, y, z](../images/lesson-03/link-state-routing-graph.png)
 
 <quiz>
 In the **u–v–w–x–y–z** topology (6 nodes), **u** was the source in the course example. If **x** is the source instead (x has **more** direct neighbors than u), how many Dijkstra iterations run **after initialization**?
@@ -119,7 +119,7 @@ Source **b** — least cost from **b** to **f** is [[9]].
 Via e: 8+1=9 beats via d: 6+5=11.
 </quiz>
 
-![Dijkstra practice topology — nodes a through f](../images/dijkstra-topology-abcdef.png)
+![Dijkstra practice topology — nodes a through f](../images/lesson-03/dijkstra-topology-abcdef.png)
 
 See the [worked example from source b](../intradomain-routing.md#worked-example-source-b) in the full guide.
 

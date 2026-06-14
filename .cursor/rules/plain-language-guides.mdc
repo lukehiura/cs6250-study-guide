@@ -57,7 +57,7 @@ Links back to full guide, quick study, quiz.
 
 - Cover the same concepts; omit proof-level detail and long algorithm walkthroughs
 - Link to full guide for "when you want exam detail"
-- If full guide has a diagram essential to understanding, reuse the same `images/...` reference
+- If full guide has a diagram essential to understanding, reuse the same `../images/lesson-NN/...` reference
 
 ## What NOT to do
 

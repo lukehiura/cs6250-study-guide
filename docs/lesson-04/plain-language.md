@@ -50,7 +50,7 @@ Each hop might be a **different company**. Inside each company, routers use an *
 
 **Memory trick:** **IGP = hallways. eBGP = exit doors. iBGP = intercom.**
 
-![Interconnection of ISPs — Tier 1, regional, access ISPs, IXPs, and content providers](../images/isp-interconnection.png)
+![Interconnection of ISPs — Tier 1, regional, access ISPs, IXPs, and content providers](../images/lesson-04/isp-interconnection.png)
 
 ---
 
@@ -96,7 +96,7 @@ In the **old hierarchical** model, two neighboring local ISPs might send traffic
 
 Result: faster paths, lower **latency**, lower **transit** bills — and a topology that is **less hierarchical** than it used to be.
 
-![Autonomous Systems business relationships — transit and peering between ISPs and customers](../images/as-business-relationships.png)
+![Autonomous Systems business relationships — transit and peering between ISPs and customers](../images/lesson-04/as-business-relationships.png)
 
 ---
 
@@ -152,7 +152,7 @@ Customer routes  >  Peer routes  >  Provider routes
 
 **Key takeaway:** BGP paths are rarely the mathematically shortest. They follow **business rules**.
 
-![Common inter-AS relationships — transit ($) and peering between ISPs and customers](../images/transit-peering-relationships.png)
+![Common inter-AS relationships — transit ($) and peering between ISPs and customers](../images/lesson-04/transit-peering-relationships.png)
 
 ---
 
@@ -198,7 +198,7 @@ When you send a packet to a destination **outside** your AS:
 
 For destinations **inside** your AS, only the **IGP** is involved — no BGP needed for internal reachability.
 
-![eBGP between AS1–AS2–AS3; iBGP within AS2](../images/ibgp-ebgp-as-sessions.png)
+![eBGP between AS1–AS2–AS3; iBGP within AS2](../images/lesson-04/ibgp-ebgp-as-sessions.png)
 
 **Memory trick:** **IGP = hallways. eBGP = exit doors. iBGP = intercom** (which exit for which outside destination).
 
@@ -222,7 +222,7 @@ Typical pattern: customer routes beat peer routes beat provider routes — encod
 
 **Memory trick:** **LocalPref = your choice of exit. MED = their suggestion for entry.**
 
-![BGP decision process — seven-step attribute comparison](../images/bgp-decision-process-steps.png)
+![BGP decision process — seven-step attribute comparison](../images/lesson-04/bgp-decision-process-steps.png)
 
 ---
 
@@ -268,7 +268,7 @@ Why networks join:
 
 To join: get an **ASN**, bring a **BGP-capable router**, plug into the IXP switch, sign their agreement. You pay for the **port**; swapping traffic is usually settlement-free.
 
-![DE-CIX Frankfurt (2012) — core sites and distributed colocation facilities](../images/de-cix-frankfurt.png)
+![DE-CIX Frankfurt (2012) — core sites and distributed colocation facilities](../images/lesson-04/de-cix-frankfurt.png)
 
 ---
 
@@ -297,7 +297,7 @@ A **route server** fixes that:
 - The server collects routes, applies **filters**, and gives each member a tailored view.
 - **Data packets** still flow **directly** between members on the switch — the route server only handles **control** (BGP messages), not your Netflix stream.
 
-![Multilateral vs bilateral BGP peering at an IXP](../images/multilateral-bilateral-peering.png)
+![Multilateral vs bilateral BGP peering at an IXP](../images/lesson-04/multilateral-bilateral-peering.png)
 
 ---
 

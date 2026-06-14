@@ -136,7 +136,7 @@ The transport layer uses **ports** and **sockets**:
 | **Multiplexing** | Sender | Sockets → segments → network layer |
 | **Demultiplexing** | Receiver | Segment → correct socket |
 
-![Transport-layer multiplexing and demultiplexing across three hosts](../images/transport-multiplexing-demux.png){ width="700" }
+![Transport-layer multiplexing and demultiplexing across three hosts](../images/lesson-02/transport-multiplexing-demux.png){ width="700" }
 
 The middle host runs **P1** and **P2** — transport must demultiplex inbound traffic and multiplex outbound traffic from both processes.
 
@@ -144,7 +144,7 @@ The middle host runs **P1** and **P2** — transport must demultiplex inbound tr
 
 Key demultiplexing fields: **source port** and **destination port** (16 bits each):
 
-![Transport segment with source and destination port fields](../images/transport-segment-header-ports.png){ width="500" }
+![Transport segment with source and destination port fields](../images/lesson-02/transport-segment-header-ports.png){ width="500" }
 
 ### Connectionless (UDP) demultiplexing
 
@@ -156,7 +156,7 @@ UDP socket ID = **2-tuple: (destination IP, destination port)**
 
 Same **dest IP + dest port** → same socket, even from different sources. Reply swaps ports.
 
-![UDP connectionless multiplexing](../images/udp-connectionless-multiplexing.png){ width="650" }
+![UDP connectionless multiplexing](../images/lesson-02/udp-connectionless-multiplexing.png){ width="650" }
 
 ### Connection-oriented (TCP) demultiplexing
 
@@ -167,7 +167,7 @@ TCP connection ID = **4-tuple: (source IP, source port, destination IP, destinat
 3. Server creates **connection socket** for that 4-tuple.
 4. Data flows between client socket and connection socket.
 
-![TCP welcoming socket, handshake, and connection socket](../images/tcp-connection-oriented-multiplexing.png){ width="650" }
+![TCP welcoming socket, handshake, and connection socket](../images/lesson-02/tcp-connection-oriented-multiplexing.png){ width="650" }
 
 ### Example: three hosts, one web server
 
@@ -179,7 +179,7 @@ TCP connection ID = **4-tuple: (source IP, source port, destination IP, destinat
 
 A and C can both use source port **26145** — server B demultiplexes by full 4-tuple (C’s two sessions differ by source port).
 
-![TCP four-tuple demultiplexing at a web server](../images/tcp-four-tuple-demux.png){ width="700" }
+![TCP four-tuple demultiplexing at a web server](../images/lesson-02/tcp-four-tuple-demux.png){ width="700" }
 
 !!! note "Persistent vs non-persistent HTTP"
     **Persistent:** many HTTP messages on one TCP connection/socket. **Non-persistent:** new connection per request — costly for busy servers.
@@ -230,7 +230,7 @@ UDP is **unreliable** and **connectionless** — no three-way handshake, no buil
 
 Real-time apps (VoIP, live streaming, gaming) often prefer **lower delay** over perfect delivery. **DNS** typically uses UDP for simple request/response.
 
-![Popular applications and their transport protocols](../images/applications-transport-protocols.png){ width="700" }
+![Popular applications and their transport protocols](../images/lesson-02/applications-transport-protocols.png){ width="700" }
 
 | Application | App protocol | Transport |
 |-------------|--------------|-----------|
@@ -251,7 +251,7 @@ Real-time apps (VoIP, live streaming, gaming) often prefer **lower delay** over 
 | Checksum | 16 bits | Error detection |
 | Application data | variable | Payload (message) |
 
-![UDP segment header and payload](../images/udp-segment-structure.png){ width="500" }
+![UDP segment header and payload](../images/lesson-02/udp-segment-structure.png){ width="500" }
 
 ### UDP checksum (basic idea)
 
@@ -281,7 +281,7 @@ Before data transfer, TCP exchanges three control segments (often with **no appl
 
 The server allocates resources on SYN; the client allocates on SYN-ACK and confirms with ACK.
 
-![TCP three-way handshake sequence diagram](../images/tcp-three-way-handshake.png){ width="650" }
+![TCP three-way handshake sequence diagram](../images/lesson-02/tcp-three-way-handshake.png){ width="650" }
 
 !!! warning "Exam / video errata"
     Step 3 ACK has **SYN=0** (not 1). Some videos misstate this; the course text is correct.
@@ -310,7 +310,7 @@ Closing is also controlled so one side does not think the connection is still op
 
 TIME_WAIT lets the client retransmit the final ACK if lost and absorbs delayed segments before fully closing.
 
-![TCP connection teardown with TIME_WAIT](../images/tcp-connection-teardown.png){ width="650" }
+![TCP connection teardown with TIME_WAIT](../images/lesson-02/tcp-connection-teardown.png){ width="650" }
 
 ## Explain the TCP connection tear down
 
@@ -354,7 +354,7 @@ Receiver ACKs the **last in-order** segment only. Out-of-order arrivals are **di
 
 If segment **7** is lost but 8–10 arrive, the receiver drops 8–10 and keeps ACKing 6 (or the byte before 7). The sender eventually retransmits **7 and everything after it**.
 
-![Go-back-N: packet 7 lost; receiver discards 8, 9, 10](../images/tcp-go-back-n.png){ width="650" }
+![Go-back-N: packet 7 lost; receiver discards 8, 9, 10](../images/lesson-02/tcp-go-back-n.png){ width="650" }
 
 ### Selective ACKing (what TCP uses)
 
@@ -368,7 +368,7 @@ A **duplicate ACK** acknowledges again a byte the sender already knows was ACKed
 
 When the sender sees **3 duplicate ACKs**, it treats the missing segment as lost and **retransmits immediately** (fast retransmit) instead of waiting for timeout.
 
-![Fast retransmit after three duplicate ACKs for segment 7](../images/tcp-fast-retransmit.png){ width="650" }
+![Fast retransmit after three duplicate ACKs for segment 7](../images/lesson-02/tcp-fast-retransmit.png){ width="650" }
 
 **Example:** Segments 1–6 OK; **7 lost**; 8–10 arrive → receiver sends dup ACK **7** three times → sender fast-retransmits **7**.
 
@@ -459,7 +459,7 @@ $$\text{rwnd} = \text{RcvBuffer} - (\text{LastByteRcvd} - \text{LastByteRead})$$
 
 The receiver **advertises rwnd** in every segment/ACK to the sender.
 
-![Receive buffer, spare room, and receive window rwnd](../images/tcp-flow-control-buffer.png){ width="600" }
+![Receive buffer, spare room, and receive window rwnd](../images/lesson-02/tcp-flow-control-buffer.png){ width="600" }
 
 - **Data from IP** fills the buffer (teal).
 - **Application process** drains it from the other side.
@@ -589,7 +589,7 @@ $$\text{cwnd} \mathrel{+}= \text{Increment}$$
 
 Each ACK bumps cwnd slightly so that over one RTT the window grows by about one packet.
 
-![Additive increase: cwnd grows by one packet per RTT](../images/tcp-aimd-additive-increase.png){ width="550" }
+![Additive increase: cwnd grows by one packet per RTT](../images/lesson-02/tcp-aimd-additive-increase.png){ width="550" }
 
 ### Multiplicative decrease
 
@@ -597,7 +597,7 @@ On a **loss event**, cut **cwnd in half** (for timeout-style AIMD decrease in co
 
 Repeated increase + decrease → **sawtooth**:
 
-![Congestion window sawtooth pattern over time](../images/tcp-cwnd-sawtooth.png){ width="600" }
+![Congestion window sawtooth pattern over time](../images/lesson-02/tcp-cwnd-sawtooth.png){ width="600" }
 
 ### TCP Reno: two loss severities
 
@@ -606,7 +606,7 @@ Repeated increase + decrease → **sawtooth**:
 | **3 duplicate ACKs** | Mild congestion | **Halve** cwnd, continue probing |
 | **Timeout** | Severe congestion | Reset toward **initial window** / slow start |
 
-![TCP Reno: probing, additive increase, dup ACK vs timeout](../images/tcp-reno-aimd.png){ width="650" }
+![TCP Reno: probing, additive increase, dup ACK vs timeout](../images/lesson-02/tcp-reno-aimd.png){ width="650" }
 
 **Probing:** TCP ramps up until congestion, backs off, then probes again — tests whether more bandwidth is available.
 
@@ -670,7 +670,7 @@ A **new connection** starts from a **cold start** with cwnd = 1. Pure AIMD would
 3. On each ACK in that RTT, **cwnd += 1** per ACK → after one RTT, cwnd roughly **doubles** (1 → 2 → 4 → 8 …).
 4. When $\text{cwnd} \geq \text{ssthresh}$, switch to **congestion avoidance (AIMD)** — linear +1 MSS per RTT.
 
-![Slow start: exponential growth of packets per RTT](../images/tcp-slow-start-packets.png){ width="550" }
+![Slow start: exponential growth of packets per RTT](../images/lesson-02/tcp-slow-start-packets.png){ width="550" }
 
 ### When slow start runs
 
@@ -681,7 +681,7 @@ A **new connection** starts from a **cold start** with cwnd = 1. Pure AIMD would
 
 ### Full cwnd timeline (slow start + AIMD + loss)
 
-![cwnd over time: exponential slow start, ssthresh, AIMD, dup ACK, timeout](../images/tcp-slow-start-cwnd-graph.png){ width="650" }
+![cwnd over time: exponential slow start, ssthresh, AIMD, dup ACK, timeout](../images/lesson-02/tcp-slow-start-cwnd-graph.png){ width="650" }
 
 - **Exponential increase** until **ssthresh** (slow start).
 - **Linear increase** (AIMD probing) above threshold.
@@ -734,7 +734,7 @@ Consider **two** TCP connections on one link of capacity **R**, same RTT, only T
 - **Full bandwidth line** — $Throughput_1 + Throughput_2 = R$
 - **Equal share line** — $Throughput_1 = Throughput_2$ (fair goal: **R/2** each)
 
-![AIMD drives two TCP flows toward equal fair share at full utilization](../images/tcp-fairness-aimd.png){ width="600" }
+![AIMD drives two TCP flows toward equal fair share at full utilization](../images/lesson-02/tcp-fairness-aimd.png){ width="600" }
 
 **AIMD sawtooth in throughput space:**
 
@@ -886,7 +886,7 @@ $$W(t) = C(t - K)^3 + W_{\max}$$
 - $K$ — time for the cubic curve to reach $W_{\max}$ with no further loss
 - $t$ — **elapsed time since last loss** (congestion epoch), not RTT
 
-![TCP CUBIC: W(t) cubic growth after loss at Wmax](../images/tcp-cubic-window-growth.png){ width="600" }
+![TCP CUBIC: W(t) cubic growth after loss at Wmax](../images/lesson-02/tcp-cubic-window-growth.png){ width="600" }
 
 CUBIC **replaces BIC’s piecewise phases** with this single cubic function. After loss, $\beta = 0.2$ in Linux (vs Reno’s 0.5).
 
@@ -1003,7 +1003,7 @@ RTT only sets **how often** ACKs trigger an update toward that target — not th
 
 In congestion avoidance, **cwnd** increases by about **1 MSS per RTT** until it reaches a maximum **W**, then a loss cuts cwnd in half — producing a **sawtooth**.
 
-![TCP throughput: sawtooth cwnd and Mathis model](../images/tcp-throughput-sawtooth.png){ width="600" }
+![TCP throughput: sawtooth cwnd and Mathis model](../images/lesson-02/tcp-throughput-sawtooth.png){ width="600" }
 
 ### Simplified model assumptions
 

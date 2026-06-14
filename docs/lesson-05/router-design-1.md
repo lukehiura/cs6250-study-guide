@@ -42,7 +42,7 @@ Consider a browser in an enterprise network (`a.b.c.0/24`) requesting a web page
 
 The router sits at the **network layer** of the Internet protocol stack, connecting hosts across different networks.
 
-![Browser request crossing enterprise, ISP, and CDN networks via a router](../images/router-cdn-topology.png){ width="700" }
+![Browser request crossing enterprise, ISP, and CDN networks via a router](../images/lesson-05/router-cdn-topology.png){ width="700" }
 
 ---
 
@@ -62,7 +62,7 @@ Routers face scaling pressure from three directions:
 | **Scheduling + fairness** | Decide who goes next; balance latency, throughput, starvation |
 | **Operations + security** | Measurement/telemetry and filtering/policy add complexity |
 
-![Router input port, switching fabric, and output port with throughput and queuing challenges](../images/router-challenges-switch-fabric.png){ width="700" }
+![Router input port, switching fabric, and output port with throughput and queuing challenges](../images/lesson-05/router-challenges-switch-fabric.png){ width="700" }
 
 ### Four fundamental bottleneck categories
 
@@ -86,7 +86,7 @@ Routers face scaling pressure from three directions:
 | **Measurement** | Link speed scaling | Juniper DCU |
 | **Security** | Attack volume/intensity scaling | Traceback (Bloom filters); worm signature extraction |
 
-![Router bottlenecks — cause and sample solution for each bottleneck class](../images/router-bottlenecks-table.png){ width="700" }
+![Router bottlenecks — cause and sample solution for each bottleneck class](../images/lesson-05/router-bottlenecks-table.png){ width="700" }
 
 !!! abstract "Takeaway"
     Bottlenecks span **lookup**, **classification**, **switching**, **queueing**, **measurement**, and **security** — each driven by link-speed scaling and growing table/state size. Part 1 focuses on prefix lookups and switching; Part 2 ([Lesson 6](../lesson-06/router-design-2.md)) covers classification, scheduling, and rate control.
@@ -107,9 +107,9 @@ A router's main job is to implement **forwarding** (data plane) and **routing/co
 !!! warning "Exam point"
     In a **traditional router**, data plane = **hardware**; control plane = **software**. The **data plane** operates on a **shorter timescale** (nanoseconds per packet) than the control plane (protocol timers, topology changes).
 
-![Control plane versus data plane responsibilities inside a router](../images/router-control-data-plane.png){ width="700" }
+![Control plane versus data plane responsibilities inside a router](../images/lesson-05/router-control-data-plane.png){ width="700" }
 
-![SDN remote controller installing forwarding rules on local data-plane tables](../images/router-sdn-control-plane.png){ width="700" }
+![SDN remote controller installing forwarding rules on local data-plane tables](../images/lesson-05/router-sdn-control-plane.png){ width="700" }
 
 ### Router Components
 
@@ -120,7 +120,7 @@ A router's main job is to implement **forwarding** (data plane) and **routing/co
 | **Output ports** | Buffer packets from fabric; transmit on outgoing link (link + physical functions) |
 | **Routing processor** | Control plane — runs protocols, maintains tables, management |
 
-![Router architecture — input ports, switching fabric, output ports, and routing processor](../images/router-inside-architecture.png){ width="700" }
+![Router architecture — input ports, switching fabric, output ports, and routing processor](../images/lesson-05/router-inside-architecture.png){ width="700" }
 
 ### Input port pipeline
 
@@ -130,7 +130,7 @@ Left to right on an **input port**:
 2. **Data link processing** — frame decapsulation (protocol-specific)
 3. **Lookup, forwarding, queuing** — consult the forwarding table (FIB) for longest-prefix match; queue if the switching fabric is busy
 
-![Input port stages — line termination, data link processing, lookup and queuing](../images/router-input-port.png){ width="700" }
+![Input port stages — line termination, data link processing, lookup and queuing](../images/lesson-05/router-input-port.png){ width="700" }
 
 ### Output port pipeline
 
@@ -140,7 +140,7 @@ Left to right on an **output port**:
 2. **Data link processing** — frame encapsulation for the outgoing link
 3. **Line termination** — physical-layer transmission
 
-![Output port stages — queuing, data link processing, line termination](../images/router-output-port.png){ width="700" }
+![Output port stages — queuing, data link processing, line termination](../images/lesson-05/router-output-port.png){ width="700" }
 
 ### Time-sensitive vs control-plane tasks
 
@@ -156,7 +156,7 @@ The **Model of a Router** diagram classifies seven router functions by timescale
 | **Protocol processing** (SNMP, ICMP, TCP/UDP management) | Control | Slow |
 | **Fragmentation, redirects, ARP** | Mixed / control-heavy | Slower than forwarding |
 
-![Model of a router — lookup, switching, scheduling, and seven router functions](../images/router-model-seven-functions.png){ width="700" }
+![Model of a router — lookup, switching, scheduling, and seven router functions](../images/lesson-05/router-model-seven-functions.png){ width="700" }
 
 !!! tip "Canvas practice quiz"
     Classify common operations: **computing paths via a protocol**, **running protocols to build a routing table**, **running Spanning Tree**, and **configuring a middlebox** → **control plane**. **Forwarding at Layer 3**, **switching across the fabric**, **decrementing TTL**, **recomputing checksum**, and **forwarding per installed middlebox rules** → **data plane**.
@@ -175,7 +175,7 @@ When a packet arrives, the router does a forwarding lookup in the **FIB**:
 - Data-plane operation: fast, per-packet, designed to run at line rate.
 - Routers store **prefixes** (e.g., `/24`, `/16`), not individual IP addresses. If multiple prefixes match, choose the **most specific** (longest) match.
 
-![Packet lookup in the FIB followed by switching across the router fabric](../images/router-lpm-packet-arrival.png){ width="700" }
+![Packet lookup in the FIB followed by switching across the router fabric](../images/lesson-05/router-lpm-packet-arrival.png){ width="700" }
 
 ### 2. Switching
 
@@ -198,7 +198,7 @@ A **scheduler** chooses the next packet across queues (priority, weighted, or fa
 
 ### Router Architecture Summary
 
-![Data-plane pipeline from lookup through switching, queuing, scheduling, and output](../images/router-data-plane-pipeline.png){ width="700" }
+![Data-plane pipeline from lookup through switching, queuing, scheduling, and output](../images/lesson-05/router-data-plane-pipeline.png){ width="700" }
 
 Hardware validation and checksum happen inline. Control-plane side: route processing + protocol processing maintain the tables the data plane uses.
 
@@ -210,19 +210,19 @@ Hardware validation and checksum happen inline. Control-plane side: route proces
 
 Packet copied into shared router memory, then copied to the output port. Memory bandwidth limits throughput (~2× line rate needed: one write + one read per packet). Simple early design; doesn't scale to many high-speed ports. **One packet at a time.**
 
-![Switching via shared router memory — one packet at a time](../images/switching-via-memory.png){ width="700" }
+![Switching via shared router memory — one packet at a time](../images/lesson-05/switching-via-memory.png){ width="700" }
 
 ### Switching via Bus
 
 Shared bus connects all inputs to outputs. When an input port receives a packet, it attaches an **internal header** designating the output port and places the packet on the shared bus. **All output ports** see the packet, but only the designated port keeps it (internal header removed on accept). The routing processor does **not** intervene per packet (unlike memory switching). Only **one packet crosses at a time** — bus bandwidth caps router throughput.
 
-![Switching via a shared internal bus — one packet at a time](../images/switching-via-bus.png){ width="700" }
+![Switching via a shared internal bus — one packet at a time](../images/lesson-05/switching-via-bus.png){ width="700" }
 
 ### Switching via Crossbar (Interconnection Network)
 
 A **crossbar** connects $N$ input ports to $N$ output ports using $2N$ buses (horizontal + vertical). **Crosspoints** at intersections are configured to connect a specific input to a specific output — e.g., input A → output Y closes the crosspoint where their buses meet. Configurable connections enable **parallel transfers**: A→Y and B→X can happen simultaneously. If multiple inputs target the **same output** → arbitration/queuing at that output. **Only crossbar can send multiple packets across the fabric in parallel.**
 
-![Crossbar switching fabric enabling parallel transfers to different outputs](../images/switching-via-crossbar.png){ width="700" }
+![Crossbar switching fabric enabling parallel transfers to different outputs](../images/lesson-05/switching-via-crossbar.png){ width="700" }
 
 ---
 
@@ -263,7 +263,7 @@ Measurement studies motivate prefix-lookup algorithm design:
 | 7 | Higher line speeds need SRAM | **Minimize memory** — SRAM is fast but expensive/limited |
 | 8 | IPv6 adoption delayed | **32-bit IPv4 lookups** remain critical for years |
 
-![Prefix-match lookup observations and their design inferences](../images/prefix-match-lookups-observations.png){ width="700" }
+![Prefix-match lookup observations and their design inferences](../images/lesson-05/prefix-match-lookups-observations.png){ width="700" }
 
 !!! tip "Exam prep"
     Four **takeaway** observations from the module: (1) many concurrent flows → caching fails in backbones; (2) lookup speed is dominated by **memory access count**; (3) unstable routing → **fast table updates** matter; (4) **SRAM vs DRAM** memory tradeoff drives trie/TCAM design.
@@ -288,7 +288,7 @@ The course uses this nine-prefix database throughout trie examples (same prefixe
 | **P8** | `100*` |
 | **P9** | `110` (compressed one-way branch — see below) |
 
-![Course example prefix database P1 through P9 for unibit trie construction](../images/unibit-trie-prefix-database.png){ width="500" }
+![Course example prefix database P1 through P9 for unibit trie construction](../images/lesson-05/unibit-trie-prefix-database.png){ width="500" }
 
 ### Unibit Tries
 
@@ -296,7 +296,7 @@ A **unibit trie** is the simplest prefix-lookup structure: each node has a **0-p
 
 **Constructing the trie:** Build subtrees by following shared prefix bits. Prefixes that are **substrings** of longer prefixes are stored **on the path** to the more specific entry — e.g., **P4** (`1*`) sits on the path toward **P2** (`111*`).
 
-![Unibit trie for the P1–P9 prefix database with compressed one-way branch P9](../images/unibit-trie-p1-p9-structure.png){ width="700" }
+![Unibit trie for the P1–P9 prefix database with compressed one-way branch P9](../images/lesson-05/unibit-trie-p1-p9-structure.png){ width="700" }
 
 **Tracing prefixes into the trie (insertion paths):**
 
@@ -364,7 +364,7 @@ After 2 bits, the last prefix recorded is **P4** (`1*`). If the address were `10
 
 Blue nodes store prefixes; white nodes are internal (no stored prefix). **Return the last blue node reached** — the longest prefix matched so far.
 
-![Practice unibit trie with stored prefixes at nodes a through h](../images/unibit-trie-practice-nodes-a-h.png){ width="600" }
+![Practice unibit trie with stored prefixes at nodes a through h](../images/lesson-05/unibit-trie-practice-nodes-a-h.png){ width="600" }
 
 | Stored prefix | Node | Lookup trace |
 |---------------|------|--------------|
@@ -381,9 +381,9 @@ Blue nodes store prefixes; white nodes are internal (no stored prefix). **Return
 !!! info "Reference"
     Varghese, *Network Algorithmics* §11.4; IP address lookup survey (Canvas readings).
 
-![Unibit trie structure with one branch per address bit](../images/unibit-trie-example.png){ width="700" }
+![Unibit trie structure with one branch per address bit](../images/lesson-05/unibit-trie-example.png){ width="700" }
 
-![Unibit trie lookup walking bits and tracking the longest matching prefix](../images/unibit-trie-lookup.png){ width="700" }
+![Unibit trie lookup walking bits and tracking the longest matching prefix](../images/lesson-05/unibit-trie-lookup.png){ width="700" }
 
 ### Multibit Tries
 
@@ -394,7 +394,7 @@ Blue nodes store prefixes; white nodes are internal (no stored prefix). **Return
 | **Fixed-length stride** | Same stride **k** at every level |
 | **Variable-length stride** | Different **k** per level — tune memory vs speed per subtree |
 
-![Multibit trie with stride greater than one bit per level](../images/multibit-trie-example.png){ width="700" }
+![Multibit trie with stride greater than one bit per level](../images/lesson-05/multibit-trie-example.png){ width="700" }
 
 !!! info "Reference"
     Varghese, *Network Algorithmics* §11.5.
@@ -422,7 +422,7 @@ Multibit tries only index **k bits at a time**, so every stored prefix must have
 | P8 | `100*` (len 3) | `100*` (unchanged) |
 | P9 | `110` (len 3) | `110*` (unchanged) |
 
-![Controlled prefix expansion with stride 3 for the P1–P9 database](../images/prefix-expansion-stride-3-p1-p9.png){ width="700" }
+![Controlled prefix expansion with stride 3 for the P1–P9 database](../images/lesson-05/prefix-expansion-stride-3-p1-p9.png){ width="700" }
 
 ### Practice: expansion quiz (stride 3)
 
@@ -447,7 +447,7 @@ Multibit tries only index **k bits at a time**, so every stored prefix must have
 !!! warning "Exam point"
     After expansion, map each surviving prefix back to its **original** ID. `101*` is owned by **P1**, not P3.
 
-![Prefix expansion example aligning shorter prefixes to multibit stride boundaries](../images/prefix-expansion-example.png){ width="700" }
+![Prefix expansion example aligning shorter prefixes to multibit stride boundaries](../images/lesson-05/prefix-expansion-example.png){ width="700" }
 
 ### Fixed-stride multibit trie (stride 3)
 
@@ -467,7 +467,7 @@ After expanding the P1–P9 database to stride 3, every node has **$2^3 = 8$** e
 | `001…` | Root entry `001` — no pointer | **P5** |
 | `100000…` | Root `100` → p8, pointer to right child → child `000` → **P7** | **P7** |
 
-![Fixed-stride multibit trie with stride 3 for the expanded P1–P9 database](../images/multibit-trie-fixed-stride-3.png){ width="700" }
+![Fixed-stride multibit trie with stride 3 for the expanded P1–P9 database](../images/lesson-05/multibit-trie-fixed-stride-3.png){ width="700" }
 
 ### Variable-stride multibit trie
 
@@ -477,7 +477,7 @@ After expanding the P1–P9 database to stride 3, every node has **$2^3 = 8$** e
 - Goal: **fewer entries** and **fewer memory accesses** (optimal strides often chosen via **dynamic programming**).
 - Root node typically stays fixed; child strides vary.
 
-![Variable-stride multibit trie — 2-bit child for P3, 3-bit child for P7](../images/multibit-trie-variable-stride.png){ width="700" }
+![Variable-stride multibit trie — 2-bit child for P3, 3-bit child for P7](../images/lesson-05/multibit-trie-variable-stride.png){ width="700" }
 
 ### Practice: variable-stride trie (Quiz 5-5)
 
@@ -522,7 +522,7 @@ After expanding the P1–P9 database to stride 3, every node has **$2^3 = 8$** e
 !!! tip "Memory aid"
     **Short prefixes appear at every child** that shares their fixed bits: `0*` → **n2 + n3**; `1*` → **n4 + n5**; `011*` → **n8 + n9** (both n3 entries where bit 3 = 1). Longer specific prefixes (b, e, f–i) appear at **one** terminal node each.
 
-![Variable-stride multibit trie practice diagram with nodes n1–n17](../images/multibit-trie-variable-stride-quiz.png){ width="600" }
+![Variable-stride multibit trie practice diagram with nodes n1–n17](../images/lesson-05/multibit-trie-variable-stride-quiz.png){ width="600" }
 
 !!! warning "Exam point"
     A **fixed-length** multibit trie (after expansion) supports only prefix lengths that are **multiples of the stride** — **not** an arbitrary number of lengths. A multibit trie requires **fewer** memory accesses than a unibit trie for the same database.

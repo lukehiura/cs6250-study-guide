@@ -74,7 +74,7 @@ We have already seen variants of packet classification:
 
 The figure below shows an example topology where networks are connected through router **R**. Destinations are shown as S1, S2, X, Y, and D. L1 and L2 denote specific connection points for router R.
 
-![Example for traffic-type sensitive routing](../images/packet-classification-traffic-routing.png)
+![Example for traffic-type sensitive routing](../images/lesson-06/packet-classification-traffic-routing.png)
 
 The table at router R shows example packet classification rules:
 
@@ -137,13 +137,13 @@ Assume we have a **two-dimensional rule** — classifying packets using both sou
 | R₆ | 10* | 1* |
 | R₇ | * | 00* |
 
-![Database at Router R — packet classification rules with To, From, Traffic Type, and Forwarding Directive](../images/packet-classification-database-router-r.png){ width="700" }
+![Database at Router R — packet classification rules with To, From, Traffic Type, and Forwarding Directive](../images/lesson-06/packet-classification-database-router-r.png){ width="700" }
 
-![Example with 7 destination-source rules for set-pruning trie construction](../images/packet-classification-7-rules.png){ width="600" }
+![Example with 7 destination-source rules for set-pruning trie construction](../images/lesson-06/packet-classification-7-rules.png){ width="600" }
 
 The simplest approach is to build a **trie on the destination prefixes**, and then for every leaf node in the destination trie, "hang" **source tries**. By S₁ we denote the source prefix of rule R₁, S₂ of rule R₂, and so on. For every destination prefix D in the destination trie, we **prune** the set of rules to those compatible with D.
 
-![Set-pruning tries: destination trie with source tries](../images/set-pruning-tries.png)
+![Set-pruning tries: destination trie with source tries](../images/lesson-06/set-pruning-tries.png)
 
 **Lookup procedure:**
 
@@ -174,7 +174,7 @@ For a destination prefix D, the backtracking approach has each destination prefi
 
 Since each rule is stored **exactly once**, memory requirements are lower than set-pruning tries. However, the lookup cost for backtracking is **worse**.
 
-![Backtracking approach: avoiding memory blowup](../images/backtracking-tries.png)
+![Backtracking approach: avoiding memory blowup](../images/lesson-06/backtracking-tries.png)
 
 ---
 
@@ -201,9 +201,9 @@ The precomputed switch pointers allow us to take **shortcuts** — we avoid back
 !!! abstract "Takeaway"
     Grid of tries = backtracking with precomputed shortcuts. Switch pointers are labeled by the bit value that caused the failure, and they jump directly to the next candidate source trie.
 
-![Grid of tries — avoiding memory blowup by storing rules once](../images/backtracking-tries.png){ width="700" }
+![Grid of tries — avoiding memory blowup by storing rules once](../images/lesson-06/backtracking-tries.png){ width="700" }
 
-![Grid of tries with precomputed switch pointers to skip failed source tries](../images/grid-of-tries-switch-pointers.png){ width="700" }
+![Grid of tries with precomputed switch pointers to skip failed source tries](../images/lesson-06/grid-of-tries-switch-pointers.png){ width="700" }
 
 !!! info "Reference"
     Varghese, *Network Algorithmics*, Section 12.5.3
@@ -222,21 +222,21 @@ Consider three input lines (A, B, C) and four output lines (1, 2, 3, 4). Next to
 
 **Round 1:** All three inputs request tickets for output link 1. Output link 1 grants three tickets (T1, T2, T3) and processes them in order. Input A's ticket is served first, so A connects to output link 1 and sends its packet. B and C wait.
 
-![Take-a-ticket scheduling — Round 1](../images/take-ticket-round-1.png)
+![Take-a-ticket scheduling — Round 1](../images/lesson-06/take-ticket-round-1.png)
 
 **Round 2:** A requests a ticket for output link 2. B uses its ticket T2 from round 1 to connect with output link 1.
 
-![Take-a-ticket scheduling — Round 2](../images/take-ticket-round-2.png)
+![Take-a-ticket scheduling — Round 2](../images/lesson-06/take-ticket-round-2.png)
 
 **Round 3:** A and B move forward to their next connections. C finally gets to request and connect with output link 1. All this time, C was blocked waiting for A and B.
 
-![Take-a-ticket scheduling — Round 3](../images/take-ticket-round-3.png)
+![Take-a-ticket scheduling — Round 3](../images/lesson-06/take-ticket-round-3.png)
 
 While A sends its packet in the first iteration, the **entire queue for B and C is waiting**. We refer to this problem as **head-of-line (HOL) blocking** — the entire queue is blocked by the progress of the head of the queue, even when packets behind the head are destined for idle output ports.
 
 The timeline below shows the effect across all output links. Empty slots mean no packet was sent at that time — wasted capacity caused by HOL blocking:
 
-![HOL blocking timeline — empty slots caused by take-a-ticket serialization](../images/hol-blocking-timeline.png){ width="700" }
+![HOL blocking timeline — empty slots caused by take-a-ticket serialization](../images/lesson-06/hol-blocking-timeline.png){ width="700" }
 
 ---
 
@@ -278,7 +278,7 @@ The algorithm runs in **three phases** per round:
 - Output 1 grants B. Output 2 grants A. Output 3 grants A. Output 4 grants C.
 - A received grants from 2 and 3 — randomly chooses **2**. B chooses **1**. C chooses **4**.
 
-![Parallel iterative matching — Round 1](../images/pim-round-1.png)
+![Parallel iterative matching — Round 1](../images/lesson-06/pim-round-1.png)
 
 **Round 2:**
 
@@ -286,7 +286,7 @@ The algorithm runs in **three phases** per round:
 - Output 1 grants A. Output 2 grants B. Output 3 grants C.
 - A→1, B→2, C→3.
 
-![Parallel iterative matching — Round 2](../images/pim-round-2.png)
+![Parallel iterative matching — Round 2](../images/lesson-06/pim-round-2.png)
 
 **Round 3:**
 
@@ -294,7 +294,7 @@ The algorithm runs in **three phases** per round:
 - Output 1 grants A. Output 3 grants C.
 - A→1, C→3. B is not served this round.
 
-![Parallel iterative matching — Round 3](../images/pim-round-3.png)
+![Parallel iterative matching — Round 3](../images/lesson-06/pim-round-3.png)
 
 All traffic is sent in **four cell times** (the fourth is sparsely used). This is more efficient than take-a-ticket because multiple inputs can transmit simultaneously to different outputs.
 
@@ -362,19 +362,19 @@ This strategy emulates bit-by-bit fair queueing by sending the packet with the *
 
 **Example walkthrough:**
 
-![Packet-level fair queuing — initial state (R(t) = 1000)](../images/pfq-diagram-1.png)
+![Packet-level fair queuing — initial state (R(t) = 1000)](../images/lesson-06/pfq-diagram-1.png)
 
 At R(t) = 1000, the head packets have F = 1017, 1007, and 1002. The packet with **F = 1002** (smallest) is transmitted.
 
-![After transmitting F = 1002 (R(t) = 1002)](../images/pfq-diagram-2.png)
+![After transmitting F = 1002 (R(t) = 1002)](../images/lesson-06/pfq-diagram-2.png)
 
 Next, the head packets have F = 1017, 1007, and 1009. The packet with **F = 1007** is transmitted.
 
-![After transmitting F = 1007 (R(t) = 1007)](../images/pfq-diagram-3.png)
+![After transmitting F = 1007 (R(t) = 1007)](../images/lesson-06/pfq-diagram-3.png)
 
 Next, the head packets have F = 1017, 1015, and 1009. The packet with **F = 1009** is transmitted.
 
-![After transmitting F = 1009 (R(t) = 1009)](../images/pfq-diagram-4.png)
+![After transmitting F = 1009 (R(t) = 1009)](../images/lesson-06/pfq-diagram-4.png)
 
 Next, the head packets have F = 1017, 1015, and 1013. The packet with **F = 1013** would be transmitted next.
 
@@ -391,11 +391,11 @@ DRR provides bandwidth guarantees with **O(1) constant-time** round-robin. Each 
 
 **Example:** Four flows (F1–F4) with quantum Q = 500 for all. Initially, all deficit counters are 0 and the round-robin pointer points to F1.
 
-![Deficit Round Robin — iteration 1 (pointer at F1, D₁ = 500)](../images/drr-iteration-1.png)
+![Deficit Round Robin — iteration 1 (pointer at F1, D₁ = 500)](../images/lesson-06/drr-iteration-1.png)
 
 **Iteration 1 (F1's turn):** $Q_1$ is added to $D_1$ → $D_1 = 500$. The head packet (size 200) satisfies $200 \leq 500$, so it is sent. $D_1$ becomes 300. The next packet (size 750) exceeds the remaining deficit, so it waits. The pointer advances to F2.
 
-![Deficit Round Robin — iteration 2 (pointer at F2, D₁ = 300)](../images/drr-iteration-2.png)
+![Deficit Round Robin — iteration 2 (pointer at F2, D₁ = 300)](../images/lesson-06/drr-iteration-2.png)
 
 **Iteration 2 (F2's turn):** Q₂ is added to D₂ → D₂ = 500. F2 sends its head packet (size 500). D₂ resets to 0. The process continues for F3 and F4 in subsequent rounds.
 
@@ -617,7 +617,7 @@ In practice, this is implemented using a **counter** (can't exceed B, decremente
 
 A modified version — **token bucket policing** — maintains a **single queue**. If a packet arrives and there are no tokens in the bucket, the packet is **dropped** instead of waiting.
 
-![Token bucket policing](../images/token-bucket-policing.png)
+![Token bucket policing](../images/lesson-06/token-bucket-policing.png)
 
 !!! info "Reference"
     Varghese, *Network Algorithmics*, Section 14.3
@@ -631,7 +631,7 @@ Traffic **policing** and **shaping** are mechanisms to limit the output rate of 
 - **Policer** — When the traffic rate reaches the maximum configured rate, excess traffic is **dropped** or the packet's marking is changed. The output rate appears as a **saw-toothed wave** (peaks clipped at the threshold).
 - **Shaper** — Excess packets are retained in a **queue or buffer** and scheduled for later transmission. Excess traffic is **delayed** instead of dropped, producing a **smooth, constant** output rate.
 
-![Policing vs shaping output rate comparison — saw-tooth vs smooth constant rate](../images/leaky-bucket-policing-vs-shaping.png){ width="700" }
+![Policing vs shaping output rate comparison — saw-tooth vs smooth constant rate](../images/lesson-06/leaky-bucket-policing-vs-shaping.png){ width="700" }
 
 Traffic shaping and policing can work in tandem.
 
@@ -645,7 +645,7 @@ The leaky bucket is analogous to water flowing into a leaky bucket, with water l
 - If the bucket is full, the new packet is dropped.
 - Irrespective of input rate, the **output rate is constant**, producing uniform packet distribution. Can be implemented as a single-server queue.
 
-![Leaky bucket analogy: faucet (unregulated input), bucket (buffer), constant drip output (regulated flow)](../images/leaky-bucket-analogy.png){ width="700" }
+![Leaky bucket analogy: faucet (unregulated input), bucket (buffer), constant drip output (regulated flow)](../images/lesson-06/leaky-bucket-analogy.png){ width="700" }
 
 !!! info "Reference"
     Kurose & Ross, Edition 6, Section 7.5.2

@@ -61,7 +61,7 @@ One organization does not always mean one AS. A large ISP or CDN may run **multi
 
 ### Import & export policy
 
-![Common inter-AS relationships — transit and peering between ISPs and customers](../images/transit-peering-relationships.png)
+![Common inter-AS relationships — transit and peering between ISPs and customers](../images/lesson-04/transit-peering-relationships.png)
 
 *C1, C2, C3 are customers of ISP-X. ISP-P is a provider of ISP-X.*
 
@@ -92,7 +92,7 @@ Import preference reflects business relationships: **customer > peer > provider*
 
 ### eBGP vs iBGP sessions
 
-![eBGP and iBGP sessions across AS1, AS2, and AS3](../images/ebgp-ibgp-sessions.png)
+![eBGP and iBGP sessions across AS1, AS2, and AS3](../images/lesson-04/ebgp-ibgp-sessions.png)
 
 *Course topology uses AS-A through AS-D with routers R-A1, R-B1, R-D2, etc. Same rules: **iBGP** within an AS, **eBGP** between ASes.*
 

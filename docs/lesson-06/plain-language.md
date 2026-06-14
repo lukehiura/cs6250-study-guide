@@ -40,7 +40,7 @@ Imagine router **R** connecting several sites. The lecture gives three rules:
 | Anything from **S2** | **Drop it** (maybe S2 is a sketchy lab) |
 | Traffic from **X** to **Y** | **Reserve 50 Mbps** for that path |
 
-![Example topology where router R classifies traffic by source, destination, and type](../images/packet-classification-traffic-routing.png)
+![Example topology where router R classifies traffic by source, destination, and type](../images/lesson-06/packet-classification-traffic-routing.png)
 
 That is **packet classification** — matching on **source, destination, port, protocol**, not just "where is it going?"
 
@@ -78,7 +78,7 @@ The lecture uses three inputs (**A**, **B**, **C**) and four outputs (**1–4**)
 2. **A** gets served first and connects.
 3. **B** and **C** wait — even if they also have packets for outputs **2** or **3** that are sitting idle.
 
-![Take-a-ticket round 1 — A connects to output 1 while B and C wait](../images/take-ticket-round-1.png)
+![Take-a-ticket round 1 — A connects to output 1 while B and C wait](../images/lesson-06/take-ticket-round-1.png)
 
 That wait is **head-of-line (HOL) blocking**: the packet at the **front** of the line blocks everything behind it, even when a different output is free.
 
@@ -96,7 +96,7 @@ With VOQs, inputs can request multiple outputs in the same round. **Parallel Ite
 
 **Round 1:** A, B, and C all wanted output 1 — but output 1 only grants **B**. Meanwhile A gets output 2 and C gets output 4. **Three connections at once** instead of one-at-a-time tickets.
 
-![Parallel iterative matching round 1 — A, B, and C connect to different outputs simultaneously](../images/pim-round-1.png)
+![Parallel iterative matching round 1 — A, B, and C connect to different outputs simultaneously](../images/lesson-06/pim-round-1.png)
 
 **Key takeaway:** VOQs + PIM = **no HOL blocking, crossbar stays busy.**
 
@@ -122,7 +122,7 @@ Friday night, someone kicks off a huge backup. Bursts fill the buffer. Meanwhile
 - Send packets until the allowance runs out; leftover credit **carries over**.
 - Big packet that does not fit this round? Wait — credit accumulates for next time.
 
-![Deficit Round Robin iteration 1 — flow F1 sends a 200-byte packet using its quantum](../images/drr-iteration-1.png)
+![Deficit Round Robin iteration 1 — flow F1 sends a 200-byte packet using its quantum](../images/lesson-06/drr-iteration-1.png)
 
 Fair enough for real hardware, cheap to run — unlike fancier schemes that track a finish time for every queue.
 
@@ -146,7 +146,7 @@ Imagine a **parking meter** that refills at rate **R**, holding at most **B** to
 - **Shaping:** no tokens → packet **waits** in a queue.
 - **Policing:** no tokens → packet **dropped**.
 
-![Token bucket policing — excess packets are dropped when the bucket is empty](../images/token-bucket-policing.png)
+![Token bucket policing — excess packets are dropped when the bucket is empty](../images/lesson-06/token-bucket-policing.png)
 
 **Exam point:** Token bucket allows **controlled bursts** (up to B) while averaging rate R.
 
@@ -154,11 +154,11 @@ Imagine a **parking meter** that refills at rate **R**, holding at most **B** to
 
 A bucket with a **small hole** dripping at constant rate **r**. Water (packets) pours in; only the drip leaves. Overflow? Discarded or queued.
 
-![Leaky bucket analogy — packets enter a bucket and leak out at a constant rate](../images/leaky-bucket-analogy.png)
+![Leaky bucket analogy — packets enter a bucket and leak out at a constant rate](../images/lesson-06/leaky-bucket-analogy.png)
 
 Output is **smooth and constant** — no bursting. Good when you want a steady stream, not occasional floods.
 
-![Policing vs shaping — policing clips peaks; shaping smooths them into a steady rate](../images/leaky-bucket-policing-vs-shaping.png)
+![Policing vs shaping — policing clips peaks; shaping smooths them into a steady rate](../images/lesson-06/leaky-bucket-policing-vs-shaping.png)
 
 **Memory trick:** **Token = burst OK. Leaky = smooth only. Police = drop. Shape = delay.**
 

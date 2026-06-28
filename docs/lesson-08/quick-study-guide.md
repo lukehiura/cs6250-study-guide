@@ -13,155 +13,279 @@ search:
 
 # Lesson 8: Quick Study Guide — SDN (Part 2)
 
-Focused exam review for SDN implementation and systems details. Start with the [Plain-language guide](plain-language.md) if needed, then use [Lesson 8 full guide](sdn-2.md), and test with the [quiz](quiz.md).
+Focused exam review for SDN systems. Start with the [Plain-language guide](plain-language.md), then [Lesson 8 full guide](sdn-2.md), and test with the [quiz](quiz.md).
 
 ---
 
 ## 1. Big picture
 
-- Part 2 focuses on SDN system mechanics: OpenFlow pipeline, controller internals, distributed control, ONOS, P4, and SDX.
-- Central tradeoff: controller simplicity vs distributed scalability and fault tolerance.
-- OpenFlow is the key southbound protocol abstraction in this lesson's architecture.
-- P4 extends programmability into the data plane itself.
+- Part 2 = SDN **landscape**, **OpenFlow** infrastructure, **controllers**, **ONOS**, **P4**, **SDX**
+- Production = **logically centralized**, **physically distributed** control
+- OpenFlow = dominant **southbound**; northbound = **no single standard**
 
 !!! tip "Memory aid"
-    **Pipeline, control state, and programmability** are the three SDN Part 2 pillars.
+    **Configure with P4, populate with OpenFlow.**
 
 ---
 
-## 2. SDN landscape perspectives
+## 2. SDN motivation revisit
 
-| Perspective | Core question |
-|------------|---------------|
-| **Plane-based** | How are control and data roles separated? |
-| **Layer-based** | How do infrastructure, control, and apps interact? |
-| **System design** | How does the controller scale and stay correct/fault tolerant? |
+| Traditional pain | SDN response |
+|-----------------|--------------|
+| Per-device vendor config | Centralized policy in NOS |
+| Coupled control + forwarding | Separation via southbound API |
+| ~10-year protocol rollouts | Software updates on controller |
 
----
+### Three planes
 
-## 3. OpenFlow multi-table pipeline
-
-| Stage | Purpose |
-|------|---------|
-| Table 0 entry | Initial classification |
-| GoTo action | Hand packet to next table |
-| Action set accumulation | Compose final packet operations |
-| Final execution | Apply forwarding/modify actions |
-
-OpenFlow message information classes:
-
-- events (packet-in, link changes, flow expiry)
-- statistics (flow/table/port counters)
-- packet payload snippets
+| Plane | Function |
+|-------|----------|
+| **Management** | Monitor/configure control (SNMP, operators) |
+| **Control** | Path computation, rule installation |
+| **Data** | Packet/frame forwarding |
 
 ---
 
-## 4. Controller functions
+## 3. SDN advantages (vs conventional)
 
-| Function | Why it matters |
-|----------|----------------|
-| Topology discovery | Needed for path computation |
-| Stats aggregation | Inputs to TE and monitoring |
-| Notification/event handling | React to link/flow changes |
-| Rule management | Install/update/delete flow entries |
-| Security policy handling | Enforce access/segmentation |
+| Advantage | Detail |
+|-----------|--------|
+| **Shared abstractions** | Reusable control APIs and languages |
+| **Consistent global view** | All apps see same network state |
+| **Locality of function** | Middlebox logic not tied to one physical box |
+| **Simpler integration** | Chain apps (LB + routing) in software |
 
----
-
-## 5. Centralized vs distributed controllers
-
-| Architecture | Benefits | Risks/Costs |
-|-------------|----------|-------------|
-| **Centralized** | Simpler implementation and reasoning | SPOF risk, scaling bottlenecks |
-| **Distributed** | Better resilience and scale | Consistency and coordination complexity |
-
-!!! warning "Exam point"
-    "Logically centralized" does **not** require one physical controller node.
+Middleboxes → **controller applications**.
 
 ---
 
-## 6. ONOS essentials
+## 4. Three SDN landscape perspectives
 
-| ONOS element | Role |
-|-------------|------|
-| Global network view | Shared state abstraction |
-| Distributed storage/replication | Durable, shared control data |
-| Consensus (e.g., Raft) | Leader election and consistent updates |
-| Mastership reassignment | Controller failover for switches |
-
----
-
-## 7. P4 essentials
-
-**P4 goals:**
-
-1. Protocol independence
-2. Target independence
-3. Reconfigurability
-
-**P4 model operations:**
-
-- **Configure:** define parser + match-action pipeline
-- **Populate:** fill tables at runtime from control plane
+| Perspective | Focus |
+|-------------|-------|
+| **(a) Plane-oriented** | Management / control / data |
+| **(b) Layered architecture** | Stack of technologies + cross-cutting debug/test |
+| **(c) System design** | Apps → NOS → switches with flow tables |
 
 ---
 
-## 8. SDN and SDX applications
+## 5. SDN landscape layers (high-yield)
 
-| Domain | Example |
-|-------|---------|
-| Traffic engineering | WAN optimization (e.g., B4-like use cases) |
-| Security/monitoring | Dynamic rule insertion and traffic steering |
-| Data centers | VM mobility, multi-tenant isolation |
-| IXPs via SDX | Application-aware peering and inbound TE |
+| # | Layer | Key tech |
+|---|-------|----------|
+| 1 | Infrastructure | Open vSwitch, SwitchLight |
+| 2 | Southbound | **OpenFlow**, OVSDB, ForCES, POF |
+| 3 | Network virtualization | VxLAN, NVGRE, FlowVisor |
+| 4 | NOS | ONOS, OpenDaylight, Beacon |
+| 5 | Northbound | No standard; Floodlight, Trema APIs |
+| 6 | Language-based virtualization | Pyretic, OpenVirteX |
+| 7 | Network programming languages | Frenetic, Merlin, FML |
+| 8 | Network applications | Hedera, FlowNAC, OpenQoS |
 
 ---
 
-## 9. High-yield exam Q&A
+## 6. OpenFlow infrastructure
 
-### Why use an OpenFlow table pipeline?
+**Flow entry:** (a) match rule, (b) actions, (c) counters
 
-To support modular, staged packet processing instead of one monolithic rule stage.
+**Lookup:** first table → match or miss
 
-### Three OpenFlow information sources?
+| Action | Effect |
+|--------|--------|
+| Forward to port | Normal forward |
+| To controller | Packet-in |
+| Drop | Discard |
+| Normal pipeline | Legacy processing |
+| Next table | Pipeline stage |
 
-Event messages, flow/port/table statistics, and packet payload from packet-in events.
+**Pipeline:** Table 0 → GoTo → … → execute action set
 
-### Centralized vs distributed control key difference?
+### Three OpenFlow information sources
 
-Distributed designs improve scale/availability but require stronger state coordination.
+1. **Event messages** (link/port changes)
+2. **Flow statistics**
+3. **Packet messages** (unknown new flow)
 
-### When prefer distributed controller deployment?
+---
 
-Large, latency-sensitive, or high-availability production networks.
+## 7. Controller core functions
 
-### ONOS fault tolerance mechanism in short?
+Topology, statistics, notifications, device management, shortest-path forwarding, **security/priority** (high-priority rules win).
 
-Replicated distributed state, consensus, and automatic failover/mastership reassignment.
+---
 
-### What is P4?
+## 8. Centralized vs distributed
 
-A language for specifying packet parsing and match-action data-plane behavior.
+| | Centralized | Distributed |
+|---|-------------|-------------|
+| Examples | Beacon, Maestro, NOX-MT, Ryu | ONOS, OpenDaylight cluster |
+| Pros | Simpler | Scale, fault tolerance |
+| Cons | SPOF, scale limits | Weak consistency, coordination |
+| Notes | Beacon: >12M flows/sec | Hybrid: cluster per DC + WAN nodes |
+
+---
+
+## 9. ONOS essentials
+
+| Component | Role |
+|-----------|------|
+| **Global network view** | Shared topology/state |
+| **Titan** | Graph DB |
+| **Cassandra** | Key-value store |
+| **Blueprints API** | Northbound to apps |
+| **OF Managers** | Floodlight-based OpenFlow |
+| **Zookeeper** | Mastership registry |
+
+**Fault tolerance:** each switch → multiple ONOS instances, **one master**; on failure → **re-election** of master from remaining connections.
+
+---
+
+## 10. P4 essentials
+
+**P4 vs OpenFlow:**
+
+| | OpenFlow | P4 |
+|---|----------|-----|
+| Parser | Fixed | Programmable |
+| Tables | Serial only | Series **or parallel** |
+| Ops | Rules | **Configure** + **Populate** |
+
+| Operation | Does |
+|-----------|------|
+| **Configure** | Parser, stages, header fields, table order |
+| **Populate** | Add/delete table entries at runtime |
+
+**Pipeline:** Input → Parser → Ingress MA → Buffer → Egress MA → Output
+
+**P4 language:** legal header types, control-flow program, **TDG** (compiler-built; parallel if no dependency)
+
+**L2/L3 TDG exam path:** Virtual routing ID → Routing (miss→L2, hit→L3) → Access control
+
+---
+
+## 11. SDN application domains (five)
+
+| Domain | Examples |
+|--------|----------|
+| **Traffic engineering** | ElasticTree, Plug-n-Serve, Aster\*x, ALTO VPN |
+| **Mobility & wireless** | OpenRadio, Odin, LVAPs |
+| **Measurement & monitoring** | OpenSketch, OpenSample, PayLess |
+| **Security & dependability** | DDoS detection, OF-RHM, CloudWatcher |
+| **Data center networking** | LIME, FlowDiff |
+
+---
+
+## 12. SDX essentials
+
+**BGP limitations SDX targets:**
+
+1. Routing on **destination prefix only**
+2. No direct **end-to-end path** control (only neighbor paths + prepending hacks)
+
+**Architecture:** traditional IXP = L2 fabric + BGP route server; SDX = **virtual switch per AS** + policy compilation to physical fabric.
+
+**Pyretic operators:**
+
+| Op | Meaning |
+|----|---------|
+| `match(...)` | Filter |
+| `>>` | Sequential |
+| `+` | Parallel (no match → drop) |
+| `fwd(X)` | Forward toward X |
+
+**Example:** `(match(dstport=80) >> fwd(B)) + (match(dstport=443) >> fwd(C))`
+
+**Wide-area SDX apps:** app-specific peering, inbound TE (src IP/port), anycast LB (rewrite dest IP), middlebox redirection
+
+---
+
+## 13. High-yield exam Q&A
+
+### Three planes of functionality?
+
+Management (configure/monitor), control (paths/rules), data (forward).
+
+### Four SDN advantages over conventional?
+
+Shared abstractions, consistent global view, flexible function placement, simpler app integration.
+
+### Three landscape perspectives?
+
+Plane-oriented, layered architecture, system design.
+
+### OpenFlow flow entry parts?
+
+Match rule, actions, counters.
+
+### Three OpenFlow info sources to NOS?
+
+Events, statistics, packet messages (new flow).
+
+### Centralized controller drawback?
+
+Single point of failure; scaling limits.
+
+### Distributed controller properties?
+
+Weak consistency, fault tolerance, scale-out.
+
+### ONOS mastership tool?
+
+**Zookeeper** (course material).
+
+### P4 vs OpenFlow division?
+
+P4 **configures** pipeline; OpenFlow **populates** rules. P4: programmable parser, parallel tables OK.
 
 ### P4 configure vs populate?
 
-Configure defines pipeline structure; populate installs runtime entries.
+Configure = structure/protocol support; populate = add/delete table entries.
 
-### What SDN limitation of BGP does SDX address?
+### What is a TDG?
 
-Fine-grained policy control beyond destination-prefix-only decisions.
+Table Dependency Graph — compiler orders (or parallelizes) match+action tables from P4 control flow.
+
+### Five SDN application domains?
+
+Traffic engineering, mobility/wireless, measurement, security, data center networking.
+
+### Two BGP limitations SDX addresses?
+
+Destination-prefix-only routing; limited end-to-end path control.
+
+### Pyretic `>>` vs `+`?
+
+Sequential vs parallel; with `+`, no match → drop.
+
+### SDX wide-area load balancing?
+
+Anycast IP + rewrite destination IP at IXP (avoids DNS cache staleness).
+
+### P4 three goals?
+
+Reconfigurability, protocol independence, target independence.
 
 ---
 
-## 10. Quick memory sheet
+## 14. Quick memory sheet
 
 | Topic | Memory aid |
-|------|-------------|
-| SDN perspectives | Plane, layer, system |
-| OpenFlow pipeline | Match -> optional GoTo -> final action set |
-| Southbound data | Events + stats + packet-in payload |
-| Distributed control | Scale + resilience, but consistency cost |
-| ONOS | Shared view + replicated state + failover |
-| P4 goals | Protocol-, target-independent, reconfigurable |
-| P4 operations | Configure structure, populate entries |
-| SDX | SDN policy at IXP, complements BGP |
+|-------|------------|
+| Three planes | Manage → Control → Data |
+| SDN advantage | Middlebox → controller app |
+| Southbound king | OpenFlow |
+| Northbound | No single standard yet |
+| Flow entry | Match + action + counter |
+| Pipeline entry | Table 0 |
+| Multi-stage | GoTo next table |
+| OpenFlow telemetry | Events + stats + packet-in |
+| ONOS storage | Titan + Cassandra |
+| ONOS failover | Zookeeper mastership + re-election |
+| P4 vs OpenFlow | Programmable parser; parallel tables OK |
+| Configure vs populate | Structure vs policy entries |
+| TDG | Compiler table ordering |
+| SDN app domains | TE, wireless, monitor, security, DC |
+| SDX virtual switch | One per AS at IXP |
+| Pyretic | >> then, + parallel, fwd(X) |
+| SDX anycast LB | Rewrite dest IP at exchange |
+| SDX | Fine policy at IXP, not BGP replacement |
